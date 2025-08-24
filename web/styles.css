@@ -1,0 +1,43 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #121111;
+  color: #fff;
+  text-align: center;
+}
+
+header {
+  padding: 2rem;
+  background: #000;
+}
+
+.tagline {
+  font-size: 1.2rem;
+  color: #ccc;
+}
+
+main {
+  padding: 2rem;
+}
+
+.button {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background: #fff;
+  color: #000;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.button:hover {
+  background: #ddd;
+}
+
+footer {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: #000;
+}
