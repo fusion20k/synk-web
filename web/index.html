@@ -3,56 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Synk - Sync Your Life</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="assets/icon.ico">
+    <title>Synk - Seamlessly Connect Notion & Google Calendar</title>
+    <meta name="description" content="Real-time sync between your Notion tasks and Google Calendar events. Connect your productivity workflow with secure, automatic synchronization.">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="assets/icons/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
 <body>
     <header>
-        <div class="container">
-            <h1>Synk</h1>
+        <div class="header-content">
+            <a href="index.html" class="logo">Synk</a>
             <nav>
                 <a href="index.html">Home</a>
-                <a href="privacy.html">Privacy Policy</a>
-                <a href="terms.html">Terms of Service</a>
+                <a href="about.html">How It Works</a>
+                <a href="contact.html">Contact</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="terms.html">Terms</a>
             </nav>
+            <div class="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
     </header>
 
     <main>
+        <!-- Hero Section -->
         <section class="hero">
-            <h2>Sync your apps, simplify your life</h2>
-            <p>Synk automatically connects your productivity apps like Google Calendar and Notion so you can manage your schedule, tasks, and notes seamlessly in one place.</p>
-            <a class="cta-button" href="#get-started">Get Started</a>
-        </section>
-
-        <section class="features">
-            <h2>Features</h2>
-            <div class="feature-cards">
-                <div class="card">
-                    <h3>Automatic Sync</h3>
-                    <p>Keep your calendars, notes, and tasks in sync automatically across Google Calendar and Notion.</p>
-                </div>
-                <div class="card">
-                    <h3>Selective Integration</h3>
-                    <p>Choose exactly which projects, pages, and events to sync—full control, zero clutter.</p>
-                </div>
-                <div class="card">
-                    <h3>Easy Setup</h3>
-                    <p>Connect your accounts in just a few clicks and start syncing instantly.</p>
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Seamlessly Connect Notion & Google Calendar</h1>
+                    <p>Real-time sync between your tasks, events, and workflow. Keep your productivity tools perfectly aligned with automatic, secure synchronization.</p>
+                    <a href="#get-started" class="cta-button">
+                        Get Started
+                        <span>→</span>
+                    </a>
                 </div>
             </div>
         </section>
 
+        <!-- Features Section -->
+        <section class="features">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Why Choose Synk?</h2>
+                    <p>Experience seamless productivity with features designed for modern workflows</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Real-Time Sync</h3>
+                        <p>Updates in Notion instantly reflect in Google Calendar. Changes flow both ways, keeping your schedule and tasks perfectly aligned.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔧</div>
+                        <h3>Easy Setup</h3>
+                        <p>Connect your accounts with a few clicks, no coding required. Get up and running in under 5 minutes with our intuitive setup process.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔒</div>
+                        <h3>Secure & Private</h3>
+                        <p>Your data stays private. Synk uses OAuth with no password storage. We never access more than necessary to keep your tools in sync.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3>Selective Control</h3>
+                        <p>Choose exactly which Notion pages and databases to sync. Full control over your data with zero clutter in your calendar.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section class="how-it-works">
+            <div class="container">
+                <div class="section-header">
+                    <h2>How It Works</h2>
+                    <p>Get started with Synk in four simple steps</p>
+                </div>
+                <div class="steps-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h3>Connect Notion</h3>
+                        <p>Securely link your Notion account using OAuth authentication</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h3>Connect Google Calendar</h3>
+                        <p>Authorize access to your Google Calendar with secure permissions</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h3>Choose What to Sync</h3>
+                        <p>Select which Notion pages or databases you want to synchronize</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <h3>Automatic Syncing</h3>
+                        <p>Enjoy real-time synchronization between your productivity tools</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
         <section class="about">
-            <h2>About Synk</h2>
-            <p>Synk is designed for busy professionals and teams who want to stay organized without juggling multiple apps. Our app integrates your favorite productivity tools into one seamless experience, saving you time and reducing errors caused by manual updates.</p>
+            <div class="container">
+                <div class="about-content">
+                    <div class="about-text">
+                        <h2>Built for Modern Productivity</h2>
+                        <p>Synk bridges the gap between your planning and scheduling tools. No more manual copying of tasks, no more missed deadlines, no more context switching between apps.</p>
+                        <p>Whether you're a busy professional, a student managing coursework, or a team lead coordinating projects, Synk keeps your workflow smooth and your schedule accurate.</p>
+                        <a href="about.html" class="btn-secondary">Learn More</a>
+                    </div>
+                    <div class="about-visual">
+                        <div class="sync-flow">
+                            <div class="app-icon">N</div>
+                            <div class="sync-arrow">⟷</div>
+                            <div class="app-icon">G</div>
+                        </div>
+                        <p style="margin-top: 1rem; color: var(--text-secondary);">Notion ⟷ Synk ⟷ Google Calendar</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section id="get-started" class="hero" style="min-height: 50vh; background: var(--bg-secondary);">
+            <div class="container">
+                <div class="hero-content">
+                    <h2>Ready to Sync Your Workflow?</h2>
+                    <p>Join thousands of users who have streamlined their productivity with Synk</p>
+                    <a href="contact.html" class="cta-button">
+                        Get Started Today
+                        <span>→</span>
+                    </a>
+                </div>
+            </div>
         </section>
     </main>
 
     <footer>
-        <p>&copy; 2025 Synk. All rights reserved.</p>
-        <p><a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms of Service</a></p>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Synk</h3>
+                    <p>Seamlessly connecting your productivity tools for a more organized workflow.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Product</h3>
+                    <a href="about.html">How It Works</a><br>
+                    <a href="contact.html">Support</a><br>
+                    <a href="#features">Features</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <a href="privacy.html">Privacy Policy</a><br>
+                    <a href="terms.html">Terms of Service</a><br>
+                    <a href="contact.html">Contact Us</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Synk. All rights reserved.</p>
+            </div>
+        </div>
     </footer>
+
+    <script src="js/scripts.js"></script>
 </body>
 </html>
