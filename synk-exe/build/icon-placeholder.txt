@@ -1,0 +1,5 @@
+PLACEHOLDER: Replace this file with icon.ico for the Windows executable.
+The icon should be a proper .ico file with multiple sizes (16x16, 32x32, 48x48, 256x256).
+
+For now, the app will try to load icon.ico from this directory.
+If the file doesn't exist, the app will use the default Electron icon.

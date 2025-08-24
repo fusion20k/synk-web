@@ -1,0 +1,6 @@
+PLACEHOLDER: Replace this file with a 16x16 or 32x32 PNG icon for the system tray.
+The icon should be simple, monochrome, and work well in both light and dark system themes.
+Suggested: A simple "S" letter or sync arrows icon.
+
+For now, the app will try to load tray.png from this directory.
+If the file doesn't exist, the tray will still work but without an icon.

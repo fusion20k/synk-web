@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Synk - Simple Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #000000;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+        
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+        
+        .button {
+            background: transparent;
+            border: 2px solid #00ff88;
+            color: #00ff88;
+            padding: 15px 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+        
+        .button:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .status {
+            margin-top: 30px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <h1>Synk</h1>
+    <p>Effortless Notion ↔ Google Calendar Sync</p>
+    
+    <div>
+        <button class="button" onclick="testConnection()">Test Connection</button>
+        <button class="button" onclick="openSettings()">Settings</button>
+    </div>
+    
+    <div class="status" id="status">
+        Ready to sync...
+    </div>
+
+    <script>
+        function testConnection() {
+            document.getElementById('status').innerHTML = 'Testing connection to server...';
+            
+            // Test connection to Express server
+            fetch('http://localhost:3000/health')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('status').innerHTML = 
+                        `✅ Connected to Synk server<br>Status: ${data.status}`;
+                })
+                .catch(error => {
+                    document.getElementById('status').innerHTML = 
+                        `❌ Failed to connect to server<br>Error: ${error.message}`;
+                });
+        }
+        
+        function openSettings() {
+            document.getElementById('status').innerHTML = 'Settings panel would open here...';
+        }
+        
+        // Auto-test connection on load
+        window.onload = function() {
+            setTimeout(testConnection, 1000);
+        };
+    </script>
+</body>
+</html>

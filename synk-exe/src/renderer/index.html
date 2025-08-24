@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synk</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="app-logo">
+                <span class="logo-text">Synk</span>
+            </div>
+            <div class="connection-indicators">
+                <div class="indicator" id="notion-indicator">
+                    <span class="indicator-dot"></span>
+                    <span class="indicator-label">Notion</span>
+                </div>
+                <div class="indicator" id="google-indicator">
+                    <span class="indicator-dot"></span>
+                    <span class="indicator-label">Google</span>
+                </div>
+                <div class="sync-status" id="sync-status">
+                    <span class="sync-dot"></span>
+                    <span class="sync-label">Sync Active</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Tab Navigation -->
+        <nav class="tab-nav">
+            <button class="tab-button active" data-tab="connections">Connections</button>
+            <button class="tab-button" data-tab="sync-log">Sync Log</button>
+            <button class="tab-button" data-tab="settings">Settings</button>
+        </nav>
+
+        <!-- Tab Content -->
+        <main class="tab-content">
+            <!-- Connections Tab -->
+            <div class="tab-pane active" id="connections-tab">
+                <div class="connection-section">
+                    <h2>Connect Your Services</h2>
+                    
+                    <div class="service-card">
+                        <div class="service-header">
+                            <div class="service-icon">📝</div>
+                            <div class="service-info">
+                                <h3>Notion</h3>
+                                <p>Connect your Notion content calendar</p>
+                            </div>
+                            <div class="service-status" id="notion-status">
+                                <span class="status-text">Disconnected</span>
+                            </div>
+                        </div>
+                        <div class="service-actions">
+                            <input type="password" id="notion-token-input" placeholder="Enter Notion Integration Token" class="synk-input">
+                            <button class="synk-button primary" id="connect-notion-btn">Connect</button>
+                        </div>
+                        <div class="error-box" id="notion-error" style="display: none;">
+                            <span class="error-message"></span>
+                            <button class="synk-button small" onclick="retryNotionConnection()">Retry</button>
+                        </div>
+                    </div>
+
+                    <section id="notion-config" class="panel neon-outline hidden" style="margin-top:12px;">
+                        <h3 style="margin-top:0;">Notion Sync Options</h3>
+
+                        <label class="small">Space</label>
+                        <select id="notion-space" class="neon-outline">
+                            <option value="auto">Auto-detect (recommended)</option>
+                            <option value="private">Private</option>
+                            <option value="teamspace">Teamspace</option>
+                        </select>
+
+                        <div style="height:10px;"></div>
+
+                        <label class="small">Database to Sync</label>
+                        <select id="notion-db" class="neon-outline">
+                            <option disabled selected>Loading databases…</option>
+                        </select>
+
+                        <div style="height:10px;"></div>
+
+                        <button id="save-notion-config" class="btn">Save Notion Selection</button>
+                        <span id="notion-config-status" class="small"></span>
+                    </section>
+
+                    <div class="service-card">
+                        <div class="service-header">
+                            <div class="service-icon">📅</div>
+                            <div class="service-info">
+                                <h3>Google Calendar</h3>
+                                <p>Connect your Google Calendar account</p>
+                            </div>
+                            <div class="service-status" id="google-status">
+                                <span class="status-text">Disconnected</span>
+                            </div>
+                        </div>
+                        <div class="service-actions">
+                            <button class="synk-button primary" id="connect-google-btn">Connect</button>
+                        </div>
+                        <div class="error-box" id="google-error" style="display: none;">
+                            <span class="error-message"></span>
+                            <button class="synk-button small" onclick="retryGoogleConnection()">Retry</button>
+                        </div>
+                    </div>
+
+                    <div class="sync-controls">
+                        <button class="synk-button large sync-now-btn" id="sync-now-btn" disabled>
+                            <span class="button-icon">🔄</span>
+                            Sync Now
+                        </button>
+                        <button class="synk-button large secondary" id="pause-sync-btn">
+                            <span class="button-icon">⏸️</span>
+                            Pause Sync
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sync Log Tab -->
+            <div class="tab-pane" id="sync-log-tab">
+                <div class="log-section">
+                    <div class="log-header">
+                        <h2>Sync Activity</h2>
+                        <button class="synk-button small" id="refresh-log-btn">Refresh</button>
+                    </div>
+                    <div class="log-container" id="log-container">
+                        <div class="log-entry info">
+                            <span class="log-time">Starting</span>
+                            <span class="log-message">Synk desktop app initialized</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div class="tab-pane" id="settings-tab">
+                <div class="settings-section">
+                    <h2>Application Settings</h2>
+                    
+                    <div class="setting-group">
+                        <div class="setting-item">
+                            <label class="setting-label">
+                                <input type="checkbox" id="launch-startup" class="setting-checkbox">
+                                <span class="checkmark"></span>
+                                Launch on Windows startup
+                            </label>
+                            <p class="setting-description">Automatically start Synk when Windows boots</p>
+                        </div>
+
+                        <div class="setting-item">
+                            <label class="setting-label">
+                                <input type="checkbox" id="notifications-enabled" class="setting-checkbox" checked>
+                                <span class="checkmark"></span>
+                                Enable sync notifications
+                            </label>
+                            <p class="setting-description">Show notifications when sync operations complete</p>
+                        </div>
+                    </div>
+
+                    <div class="settings-actions">
+                        <button class="synk-button primary" id="save-settings-btn">Save Settings</button>
+                    </div>
+
+                    <div class="app-info">
+                        <h3>About Synk</h3>
+                        <p>Version 1.0.0</p>
+                        <p>Effortless Notion ↔ Google Calendar Sync</p>
+                        <p>Instant sync - no delays, no intervals</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="renderer.js"></script>
+</body>
+</html>

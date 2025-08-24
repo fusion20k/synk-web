@@ -1,0 +1,40 @@
+{
+  "name": "synk",
+  "version": "1.0.0",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --enable-logging",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.synk.app",
+    "productName": "Synk",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "files": [
+      "src/**",
+      "assets/**",
+      "build/**",
+      "package.json"
+    ],
+    "asar": true
+  },
+  "dependencies": {
+    "electron": "^22.3.27",
+    "electron-log": "^5.1.5",
+    "electron-store": "^8.1.0",
+    "keytar": "^7.9.0",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "electron-builder": "^24.6.0"
+  }
+}

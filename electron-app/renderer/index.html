@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synk</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="app-title">Synk</h1>
+            <p class="app-subtitle">Effortless Notion ↔ Google Calendar Sync</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Connection Status -->
+            <section class="connection-status">
+                <div class="status-item" id="notion-status">
+                    <div class="status-icon" id="notion-icon">⚪</div>
+                    <span class="status-label">Notion</span>
+                    <span class="status-text" id="notion-text">Disconnected</span>
+                </div>
+                <div class="status-item" id="google-status">
+                    <div class="status-icon" id="google-icon">⚪</div>
+                    <span class="status-label">Google Calendar</span>
+                    <span class="status-text" id="google-text">Disconnected</span>
+                </div>
+            </section>
+
+            <!-- Core Actions -->
+            <section class="core-actions">
+                <button class="neon-button primary" id="connect-notion">
+                    <span class="button-text">Connect Notion</span>
+                </button>
+                
+                <button class="neon-button primary" id="connect-google">
+                    <span class="button-text">Connect Google Calendar</span>
+                </button>
+                
+                <button class="neon-button secondary" id="sync-now" disabled>
+                    <span class="button-text">Sync Now</span>
+                </button>
+            </section>
+
+            <!-- Auto-Sync Controls -->
+            <section class="auto-sync-section">
+                <div class="auto-sync-controls">
+                    <label class="toggle-container">
+                        <input type="checkbox" id="auto-sync-toggle">
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-label">Auto-Sync every</span>
+                    </label>
+                    
+                    <select class="neon-select" id="sync-interval" disabled>
+                        <option value="15">15 minutes</option>
+                        <option value="30" selected>30 minutes</option>
+                        <option value="60">1 hour</option>
+                        <option value="360">6 hours</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- Settings Button -->
+            <section class="settings-section">
+                <button class="neon-button tertiary" id="settings-btn">
+                    <span class="button-text">⚙️ Settings</span>
+                </button>
+            </section>
+        </main>
+
+        <!-- Log Panel -->
+        <section class="log-panel">
+            <div class="log-header">
+                <h3>Sync Log</h3>
+                <button class="clear-log-btn" id="clear-log">Clear</button>
+            </div>
+            <div class="log-content" id="log-content">
+                <div class="log-entry info">
+                    <span class="log-time">Starting up...</span>
+                    <span class="log-message">Synk initialized. Connect your accounts to begin syncing.</span>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="close-modal" id="close-settings">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <label>Notion Database ID</label>
+                    <input type="text" class="neon-input" id="notion-db-id" placeholder="Enter Notion database ID">
+                </div>
+                
+                <div class="setting-group">
+                    <label>Default Google Calendar</label>
+                    <select class="neon-select" id="default-calendar">
+                        <option value="primary">Primary Calendar</option>
+                    </select>
+                </div>
+                
+                <div class="setting-group">
+                    <label>Sync Preferences</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="sync-completed-tasks">
+                            <span class="checkmark"></span>
+                            Sync completed tasks
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="create-all-day-events" checked>
+                            <span class="checkmark"></span>
+                            Create all-day events for tasks without time
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="neon-button secondary" id="reset-connections">Reset All Connections</button>
+                <button class="neon-button primary" id="save-settings">Save & Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Connection Modal -->
+    <div class="modal-overlay" id="connection-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="connection-title">Connect Service</h2>
+                <button class="close-modal" id="close-connection">×</button>
+            </div>
+            <div class="modal-body" id="connection-body">
+                <!-- Dynamic content based on connection type -->
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

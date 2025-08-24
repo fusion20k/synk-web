@@ -1,0 +1,30 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="256" height="256" fill="#000000" rx="32"/>
+  
+  <!-- Main S shape with neon glow -->
+  <path d="M80 80 Q80 40, 120 40 L160 40 Q200 40, 200 80 Q200 120, 160 120 L120 120 Q80 120, 80 160 Q80 200, 120 200 L160 200 Q200 200, 200 160" 
+        stroke="#ffffff" 
+        stroke-width="8" 
+        fill="none" 
+        filter="url(#glow)"
+        stroke-linecap="round"/>
+  
+  <!-- Sync arrows -->
+  <circle cx="64" cy="64" r="4" fill="#00ff88" filter="url(#glow)"/>
+  <circle cx="192" cy="192" r="4" fill="#00ff88" filter="url(#glow)"/>
+  
+  <!-- Connection dots -->
+  <circle cx="192" cy="64" r="3" fill="#00aaff" filter="url(#glow)"/>
+  <circle cx="64" cy="192" r="3" fill="#00aaff" filter="url(#glow)"/>
+</svg>

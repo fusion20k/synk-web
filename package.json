@@ -1,0 +1,27 @@
+{
+  "name": "synk",
+  "version": "1.0.0",
+  "description": "A simple automation tool that syncs tasks from Notion to Google Calendar",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "body-parser": "^1.20.2",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.3.1",
+    "@supabase/supabase-js": "^2.38.0",
+    "@notionhq/client": "^2.2.13",
+    "googleapis": "^126.0.1",
+    "node-cron": "^3.0.2",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": ["notion", "google-calendar", "automation", "sync"],
+  "author": "",
+  "license": "MIT"
+}
