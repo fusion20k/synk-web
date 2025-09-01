@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synk - Notion & Google Calendar Sync</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000 !important;
+            color: #fff !important;
+            line-height: 1.6;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* App Shell Layout */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            background: #000;
+        }
+
+        /* Left Sidebar */
+        .sidebar {
+            width: 240px;
+            background: #111;
+            border-right: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #333;
+            margin-bottom: 20px;
+        }
+
+        .app-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 0 10px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #ccc;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            color: #fff;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border-left: 3px solid #667eea;
+        }
+
+        .nav-icon {
+            margin-right: 12px;
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #000;
+        }
+
+        /* Top Header Bar */
+        .header-bar {
+            height: 60px;
+            background: #111;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .header-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .status-pills {
+            display: flex;
+            gap: 10px;
+        }
+
+        .status-pill {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-pill.connected {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            color: #667eea;
+            border: 1px solid #667eea;
+        }
+
+        .status-pill.disconnected {
+            background: #4d1a1a;
+            color: #f87171;
+            border: 1px solid #ef4444;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #000;
+        }
+
+        .tab-content {
+            display: none;
+            height: 100%;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Cards */
+        .content-card {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        /* Sync Tab Specific Styles */
+        .sync-container {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .service-section {
+            flex: 1;
+            max-width: 45%;
+            min-width: 400px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .sync-icon {
+            font-size: 32px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            align-self: center;
+            margin-top: 60px;
+        }
+
+        .service-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+
+        .service-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .connect-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .connect-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
+
+        .status.success {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2)) !important;
+            color: #a78bfa !important;
+            border: 1px solid #667eea;
+        }
+
+        .status.error {
+            background: #4d1a1a !important;
+            color: #f87171 !important;
+            border: 1px solid #ef4444;
+        }
+
+        .list-container {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            min-height: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .calendar-item, .database-item {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            outline: none;
+            position: relative;
+        }
+
+        .calendar-item:hover, .database-item:hover,
+        .calendar-item:focus, .database-item:focus {
+            border-color: #667eea;
+            background: #222;
+            outline: 2px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .calendar-item.selected, .database-item.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .calendar-item.primary {
+            border-left: 4px solid #667eea;
+        }
+
+        .item-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .item-meta {
+            font-size: 0.85rem;
+            color: #ccc;
+        }
+
+        .demo-badge {
+            display: inline-block;
+            background: #333;
+            color: #667eea;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-left: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #ccc;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .sync-status-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .sync-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            background: #111;
+            border: 1px solid #333;
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        .sync-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #666;
+            transition: all 0.3s ease;
+        }
+
+        .sync-status.ready .sync-indicator {
+            background: #fbbf24;
+            animation: pulse 2s infinite;
+        }
+
+        .sync-status.syncing .sync-indicator {
+            background: #3b82f6;
+            animation: spin 1s linear infinite;
+        }
+
+        .sync-status.synced .sync-indicator {
+            background: #10b981;
+        }
+
+        .sync-status.error .sync-indicator {
+            background: #ef4444;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Settings Styles */
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info h3 {
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .setting-info p {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: #333;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(26px);
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border: 1px solid #667eea;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: linear-gradient(135deg, #5a67d8, #6b46c1);
+            border-color: #5a67d8;
+            transform: translateY(-1px);
+        }
+
+        /* Dashboard Styles */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .connection-card {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-dot.connected {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .status-dot.disconnected {
+            background: #f87171;
+        }
+
+        /* Logs Styles */
+        .log-entry {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+
+        .log-time {
+            color: #888;
+            margin-right: 10px;
+        }
+
+        .log-action {
+            color: #667eea;
+            margin-right: 10px;
+        }
+
+        .log-result {
+            color: #ccc;
+        }
+
+        .log-result.error {
+            color: #f87171;
+        }
+
+        .log-result.success {
+            color: #667eea;
+        }
+
+        /* About Styles */
+        .about-section {
+            margin-bottom: 30px;
+        }
+
+        .about-section h3 {
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .about-section p {
+            color: #ccc;
+            line-height: 1.6;
+        }
+
+        .link-list {
+            list-style: none;
+        }
+
+        .link-list li {
+            margin-bottom: 8px;
+        }
+
+        .link-list a {
+            color: #667eea;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .link-list a:hover {
+            color: #764ba2;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #333;
+            border-top: 2px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            z-index: 1000;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Left Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="app-logo">Synk</div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-item active" data-tab="dashboard">
+                    <span class="nav-icon">■</span>
+                    <span>Dashboard</span>
+                </div>
+                <div class="nav-item" data-tab="sync">
+                    <span class="nav-icon">↔</span>
+                    <span>Sync</span>
+                </div>
+                <div class="nav-item" data-tab="settings">
+                    <span class="nav-icon">⚙</span>
+                    <span>Settings</span>
+                </div>
+                <div class="nav-item" data-tab="logs">
+                    <span class="nav-icon">□</span>
+                    <span>Logs</span>
+                </div>
+                <div class="nav-item" data-tab="about">
+                    <span class="nav-icon">i</span>
+                    <span>About</span>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header Bar -->
+            <div class="header-bar">
+                <div class="header-title" id="header-title">Dashboard</div>
+                <div class="status-pills">
+                    <div class="status-pill disconnected" id="google-pill">Google</div>
+                    <div class="status-pill disconnected" id="notion-pill">Notion</div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Dashboard Tab -->
+                <div class="tab-content active" id="dashboard-tab">
+                    <div class="dashboard-grid">
+                        <div class="connection-card">
+                            <h3 class="card-title">Google Calendar</h3>
+                            <div class="connection-status">
+                                <div class="status-dot disconnected" id="google-status-dot"></div>
+                                <span id="google-status-text">Not connected</span>
+                            </div>
+                            <p id="google-user-info" style="color: #ccc; font-size: 0.9rem;">Connect to see your calendars</p>
+                        </div>
+                        <div class="connection-card">
+                            <h3 class="card-title">Notion</h3>
+                            <div class="connection-status">
+                                <div class="status-dot disconnected" id="notion-status-dot"></div>
+                                <span id="notion-status-text">Not connected</span>
+                            </div>
+                            <p id="notion-user-info" style="color: #ccc; font-size: 0.9rem;">Connect to see your databases</p>
+                        </div>
+                    </div>
+                    <div class="content-card">
+                        <h3 class="card-title">Last Sync</h3>
+                        <p id="last-sync-info" style="color: #ccc;">No syncs performed yet</p>
+                    </div>
+                </div>
+
+                <!-- Sync Tab -->
+                <div class="tab-content" id="sync-tab">
+                    <div class="sync-container">
+                        <div class="service-section">
+                            <div class="service-header">
+                                <h2 class="service-title">Notion</h2>
+                                <button class="connect-btn" id="notion-connect">
+                                    <span id="notion-text">Connect Notion</span>
+                                </button>
+                            </div>
+                            <div id="notion-status"></div>
+                            <div class="list-container" id="notion-content">
+                                <div class="empty-state">
+                                    <h3>Connect Notion to get started</h3>
+                                    <p>Your databases and pages will appear here</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sync-icon">↔</div>
+
+                        <div class="service-section">
+                            <div class="service-header">
+                                <h2 class="service-title">Google Calendar</h2>
+                                <button class="connect-btn" id="google-connect">
+                                    <span id="google-text">Connect Google</span>
+                                </button>
+                            </div>
+                            <div id="google-status"></div>
+                            <div class="list-container" id="calendars-content">
+                                <div class="empty-state">
+                                    <h3>Connect Google Calendar to get started</h3>
+                                    <p>Your calendars will appear here</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sync-status-container">
+                        <div class="sync-status" id="sync-status" style="display: none;">
+                            <span class="sync-indicator"></span>
+                            <span class="sync-text">Ready to sync</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div class="tab-content" id="settings-tab">
+                    <div class="content-card">
+                        <h3 class="card-title">General Settings</h3>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Demo Mode</h3>
+                                <p>Use sample data for testing without connecting real accounts</p>
+                            </div>
+                            <div class="toggle-switch" id="demo-toggle">
+                                <div class="toggle-slider"></div>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Reset Connections</h3>
+                                <p>Clear all saved authentication tokens</p>
+                            </div>
+                            <button class="action-btn" id="reset-connections">Reset</button>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Export Logs</h3>
+                                <p>Download recent activity logs for troubleshooting</p>
+                            </div>
+                            <button class="action-btn" id="export-logs">Export</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logs Tab -->
+                <div class="tab-content" id="logs-tab">
+                    <div class="content-card">
+                        <h3 class="card-title">Activity Logs</h3>
+                        <div id="logs-container">
+                            <!-- Logs will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About Tab -->
+                <div class="tab-content" id="about-tab">
+                    <div class="content-card">
+                        <div class="about-section">
+                            <h3>Synk v1.0.0</h3>
+                            <p>Effortless synchronization between Notion and Google Calendar</p>
+                        </div>
+                        <div class="about-section">
+                            <h3>Links</h3>
+                            <ul class="link-list">
+                                <li><a href="#" onclick="openExternal('https://synk-official.com')">Homepage</a></li>
+                                <li><a href="#" onclick="openExternal('https://synk-official.com/privacy')">Privacy Policy</a></li>
+                                <li><a href="#" onclick="openExternal('https://synk-official.com/terms')">Terms of Service</a></li>
+                                <li><a href="#" onclick="openExternal('https://synk-official.com/support')">Support</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // App State - Single source of truth
+        const AppState = {
+            currentTab: 'dashboard',
+            isDemoMode: localStorage.getItem('demoMode') === 'true',
+            selectedCalendar: null,
+            selectedDatabase: null,
+            isGoogleConnected: false,
+            isNotionConnected: false,
+            logs: JSON.parse(localStorage.getItem('synkLogs') || '[]'),
+            syncTimeout: null,
+            isSyncing: false,
+            
+            // Demo mode control
+            setDemoMode(enabled) {
+                this.isDemoMode = enabled;
+                localStorage.setItem('demoMode', enabled.toString());
+                addLog('demo-mode', `Demo mode ${enabled ? 'enabled' : 'disabled'}`, 'info');
+                
+                // Reset connections when mode changes
+                if (!enabled) {
+                    this.resetConnections();
+                }
+                this.updateUI();
+            },
+            
+            resetConnections() {
+                this.isGoogleConnected = false;
+                this.isNotionConnected = false;
+                this.selectedCalendar = null;
+                this.selectedDatabase = null;
+                localStorage.removeItem('googleTokens');
+                localStorage.removeItem('notionTokens');
+                addLog('reset', 'All connections reset', 'info');
+            },
+            
+            updateUI() {
+                updateDemoToggle();
+                updateConnectionStatus('google', this.isGoogleConnected, null, this.isDemoMode);
+                updateConnectionStatus('notion', this.isNotionConnected, null, this.isDemoMode);
+            }
+        };
+
+        // Legacy variables for backward compatibility
+        let currentTab = AppState.currentTab;
+        let isDemoMode = AppState.isDemoMode;
+        let selectedCalendar = AppState.selectedCalendar;
+        let selectedDatabase = AppState.selectedDatabase;
+        let isGoogleConnected = AppState.isGoogleConnected;
+        let isNotionConnected = AppState.isNotionConnected;
+        let logs = AppState.logs;
+        let syncTimeout = AppState.syncTimeout;
+        let isSyncing = AppState.isSyncing;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', () => {
+            // Verify demo mode at startup
+            verifyDemoModeAtStartup();
+            initializeApp();
+            loadLogs();
+            updateDemoToggle();
+        });
+
+        function verifyDemoModeAtStartup() {
+            // Check if demo mode setting exists, default to true for safety
+            const storedDemoMode = localStorage.getItem('demoMode');
+            if (storedDemoMode === null) {
+                AppState.setDemoMode(true);
+                addLog('startup', 'Demo mode defaulted to enabled for first run', 'info');
+            } else {
+                AppState.isDemoMode = storedDemoMode === 'true';
+                addLog('startup', `Demo mode verified: ${AppState.isDemoMode ? 'enabled' : 'disabled'}`, 'info');
+            }
+            
+            // Update legacy variable
+            isDemoMode = AppState.isDemoMode;
+            
+            // Check for existing tokens if not in demo mode
+            if (!AppState.isDemoMode) {
+                const googleTokens = localStorage.getItem('googleTokens');
+                const notionTokens = localStorage.getItem('notionTokens');
+                
+                if (googleTokens) {
+                    try {
+                        const tokens = JSON.parse(googleTokens);
+                        if (tokens.access_token) {
+                            AppState.isGoogleConnected = true;
+                            isGoogleConnected = true;
+                            addLog('startup', 'Google tokens found and restored', 'success');
+                        }
+                    } catch (error) {
+                        localStorage.removeItem('googleTokens');
+                        addLog('startup', 'Invalid Google tokens removed', 'warning');
+                    }
+                }
+                
+                if (notionTokens) {
+                    try {
+                        const tokens = JSON.parse(notionTokens);
+                        if (tokens.access_token) {
+                            AppState.isNotionConnected = true;
+                            isNotionConnected = true;
+                            addLog('startup', 'Notion tokens found and restored', 'success');
+                        }
+                    } catch (error) {
+                        localStorage.removeItem('notionTokens');
+                        addLog('startup', 'Invalid Notion tokens removed', 'warning');
+                    }
+                }
+            }
+        }
+
+        function initializeApp() {
+            // Tab navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', () => switchTab(item.dataset.tab));
+            });
+
+            // Demo toggle
+            document.getElementById('demo-toggle').addEventListener('click', toggleDemoMode);
+
+            // Connect buttons
+            document.getElementById('google-connect').addEventListener('click', connectGoogle);
+            document.getElementById('notion-connect').addEventListener('click', connectNotion);
+
+            // Settings buttons
+            document.getElementById('reset-connections').addEventListener('click', resetConnections);
+            document.getElementById('export-logs').addEventListener('click', exportLogs);
+
+            addLog('app-start', 'Application initialized', 'success');
+        }
+
+        // Tab Management
+        function switchTab(tabName) {
+            // Update nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+
+            // Update header title
+            const titles = {
+                dashboard: 'Dashboard',
+                sync: 'Sync',
+                settings: 'Settings',
+                logs: 'Activity Logs',
+                about: 'About'
+            };
+            document.getElementById('header-title').textContent = titles[tabName];
+
+            currentTab = tabName;
+            addLog('tab-switch', `Switched to ${tabName} tab`, 'success');
+        }
+
+        // Demo Mode
+        function toggleDemoMode() {
+            AppState.setDemoMode(!AppState.isDemoMode);
+            // Update legacy variable
+            isDemoMode = AppState.isDemoMode;
+        }
+
+        function updateDemoToggle() {
+            const toggle = document.getElementById('demo-toggle');
+            toggle.classList.toggle('active', AppState.isDemoMode);
+        }
+
+        // OAuth Functions with Popup - Always show popup regardless of demo mode
+        async function connectGoogle() {
+            const btn = document.getElementById('google-connect');
+            const text = document.getElementById('google-text');
+            const originalText = text.textContent;
+
+            try {
+                btn.disabled = true;
+                text.innerHTML = '<span class="spinner"></span> Connecting...';
+
+                addLog('oauth-start', 'Google OAuth popup opening', 'info');
+
+                let result;
+                
+                // Always show real OAuth popup for consent demonstration
+                if (AppState.isDemoMode) {
+                    // In demo mode, show real OAuth popup but use demo data
+                    try {
+                        addLog('oauth-demo', 'Showing real OAuth popup for consent demonstration', 'info');
+                        result = await performRealGoogleOAuth();
+                        addLog('oauth-demo-success', 'Real OAuth completed, using demo data for safety', 'info');
+                        // Override with demo data for safety
+                        result = {
+                            demo: true,
+                            connectedEmail: 'demo@synk-official.com',
+                            calendars: getSampleCalendars(),
+                            popupCompleted: true,
+                            note: 'OAuth consent shown, using demo data'
+                        };
+                    } catch (oauthError) {
+                        addLog('oauth-demo-fallback', 'OAuth popup failed, using demo data', 'warning');
+                        result = {
+                            demo: true,
+                            connectedEmail: 'demo@synk-official.com',
+                            calendars: getSampleCalendars(),
+                            popupCompleted: false,
+                            note: 'OAuth popup failed, showing demo data'
+                        };
+                    }
+                } else {
+                    // Real OAuth flow
+                    result = await performRealGoogleOAuth();
+                    addLog('oauth-complete', 'Google OAuth completed successfully', 'success');
+                }
+
+                // Update UI
+                isGoogleConnected = true;
+                updateConnectionStatus('google', true, result.connectedEmail, result.demo);
+                text.textContent = 'Connected';
+                
+                let statusMessage = 'Connected to Google Calendar';
+                if (result.demo) {
+                    statusMessage += ' <span class="demo-badge">Demo</span>';
+                }
+                if (result.note) {
+                    statusMessage += ` <small style="color: #ccc;">(${result.note})</small>`;
+                }
+                
+                document.getElementById('google-status').innerHTML = 
+                    `<div class="status success">✓ ${statusMessage}</div>`;
+
+                await loadGoogleCalendars(result.calendars);
+
+            } catch (error) {
+                addLog('oauth-error', `Google OAuth failed: ${error.message}`, 'error');
+                document.getElementById('google-status').innerHTML = 
+                    `<div class="status error">Connection failed</div>`;
+                text.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        async function connectNotion() {
+            const btn = document.getElementById('notion-connect');
+            const text = document.getElementById('notion-text');
+            const originalText = text.textContent;
+
+            try {
+                btn.disabled = true;
+                text.innerHTML = '<span class="spinner"></span> Connecting...';
+
+                addLog('oauth-start', 'Notion OAuth popup opening', 'info');
+
+                let result;
+                
+                // Always show real OAuth popup for workspace selection demonstration
+                if (AppState.isDemoMode) {
+                    // In demo mode, show real OAuth popup but use demo data
+                    try {
+                        addLog('oauth-demo', 'Showing real OAuth popup for workspace selection demonstration', 'info');
+                        result = await performRealNotionOAuth();
+                        addLog('oauth-demo-success', 'Real OAuth completed, using demo data for safety', 'info');
+                        // Override with demo data for safety
+                        result = {
+                            demo: true,
+                            connectedEmail: 'demo@synk-official.com',
+                            databases: getSampleNotionData().databases,
+                            popupCompleted: true,
+                            note: 'OAuth workspace selection shown, using demo data'
+                        };
+                    } catch (oauthError) {
+                        addLog('oauth-demo-fallback', 'OAuth popup failed, using demo data', 'warning');
+                        result = {
+                            demo: true,
+                            connectedEmail: 'demo@synk-official.com',
+                            databases: getSampleNotionData().databases,
+                            popupCompleted: false,
+                            note: 'OAuth popup failed, showing demo data'
+                        };
+                    }
+                } else {
+                    // Real OAuth flow
+                    result = await performRealNotionOAuth();
+                    addLog('oauth-complete', 'Notion OAuth completed successfully', 'success');
+                }
+
+                // Update UI
+                isNotionConnected = true;
+                updateConnectionStatus('notion', true, result.connectedEmail, result.demo);
+                text.textContent = 'Connected';
+                
+                let statusMessage = 'Connected to Notion';
+                if (result.demo) {
+                    statusMessage += ' <span class="demo-badge">Demo</span>';
+                }
+                if (result.note) {
+                    statusMessage += ` <small style="color: #ccc;">(${result.note})</small>`;
+                }
+                
+                document.getElementById('notion-status').innerHTML = 
+                    `<div class="status success">✓ ${statusMessage}</div>`;
+
+                await loadNotionData(result.databases);
+
+            } catch (error) {
+                addLog('oauth-error', `Notion OAuth failed: ${error.message}`, 'error');
+                document.getElementById('notion-status').innerHTML = 
+                    `<div class="status error">Connection failed</div>`;
+                text.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Update connection status in header and dashboard
+        function updateConnectionStatus(service, connected, email, isDemo) {
+            const pill = document.getElementById(`${service}-pill`);
+            const dot = document.getElementById(`${service}-status-dot`);
+            const text = document.getElementById(`${service}-status-text`);
+            const info = document.getElementById(`${service}-user-info`);
+
+            if (connected) {
+                pill.className = 'status-pill connected';
+                dot.className = 'status-dot connected';
+                text.textContent = 'Connected';
+                info.textContent = `Signed in as ${email}${isDemo ? ' (Demo)' : ''}`;
+            } else {
+                pill.className = 'status-pill disconnected';
+                dot.className = 'status-dot disconnected';
+                text.textContent = 'Not connected';
+                info.textContent = `Connect to see your ${service === 'google' ? 'calendars' : 'databases'}`;
+            }
+        }
+
+        // Load data functions
+        async function loadGoogleCalendars(calendars) {
+            const container = document.getElementById('calendars-content');
+            
+            if (!calendars || calendars.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No calendars found</h3>
+                        <p>Your Google account doesn't have any accessible calendars</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const calendarHTML = calendars.map(cal => `
+                <div class="calendar-item ${cal.primary ? 'primary' : ''} tooltip" 
+                     data-tooltip="Click to select this calendar"
+                     tabindex="0" 
+                     role="button"
+                     onclick="selectCalendar('${cal.id}', this)"
+                     onkeydown="handleKeyPress(event, () => selectCalendar('${cal.id}', this))">
+                    <div class="item-title">
+                        ${cal.name}
+                        ${cal._demo ? '<span class="demo-badge">Sample Data</span>' : ''}
+                        ${cal.primary ? ' (Primary)' : ''}
+                    </div>
+                    <div class="item-meta">
+                        Access: ${cal.accessRole} • Time Zone: ${cal.timeZone}
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = calendarHTML;
+        }
+
+        async function loadNotionData(databases) {
+            const container = document.getElementById('notion-content');
+            
+            if (!databases || databases.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No databases found</h3>
+                        <p>Your Notion workspace doesn't have any accessible databases</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const databaseHTML = databases.map(db => `
+                <div class="database-item tooltip" 
+                     data-tooltip="Click to select this database"
+                     tabindex="0" 
+                     role="button"
+                     onclick="selectDatabase('${db.id}', this)"
+                     onkeydown="handleKeyPress(event, () => selectDatabase('${db.id}', this))">
+                    <div class="item-title">
+                        ${db.title}
+                        ${db._demo ? '<span class="demo-badge">Sample Data</span>' : ''}
+                    </div>
+                    <div class="item-meta">
+                        Properties: ${db.properties.join(', ')} • Last edited: ${new Date(db.last_edited_time).toLocaleDateString()}
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = databaseHTML;
+        }
+
+        // Selection functions
+        function selectCalendar(calendarId, element) {
+            document.querySelectorAll('.calendar-item.selected').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            element.classList.add('selected');
+            selectedCalendar = calendarId;
+            checkAutoSync();
+            addLog('selection', `Selected calendar: ${calendarId}`, 'info');
+        }
+
+        function selectDatabase(databaseId, element) {
+            document.querySelectorAll('.database-item.selected').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            element.classList.add('selected');
+            selectedDatabase = databaseId;
+            checkAutoSync();
+            addLog('selection', `Selected database: ${databaseId}`, 'info');
+        }
+
+        function checkAutoSync() {
+            const syncStatus = document.getElementById('sync-status');
+            
+            if (selectedCalendar && selectedDatabase && !isSyncing) {
+                // Show ready status
+                syncStatus.style.display = 'inline-flex';
+                syncStatus.className = 'sync-status ready';
+                syncStatus.querySelector('.sync-text').textContent = 'Ready to sync';
+                
+                // Clear any existing timeout
+                if (syncTimeout) {
+                    clearTimeout(syncTimeout);
+                }
+                
+                // Set debounced auto-sync (2 second delay)
+                syncTimeout = setTimeout(() => {
+                    performAutoSync();
+                }, 2000);
+                
+            } else if (!selectedCalendar || !selectedDatabase) {
+                // Hide status if incomplete selection
+                syncStatus.style.display = 'none';
+                if (syncTimeout) {
+                    clearTimeout(syncTimeout);
+                    syncTimeout = null;
+                }
+            }
+        }
+
+        // Keyboard accessibility
+        function handleKeyPress(event, callback) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                callback();
+            }
+        }
+
+        // Real OAuth Functions
+        async function performRealGoogleOAuth() {
+            const clientId = '544344031124-1m1d09ighljp5i94g3l1fns74ss3vadg.apps.googleusercontent.com';
+            const redirectUri = window.location.origin + '/oauth-google-callback.html';
+            const scope = 'openid email profile https://www.googleapis.com/auth/calendar.readonly';
+            
+            const authUrl = `https://accounts.google.com/oauth/authorize?` +
+                `client_id=${clientId}&` +
+                `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+                `scope=${encodeURIComponent(scope)}&` +
+                `response_type=code&` +
+                `access_type=offline&` +
+                `prompt=consent select_account&` +
+                `include_granted_scopes=false`;
+
+            return new Promise((resolve, reject) => {
+                const popup = window.open(authUrl, 'google-oauth', 'width=500,height=600');
+                
+                const checkClosed = setInterval(() => {
+                    if (popup.closed) {
+                        clearInterval(checkClosed);
+                        reject(new Error('OAuth popup was closed'));
+                    }
+                }, 1000);
+
+                // Listen for OAuth callback
+                window.addEventListener('message', function handleOAuthMessage(event) {
+                    if (event.origin !== window.location.origin) return;
+                    
+                    if (event.data.type === 'GOOGLE_OAUTH_SUCCESS') {
+                        clearInterval(checkClosed);
+                        popup.close();
+                        window.removeEventListener('message', handleOAuthMessage);
+                        
+                        // Store tokens securely
+                        const tokens = {
+                            access_token: event.data.access_token,
+                            refresh_token: event.data.refresh_token,
+                            expires_at: Date.now() + (event.data.expires_in * 1000)
+                        };
+                        localStorage.setItem('googleTokens', JSON.stringify(tokens));
+                        
+                        resolve({
+                            demo: false,
+                            connectedEmail: event.data.email,
+                            calendars: event.data.calendars || [],
+                            popupCompleted: true
+                        });
+                    } else if (event.data.type === 'GOOGLE_OAUTH_ERROR') {
+                        clearInterval(checkClosed);
+                        popup.close();
+                        window.removeEventListener('message', handleOAuthMessage);
+                        reject(new Error(event.data.error));
+                    }
+                });
+            });
+        }
+
+        async function performRealNotionOAuth() {
+            const clientId = 'your_notion_client_id_here'; // From .env
+            const redirectUri = window.location.origin + '/oauth-notion-callback.html';
+            
+            const authUrl = `https://api.notion.com/v1/oauth/authorize?` +
+                `client_id=${clientId}&` +
+                `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+                `response_type=code&` +
+                `owner=user`;
+
+            return new Promise((resolve, reject) => {
+                const popup = window.open(authUrl, 'notion-oauth', 'width=500,height=600');
+                
+                const checkClosed = setInterval(() => {
+                    if (popup.closed) {
+                        clearInterval(checkClosed);
+                        reject(new Error('OAuth popup was closed'));
+                    }
+                }, 1000);
+
+                // Listen for OAuth callback
+                window.addEventListener('message', function handleOAuthMessage(event) {
+                    if (event.origin !== window.location.origin) return;
+                    
+                    if (event.data.type === 'NOTION_OAUTH_SUCCESS') {
+                        clearInterval(checkClosed);
+                        popup.close();
+                        window.removeEventListener('message', handleOAuthMessage);
+                        
+                        // Store tokens securely
+                        const tokens = {
+                            access_token: event.data.access_token,
+                            workspace_id: event.data.workspace_id,
+                            expires_at: event.data.expires_at
+                        };
+                        localStorage.setItem('notionTokens', JSON.stringify(tokens));
+                        
+                        resolve({
+                            demo: false,
+                            connectedEmail: event.data.email,
+                            databases: event.data.databases || [],
+                            popupCompleted: true
+                        });
+                    } else if (event.data.type === 'NOTION_OAUTH_ERROR') {
+                        clearInterval(checkClosed);
+                        popup.close();
+                        window.removeEventListener('message', handleOAuthMessage);
+                        reject(new Error(event.data.error));
+                    }
+                });
+            });
+        }
+
+        // Token refresh functions
+        async function refreshGoogleToken() {
+            const tokens = JSON.parse(localStorage.getItem('googleTokens') || '{}');
+            if (!tokens.refresh_token) {
+                throw new Error('No refresh token available');
+            }
+
+            try {
+                const response = await fetch('/api/oauth/google/refresh', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ refresh_token: tokens.refresh_token })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Token refresh failed');
+                }
+
+                const newTokens = await response.json();
+                const updatedTokens = {
+                    ...tokens,
+                    access_token: newTokens.access_token,
+                    expires_at: Date.now() + (newTokens.expires_in * 1000)
+                };
+                
+                localStorage.setItem('googleTokens', JSON.stringify(updatedTokens));
+                return updatedTokens;
+            } catch (error) {
+                // If refresh fails, clear tokens and require re-auth
+                localStorage.removeItem('googleTokens');
+                AppState.isGoogleConnected = false;
+                throw error;
+            }
+        }
+
+        async function getValidGoogleToken() {
+            const tokens = JSON.parse(localStorage.getItem('googleTokens') || '{}');
+            if (!tokens.access_token) {
+                throw new Error('No access token available');
+            }
+
+            // Check if token is expired (with 5 minute buffer)
+            if (tokens.expires_at && tokens.expires_at < Date.now() + 300000) {
+                return await refreshGoogleToken();
+            }
+
+            return tokens;
+        }
+
+        // Real sync function
+        async function performRealSync(calendarId, databaseId) {
+            try {
+                // Get valid tokens
+                const googleTokens = await getValidGoogleToken();
+                const notionTokens = JSON.parse(localStorage.getItem('notionTokens') || '{}');
+                
+                if (!notionTokens.access_token) {
+                    throw new Error('Notion not connected');
+                }
+
+                // Fetch Google Calendar events
+                const calendarResponse = await fetch(
+                    `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?timeMin=${new Date().toISOString()}`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${googleTokens.access_token}`
+                        }
+                    }
+                );
+
+                if (!calendarResponse.ok) {
+                    throw new Error('Failed to fetch calendar events');
+                }
+
+                const calendarData = await calendarResponse.json();
+                const events = calendarData.items || [];
+
+                // Sync events to Notion database
+                for (const event of events.slice(0, 10)) { // Limit to 10 events for demo
+                    await syncEventToNotion(event, databaseId, notionTokens.access_token);
+                }
+
+                addLog('real-sync', `Synced ${events.length} events from Google Calendar to Notion`, 'success');
+                
+            } catch (error) {
+                addLog('real-sync-error', `Real sync failed: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+
+        async function syncEventToNotion(event, databaseId, notionToken) {
+            const notionPage = {
+                parent: { database_id: databaseId },
+                properties: {
+                    'Name': {
+                        title: [{ text: { content: event.summary || 'Untitled Event' } }]
+                    },
+                    'Date': {
+                        date: {
+                            start: event.start?.dateTime || event.start?.date,
+                            end: event.end?.dateTime || event.end?.date
+                        }
+                    },
+                    'Description': {
+                        rich_text: [{ text: { content: event.description || '' } }]
+                    }
+                }
+            };
+
+            const response = await fetch('https://api.notion.com/v1/pages', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${notionToken}`,
+                    'Content-Type': 'application/json',
+                    'Notion-Version': '2022-06-28'
+                },
+                body: JSON.stringify(notionPage)
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(`Notion API error: ${error.message}`);
+            }
+
+            return await response.json();
+        }
+
+        // Auto-sync function
+        async function performAutoSync() {
+            if (!selectedCalendar || !selectedDatabase || isSyncing) {
+                return;
+            }
+
+            const syncStatus = document.getElementById('sync-status');
+            
+            try {
+                isSyncing = true;
+                syncStatus.className = 'sync-status syncing';
+                syncStatus.querySelector('.sync-text').textContent = 'Syncing...';
+                
+                addLog('auto-sync-start', `Auto-syncing calendar ${selectedCalendar} with database ${selectedDatabase}`, 'info');
+                
+                if (AppState.isDemoMode) {
+                    // Simulate sync operation in demo mode
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                } else {
+                    // Perform real sync operation
+                    await performRealSync(selectedCalendar, selectedDatabase);
+                }
+                
+                syncStatus.className = 'sync-status synced';
+                syncStatus.querySelector('.sync-text').textContent = 'Synced successfully';
+                addLog('auto-sync-complete', 'Auto-sync completed successfully', 'success');
+                
+                // Update last sync info
+                const now = new Date().toLocaleString();
+                document.getElementById('last-sync-info').textContent = `Last synced: ${now}`;
+                
+                // Hide status after 3 seconds
+                setTimeout(() => {
+                    syncStatus.style.display = 'none';
+                    isSyncing = false;
+                }, 3000);
+                
+            } catch (error) {
+                addLog('auto-sync-error', `Auto-sync failed: ${error.message}`, 'error');
+                syncStatus.className = 'sync-status error';
+                syncStatus.querySelector('.sync-text').textContent = 'Sync failed';
+                
+                setTimeout(() => {
+                    syncStatus.style.display = 'none';
+                    isSyncing = false;
+                }, 3000);
+            }
+        }
+
+        // Settings functions
+        function resetConnections() {
+            if (confirm('Are you sure you want to reset all connections? This will clear all saved tokens.')) {
+                AppState.resetConnections();
+                
+                // Update legacy variables
+                isGoogleConnected = AppState.isGoogleConnected;
+                isNotionConnected = AppState.isNotionConnected;
+                selectedCalendar = AppState.selectedCalendar;
+                selectedDatabase = AppState.selectedDatabase;
+                
+                updateConnectionStatus('google', false);
+                updateConnectionStatus('notion', false);
+                
+                document.getElementById('google-text').textContent = 'Connect Google';
+                document.getElementById('notion-text').textContent = 'Connect Notion';
+                document.getElementById('google-connect').disabled = false;
+                document.getElementById('notion-connect').disabled = false;
+                
+                document.getElementById('google-status').innerHTML = '';
+                document.getElementById('notion-status').innerHTML = '';
+                
+                document.getElementById('calendars-content').innerHTML = `
+                    <div class="empty-state">
+                        <h3>Connect Google Calendar to get started</h3>
+                        <p>Your calendars will appear here</p>
+                    </div>
+                `;
+                
+                document.getElementById('notion-content').innerHTML = `
+                    <div class="empty-state">
+                        <h3>Connect Notion to get started</h3>
+                        <p>Your databases and pages will appear here</p>
+                    </div>
+                `;
+                
+                // Hide sync status
+                document.getElementById('sync-status').style.display = 'none';
+            }
+        }
+
+        function exportLogs() {
+            const logsData = {
+                exportTime: new Date().toISOString(),
+                version: '1.0.0',
+                logs: logs
+            };
+            
+            const blob = new Blob([JSON.stringify(logsData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `synk-logs-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            addLog('export', 'Logs exported successfully', 'success');
+        }
+
+        // Logging system
+        function addLog(action, message, result = 'info') {
+            const logEntry = {
+                time: new Date().toISOString(),
+                action,
+                message,
+                result
+            };
+            
+            logs.unshift(logEntry);
+            
+            // Keep only last 100 logs
+            if (logs.length > 100) {
+                logs = logs.slice(0, 100);
+            }
+            
+            localStorage.setItem('synkLogs', JSON.stringify(logs));
+            updateLogsDisplay();
+        }
+
+        function loadLogs() {
+            updateLogsDisplay();
+        }
+
+        function updateLogsDisplay() {
+            const container = document.getElementById('logs-container');
+            
+            if (logs.length === 0) {
+                container.innerHTML = '<p style="color: #ccc; text-align: center; padding: 20px;">No logs available</p>';
+                return;
+            }
+            
+            const logsHTML = logs.map(log => `
+                <div class="log-entry">
+                    <span class="log-time">${new Date(log.time).toLocaleString()}</span>
+                    <span class="log-action">[${log.action}]</span>
+                    <span class="log-result ${log.result}">${log.message}</span>
+                </div>
+            `).join('');
+            
+            container.innerHTML = logsHTML;
+        }
+
+        // Sample data functions
+        function getSampleCalendars() {
+            return [
+                {
+                    id: 'primary',
+                    name: 'Primary Calendar',
+                    primary: true,
+                    accessRole: 'owner',
+                    timeZone: 'America/New_York',
+                    _demo: true
+                },
+                {
+                    id: 'work',
+                    name: 'Work Calendar',
+                    primary: false,
+                    accessRole: 'owner',
+                    timeZone: 'America/New_York',
+                    _demo: true
+                },
+                {
+                    id: 'personal',
+                    name: 'Personal Projects',
+                    primary: false,
+                    accessRole: 'owner',
+                    timeZone: 'America/New_York',
+                    _demo: true
+                }
+            ];
+        }
+
+        function getSampleNotionData() {
+            return {
+                databases: [
+                    {
+                        id: 'db1',
+                        title: 'Content Calendar',
+                        properties: ['Title', 'Status', 'Date', 'Author'],
+                        last_edited_time: '2024-01-15T10:00:00.000Z',
+                        _demo: true
+                    },
+                    {
+                        id: 'db2',
+                        title: 'Blog Posts',
+                        properties: ['Title', 'Status', 'Publish Date', 'Tags'],
+                        last_edited_time: '2024-01-14T15:30:00.000Z',
+                        _demo: true
+                    },
+                    {
+                        id: 'db3',
+                        title: 'Social Media Schedule',
+                        properties: ['Platform', 'Content', 'Scheduled Time', 'Status'],
+                        last_edited_time: '2024-01-13T09:15:00.000Z',
+                        _demo: true
+                    }
+                ]
+            };
+        }
+
+        // External link handler
+        function openExternal(url) {
+            window.open(url, '_blank');
+            addLog('external-link', `Opened external link: ${url}`, 'info');
+        }
+    </script>
+</body>
+</html>

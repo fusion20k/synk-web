@@ -1,0 +1,52 @@
+{
+  "name": "synk-app",
+  "version": "1.0.0",
+  "description": "Synk - Notion & Google Calendar Sync",
+  "main": "main-fresh.js",
+  "homepage": "./",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "prod": "electron .",
+    "build": "electron-builder",
+    "test-oauth": "node test-oauth.js"
+  },
+  "keywords": [
+    "notion",
+    "google-calendar",
+    "sync",
+    "productivity"
+  ],
+  "author": "Synk Team",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^25.9.0",
+    "electron-builder": "^24.6.4"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^2.7.0"
+  },
+  "build": {
+    "appId": "com.synk.app",
+    "productName": "Synk",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!node_modules/**/*",
+      "node_modules/express/**/*",
+      "node_modules/node-fetch/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  }
+}
