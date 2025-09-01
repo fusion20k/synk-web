@@ -10,19 +10,28 @@ const store = new Store();
 let mainWindow;
 
 function createWindow() {
+  console.log('🪟 Creating main window...');
+  console.log("Created window in:", __filename);
+  
+  const iconPath = path.join(__dirname, 'favicon.ico'); // keep within synk-fixed
+
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
-    minWidth: 800,
-    minHeight: 600,
+    frame: false,                 // <<< MUST be false to remove OS border
+    show: false,                  // show after ready-to-show
+    autoHideMenuBar: true,        // hide menu bar (toggle with Alt if needed)
+    resizable: true,
     webPreferences: {
-      nodeIntegration: false,
+      preload: path.join(__dirname, 'src', 'preload.js'),
       contextIsolation: true,
-      preload: path.join(__dirname, 'src', 'preload.js')
+      nodeIntegration: false,
     },
-    backgroundColor: '#000000',
-    show: false
+    icon: iconPath
   });
+
+  // hide menu always (extra safety)
+  mainWindow.setMenuBarVisibility(false);
 
   mainWindow.loadFile(path.join(__dirname, 'src', 'index.html'));
 
