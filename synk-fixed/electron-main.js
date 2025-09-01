@@ -40,9 +40,13 @@ function createWindow() {
     mainWindow.show();
   });
 
-  // Open DevTools in development
-  if (process.argv.includes('--dev')) {
-    mainWindow.webContents.openDevTools();
+  // Open DevTools only in development when explicitly needed
+  if (
+    process.env.NODE_ENV === 'development' &&
+    (process.env.DEBUG_PROD === 'true' || process.env.OPEN_DEVTOOLS === 'true')
+  ) {
+    // dev only: open devtools on the right for debugging
+    mainWindow.webContents.openDevTools({ mode: 'right' });
   }
 }
 
