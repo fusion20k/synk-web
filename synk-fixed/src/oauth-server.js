@@ -4,6 +4,9 @@ const axios = require('axios');
 const cors = require('cors');
 require('dotenv').config();
 
+// Detect environment (dev vs production)
+const isDev = process.env.NODE_ENV === 'development';
+
 class OAuthServer {
   constructor() {
     this.app = express();
@@ -54,61 +57,49 @@ class OAuthServer {
         console.log('🔄 Starting complete OAuth flow...');
         
         // 1) Exchange code for tokens
-        console.log('🔄 Exchanging code for tokens...');
+        console.log('[OAuth] Code received:', code);
+        console.log('[OAuth] Exchanging code for tokens...');
         const DEMO_MODE = process.env.DEMO_MODE === 'true';
         const GOOGLE_CLIENT_ID = DEMO_MODE ? process.env.GOOGLE_CLIENT_ID_DEMO : process.env.GOOGLE_CLIENT_ID;
         const GOOGLE_CLIENT_SECRET = DEMO_MODE ? process.env.GOOGLE_CLIENT_SECRET_DEMO : process.env.GOOGLE_CLIENT_SECRET;
-        const GOOGLE_REDIRECT_URI = DEMO_MODE ? process.env.GOOGLE_REDIRECT_URI_DEMO : process.env.GOOGLE_REDIRECT_URI;
+        
+        // Use localhost redirect in dev, production URL otherwise
+        const GOOGLE_REDIRECT_URI = isDev
+          ? "http://localhost:3000/oauth2callback"
+          : (DEMO_MODE ? process.env.GOOGLE_REDIRECT_URI_DEMO : process.env.GOOGLE_REDIRECT_URI);
 
-        const { data: tokenData } = await axios.post('https://oauth2.googleapis.com/token', {
+        const { data: tokens } = await axios.post('https://oauth2.googleapis.com/token', {
           client_id: GOOGLE_CLIENT_ID,
           client_secret: GOOGLE_CLIENT_SECRET,
-          redirect_uri: GOOGLE_REDIRECT_URI, // must be https://synk-official.com/oauth2callback
+          redirect_uri: GOOGLE_REDIRECT_URI,
           grant_type: 'authorization_code',
           code,
         });
         
-        console.log('✅ Token exchange successful');
+        console.log('[OAuth] Tokens received:', tokens);
         
         // 2) Save tokens
-        this.saveTokens(tokenData);
-        console.log('✅ Tokens saved');
+        this.saveTokens(tokens);
+        console.log('[OAuth] Tokens saved');
         
         // 3) Fetch calendar list with access token
-        console.log('🔄 Fetching calendars...');
-        const { data: calendars } = await axios.get(
+        console.log('[OAuth] Fetching calendars...');
+        const { data: result } = await axios.get(
           'https://www.googleapis.com/calendar/v3/users/me/calendarList',
-          { headers: { Authorization: `Bearer ${tokenData.access_token}` } }
+          { headers: { Authorization: `Bearer ${tokens.access_token}` } }
         );
-        console.log(`✅ Calendars fetched: ${calendars.items?.length || 0} calendars`);
+        console.log(`[OAuth] Calendars fetched: ${result.items?.length || 0} calendars`);
         
-        // 4) Send calendars to Electron app via multiple methods
+        res.send("Authentication successful! You may close this window.");
+
+        // Send calendars to renderer
         if (this.mainWindow && this.mainWindow.webContents) {
-          console.log('📤 Sending calendars to Electron app via IPC');
-          this.mainWindow.webContents.send('google:calendars', calendars);
-          console.log('✅ Calendars sent to app via IPC');
-        } else {
-          console.log('⚠️ No main window available for IPC');
+          this.mainWindow.webContents.send('google-oauth-success', result.items);
         }
         
-        // 5) Also redirect to custom protocol as backup
-        const calendarData = encodeURIComponent(JSON.stringify(calendars));
-        const protocolUrl = `synk://oauth-success?data=${calendarData}`;
-        console.log('📤 Redirecting to custom protocol:', protocolUrl);
-        
-        // 6) Close the OAuth browser tab gracefully with redirect
-        res.send(`
-          <script>
-            console.log('OAuth flow completed successfully');
-            console.log('Redirecting to app...');
-            window.location.href = '${protocolUrl}';
-            setTimeout(() => window.close(), 1000);
-          </script>
-        `);
-        
-      } catch (error) {
-        console.error('❌ OAuth flow failed:', error.response?.data || error.message);
-        res.status(500).send('OAuth flow failed, check logs.');
+      } catch (err) {
+        console.error("[OAuth] Error exchanging code:", err);
+        res.send("Authentication failed. Check logs.");
       }
     });
 

@@ -8,13 +8,35 @@ const { google } = require('googleapis');
 const express = require('express');
 
 // Load environment variables
-require('dotenv').config();
+require('dotenv').config({ path: '.env.production' });
 
-// Define Google Calendar scopes
+// Define Google Calendar scopes - exactly as specified
 const SCOPES = [
   "https://www.googleapis.com/auth/calendar",
   "https://www.googleapis.com/auth/calendar.events"
 ];
+
+// OAuth Configuration from environment variables
+const OAUTH_CONFIG = {
+  google: {
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    redirectUri: 'https://synk-official.com/oauth2callback',
+    scopes: SCOPES
+  },
+  notion: {
+    secret: process.env.NOTION_SECRET
+  }
+};
+
+// Validate required environment variables
+const requiredVars = ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'NOTION_SECRET'];
+const missingVars = requiredVars.filter(varName => !process.env[varName]);
+
+if (missingVars.length > 0) {
+  console.error('❌ Missing required environment variables:', missingVars);
+  console.error('Please check your .env.production file');
+}
 
 // Centralized OAuth server manager to prevent port conflicts
 class OAuthServerManager {
@@ -523,23 +545,28 @@ async function exchangeGoogleCodeForTokens({ code, redirectUri, clientId, client
 
 // Google OAuth via production server + polling
 async function googleOAuthViaProduction(shellRef) {
-  const CLIENT_ID = process.env.GOOGLE_CLIENT_ID; // keep using env var
-  const REDIRECT_URI = 'https://synk-official.com/oauth2callback';
-  const SCOPES = [
-    'https://www.googleapis.com/auth/calendar',
-    'https://www.googleapis.com/auth/calendar.events'
-  ];
+  // Validate configuration
+  if (!OAUTH_CONFIG.google.clientId || !OAUTH_CONFIG.google.clientSecret) {
+    console.error('❌ Google OAuth not configured. Missing CLIENT_ID or CLIENT_SECRET');
+    return { ok: false, error: 'oauth_not_configured' };
+  }
 
+  console.log('🚀 Starting Google OAuth via production server...');
+  
   const state = crypto.randomBytes(16).toString('hex');
   const authUrl =
     'https://accounts.google.com/o/oauth2/v2/auth?' +
-    `client_id=${encodeURIComponent(CLIENT_ID)}&` +
-    `redirect_uri=${encodeURIComponent(REDIRECT_URI)}&` +
+    `client_id=${encodeURIComponent(OAUTH_CONFIG.google.clientId)}&` +
+    `redirect_uri=${encodeURIComponent(OAUTH_CONFIG.google.redirectUri)}&` +
     'response_type=code&' +
-    `scope=${encodeURIComponent(SCOPES.join(' '))}&` +
+    `scope=${encodeURIComponent(OAUTH_CONFIG.google.scopes.join(' '))}&` +
     'access_type=offline&' +
     'prompt=consent%20select_account&' +
     `state=${encodeURIComponent(state)}`;
+
+  console.log('[Client OAuth] Opening browser for Google authentication...');
+  console.log('[Client OAuth] Redirect URI:', OAUTH_CONFIG.google.redirectUri);
+  console.log('[Client OAuth] Scopes:', OAUTH_CONFIG.google.scopes.join(', '));
 
   // Open in system browser (new tab if browser already open)
   await shellRef.openExternal(authUrl);
@@ -549,29 +576,37 @@ async function googleOAuthViaProduction(shellRef) {
   const maxMs = 2 * 60 * 1000; // 2 minutes
   const start = Date.now();
 
+  console.log('[Client OAuth] Polling server for OAuth result...');
+  console.log('[Client OAuth] Poll endpoint:', pollEndpoint);
+
   while (Date.now() - start < maxMs) {
     await new Promise(r => setTimeout(r, 2000));
     try {
+      console.log('[Client OAuth] Polling...', new Date().toISOString());
       const resp = await fetch(pollEndpoint, { method: 'GET' });
       if (!resp.ok) {
-        // server not ready, continue polling
+        console.log('[Client OAuth] Server not ready, continuing to poll...');
         continue;
       }
       const data = await resp.json();
+      console.log('[Client OAuth] Server response:', data.status);
+      
       if (data.status === 'pending') continue;
       if (data.status === 'ready') {
-        // data.calendars should be an array of {id, summary}
+        console.log('[Client OAuth] ✅ Calendars received:', data.calendars?.length || 0);
         return { ok: true, calendars: data.calendars || [] };
       }
       if (data.status === 'error') {
+        console.error('[Client OAuth] ❌ Server error:', data.error);
         return { ok: false, error: data.error || 'server_error' };
       }
     } catch (err) {
-      console.error('[Client OAuth] Polling error', err);
+      console.error('[Client OAuth] Polling error:', err.message);
       // continue polling until timeout
     }
   }
 
+  console.error('[Client OAuth] ❌ Timeout after 2 minutes');
   return { ok: false, error: 'timeout' };
 }
 

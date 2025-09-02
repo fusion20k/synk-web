@@ -501,6 +501,79 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* OAuth Status Styles */
+        .oauth-status {
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 8px;
+            background: #111;
+            border: 1px solid #333;
+        }
+
+        .oauth-loading, .oauth-success, .oauth-error {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 10px;
+        }
+
+        .oauth-loading .spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #333;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .oauth-loading span {
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .oauth-step {
+            color: #ccc;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .success-icon, .error-icon {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        .oauth-success span {
+            color: #4CAF50;
+            font-weight: 500;
+        }
+
+        .oauth-error span {
+            color: #f44336;
+            font-weight: 500;
+        }
+
+        .retry-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            transition: background-color 0.2s;
+        }
+
+        .retry-btn:hover {
+            background: #5a67d8;
+        }
+
+        .retry-btn:disabled {
+            background: #333;
+            cursor: not-allowed;
+        }
+
         /* Sync Status Panel */
         .sync-status-panel {
             position: fixed;
@@ -661,6 +734,28 @@
                                     <span id="google-text">Connect Google</span>
                                 </button>
                             </div>
+                            
+                            <!-- OAuth Status Display -->
+                            <div id="google-oauth-status" class="oauth-status" style="display: none;">
+                                <div class="oauth-loading" id="google-loading">
+                                    <div class="spinner"></div>
+                                    <span>Connecting to Google...</span>
+                                    <p class="oauth-step">Please complete authentication in your browser</p>
+                                </div>
+                                
+                                <div class="oauth-success" id="google-success" style="display: none;">
+                                    <div class="success-icon">✅</div>
+                                    <span>Google Calendar Connected!</span>
+                                    <p class="oauth-step">Loading your calendars...</p>
+                                </div>
+                                
+                                <div class="oauth-error" id="google-error" style="display: none;">
+                                    <div class="error-icon">❌</div>
+                                    <span id="google-error-message">Connection failed</span>
+                                    <button class="retry-btn" id="google-retry">Retry Connection</button>
+                                </div>
+                            </div>
+                            
                             <div id="google-status"></div>
                             <div class="list-container" id="calendars-content">
                                 <div class="empty-state">
@@ -1371,85 +1466,73 @@
             }
         });
 
-        // Connect handlers with connection state checking
+        // Connect handlers with enhanced OAuth UI states
         async function handleGoogleConnect() {
             if (isGoogleConnecting || isGoogleConnected) return;
             
             isGoogleConnecting = true;
-            const btn = document.getElementById('google-connect');
-            const text = document.getElementById('google-text');
-            
-            btn.disabled = true;
-            text.innerHTML = '<span class="spinner"></span> Connecting...';
+            showGoogleOAuthStatus('loading');
             
             try {
-                console.log('[Renderer] About to call startGoogleOAuth...');
+                console.log('[Renderer] Starting Google OAuth...');
                 console.log('[Renderer] Demo mode:', demoMode);
                 
                 const result = await window.electronAPI.startGoogleOAuth({ demoMode });
                 
-                console.log('[Renderer] IPC call completed');
-                console.log('[Renderer] Full result received:', result);
-                console.log('[Renderer] Result structure:', {
+                console.log('[Renderer] OAuth result:', {
                     success: result.success,
                     hasError: !!result.error,
                     hasCalendars: !!result.calendars,
-                    calendarCount: result.calendars?.length,
-                    hasUser: !!result.user,
-                    hasTokens: !!result.tokens
+                    calendarCount: result.calendars?.length
                 });
                 
                 if (result.error) {
-                    updateGoogleStatus('error', result.error);
+                    console.error('[Renderer] OAuth error:', result.error);
+                    showGoogleOAuthStatus('error', result.error);
+                    
                     if (result.error.includes('redirect_uri') || result.error.includes('client_id') || result.error.includes('403')) {
                         showErrorToast('OAuth misconfigured: check redirect URIs and client IDs');
                     }
-                    // Re-enable button on error
+                    
                     isGoogleConnecting = false;
-                    btn.disabled = false;
-                    text.textContent = 'Connect Google';
-                } else if (result.inProgress) {
-                    updateGoogleStatus('success', result.message);
-                    // Keep button disabled while OAuth is in progress
                 } else if (result.success && result.calendars) {
-                    // Handle successful OAuth with calendars
-                    console.log(`[Renderer] SUCCESS: Processing ${result.calendars.length} calendars`);
-                    console.log('[Renderer] Calendar preview:', result.calendars.slice(0, 3));
+                    // Show success state briefly, then hide OAuth status
+                    showGoogleOAuthStatus('success');
                     
-                    console.log('[Renderer] Updating UI state...');
-                    isGoogleConnected = true;
-                    isGoogleConnecting = false;
-                    btn.disabled = false;
-                    text.textContent = 'Connected';
-                    
-                    console.log('[Renderer] Updating connection pill...');
-                    updateConnectionPill('google', true);
-                    
-                    console.log('[Renderer] Calling displayCalendars...');
-                    displayCalendars(result.calendars);
-                    console.log('[Renderer] displayCalendars completed');
+                    setTimeout(() => {
+                        console.log(`[Renderer] SUCCESS: Processing ${result.calendars.length} calendars`);
+                        
+                        isGoogleConnected = true;
+                        isGoogleConnecting = false;
+                        
+                        // Hide OAuth status and update button
+                        hideGoogleOAuthStatus();
+                        updateGoogleButton('connected');
+                        updateConnectionPill('google', true);
+                        
+                        displayCalendars(result.calendars);
+                        console.log('[Renderer] OAuth flow completed successfully');
+                    }, 1500); // Show success for 1.5 seconds
                 } else if (result.success) {
-                    console.log('[Renderer] OAuth succeeded but no calendars in result');
-                    isGoogleConnected = true;
-                    isGoogleConnecting = false;
-                    btn.disabled = false;
-                    text.textContent = 'Connected (No Calendars)';
-                    updateConnectionPill('google', true);
+                    console.log('[Renderer] OAuth succeeded but no calendars');
+                    showGoogleOAuthStatus('success');
+                    
+                    setTimeout(() => {
+                        isGoogleConnected = true;
+                        isGoogleConnecting = false;
+                        hideGoogleOAuthStatus();
+                        updateGoogleButton('connected');
+                        updateConnectionPill('google', true);
+                    }, 1500);
                 } else {
-                    // Success will be handled by oauth-success event
-                    // Status text removed - spinner on button is sufficient
+                    // Keep loading state - success will be handled by oauth-success event
+                    console.log('[Renderer] OAuth in progress...');
                 }
             } catch (error) {
-                console.error('[Renderer] Exception caught:', error);
-                console.error('[Renderer] Error message:', error.message);
-                console.error('[Renderer] Error stack:', error.stack);
-                
-                updateGoogleStatus('error', `Connection failed: ${error.message}`);
+                console.error('[Renderer] OAuth exception:', error);
+                showGoogleOAuthStatus('error', error.message);
                 showErrorToast(`Google connection failed: ${error.message}`);
-                // Re-enable button on error
                 isGoogleConnecting = false;
-                btn.disabled = false;
-                text.textContent = 'Connect Google';
             }
         }
 
@@ -1492,8 +1575,86 @@
             }
         }
 
+        // OAuth Status UI Helper Functions
+        function showGoogleOAuthStatus(state, message = '') {
+            const statusContainer = document.getElementById('google-oauth-status');
+            const loadingDiv = document.getElementById('google-loading');
+            const successDiv = document.getElementById('google-success');
+            const errorDiv = document.getElementById('google-error');
+            const errorMessage = document.getElementById('google-error-message');
+            
+            // Hide all states first
+            loadingDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            errorDiv.style.display = 'none';
+            
+            // Show the container
+            statusContainer.style.display = 'block';
+            
+            // Show the appropriate state
+            switch (state) {
+                case 'loading':
+                    loadingDiv.style.display = 'flex';
+                    updateGoogleButton('loading');
+                    break;
+                case 'success':
+                    successDiv.style.display = 'flex';
+                    break;
+                case 'error':
+                    errorDiv.style.display = 'flex';
+                    if (message) {
+                        errorMessage.textContent = message;
+                    }
+                    updateGoogleButton('error');
+                    break;
+            }
+        }
+        
+        function hideGoogleOAuthStatus() {
+            const statusContainer = document.getElementById('google-oauth-status');
+            statusContainer.style.display = 'none';
+        }
+        
+        function updateGoogleButton(state) {
+            const btn = document.getElementById('google-connect');
+            const text = document.getElementById('google-text');
+            
+            switch (state) {
+                case 'loading':
+                    btn.disabled = true;
+                    text.innerHTML = '<span class="spinner"></span> Connecting...';
+                    break;
+                case 'connected':
+                    btn.disabled = false;
+                    text.textContent = 'Connected';
+                    btn.style.background = '#4CAF50';
+                    break;
+                case 'error':
+                    btn.disabled = false;
+                    text.textContent = 'Connect Google';
+                    btn.style.background = '';
+                    break;
+                default:
+                    btn.disabled = false;
+                    text.textContent = 'Connect Google';
+                    btn.style.background = '';
+            }
+        }
+        
+        // Add retry button functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const retryBtn = document.getElementById('google-retry');
+            if (retryBtn) {
+                retryBtn.addEventListener('click', () => {
+                    console.log('[Renderer] Retry button clicked');
+                    hideGoogleOAuthStatus();
+                    handleGoogleConnect();
+                });
+            }
+        });
+
         // Initialize the app
-        console.log('Synk app initialized with new UI and OAuth fixes');
+        console.log('Synk app initialized with enhanced OAuth UI');
     </script>
 </body>
 </html>

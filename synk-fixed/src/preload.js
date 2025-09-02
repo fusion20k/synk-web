@@ -38,6 +38,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onDemoTimeout: (callback) => ipcRenderer.on('demo-timeout', callback),
   onConnectionsCleared: (callback) => ipcRenderer.on('connections-cleared', callback),
   onConnectionError: (callback) => ipcRenderer.on('connection-error', callback),
+  
+  // Generic IPC event listener for google-oauth-success
+  on: (channel, callback) => ipcRenderer.on(channel, callback),
 
   // Environment detection
   isDemoMode: () => ipcRenderer.invoke('get-demo-mode'),

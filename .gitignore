@@ -1,4 +1,12 @@
+# Environment files - NEVER commit secrets!
 .env
+.env.*
+.env.local
+.env.production
+.env.development
+**/.env
+**/.env.*
+
 node_modules/
 dist/
 build/
