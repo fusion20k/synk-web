@@ -68,6 +68,53 @@ app.on('window-all-closed', () => {
 });
 
 // IPC Handlers
+ipcMain.handle('start-google-oauth', async (event, options = {}) => {
+  console.log('🔄 Starting Google OAuth flow...');
+  
+  try {
+    const DEMO_MODE = options.demoMode || process.env.DEMO_MODE === 'true';
+    const GOOGLE_CLIENT_ID = DEMO_MODE ? process.env.GOOGLE_CLIENT_ID_DEMO : process.env.GOOGLE_CLIENT_ID;
+    const GOOGLE_REDIRECT_URI = DEMO_MODE ? process.env.GOOGLE_REDIRECT_URI_DEMO : process.env.GOOGLE_REDIRECT_URI;
+    
+    if (!GOOGLE_CLIENT_ID || !GOOGLE_REDIRECT_URI) {
+      throw new Error('Missing Google OAuth configuration');
+    }
+    
+    // Generate OAuth URL
+    const crypto = require('crypto');
+    const state = crypto.randomBytes(16).toString('hex');
+    
+    const params = new URLSearchParams({
+      client_id: GOOGLE_CLIENT_ID,
+      redirect_uri: GOOGLE_REDIRECT_URI,
+      response_type: 'code',
+      scope: process.env.GOOGLE_SCOPES || 'https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar',
+      access_type: 'offline',
+      prompt: 'consent',
+      state: state
+    });
+    
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+    
+    // Open OAuth window
+    const authWindow = new BrowserWindow({
+      width: 500,
+      height: 600,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true
+      }
+    });
+
+    await authWindow.loadURL(authUrl);
+    
+    return { success: true, authUrl };
+  } catch (error) {
+    log.error('Google OAuth error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
 ipcMain.handle('connect-google', async () => {
   try {
     const { googleOAuth } = require('./src/oauth');
@@ -76,6 +123,51 @@ ipcMain.handle('connect-google', async () => {
   } catch (error) {
     log.error('Google OAuth error:', error);
     return { ok: false, error: error.message };
+  }
+});
+
+ipcMain.handle('start-notion-oauth', async (event, options = {}) => {
+  console.log('🔄 Starting Notion OAuth flow...');
+  
+  try {
+    const DEMO_MODE = options.demoMode || process.env.DEMO_MODE === 'true';
+    const NOTION_CLIENT_ID = DEMO_MODE ? process.env.NOTION_CLIENT_ID_DEMO : process.env.NOTION_CLIENT_ID;
+    const NOTION_REDIRECT_URI = DEMO_MODE ? process.env.NOTION_REDIRECT_URI_DEMO : process.env.NOTION_REDIRECT_URI;
+    
+    if (!NOTION_CLIENT_ID || !NOTION_REDIRECT_URI) {
+      throw new Error('Missing Notion OAuth configuration');
+    }
+    
+    // Generate OAuth URL
+    const crypto = require('crypto');
+    const state = crypto.randomBytes(16).toString('hex');
+    
+    const params = new URLSearchParams({
+      client_id: NOTION_CLIENT_ID,
+      redirect_uri: NOTION_REDIRECT_URI,
+      response_type: 'code',
+      owner: 'user',
+      state: state
+    });
+
+    const authUrl = `https://api.notion.com/v1/oauth/authorize?${params}`;
+    
+    // Open OAuth window
+    const authWindow = new BrowserWindow({
+      width: 500,
+      height: 600,
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true
+      }
+    });
+
+    await authWindow.loadURL(authUrl);
+    
+    return { success: true, authUrl };
+  } catch (error) {
+    log.error('Notion OAuth error:', error);
+    return { success: false, error: error.message };
   }
 });
 
