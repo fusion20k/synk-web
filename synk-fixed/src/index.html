@@ -1330,9 +1330,21 @@
             text.innerHTML = '<span class="spinner"></span> Connecting...';
             
             try {
-                console.log('🔄 Frontend: Calling startGoogleOAuth...');
+                console.log('[Renderer] About to call startGoogleOAuth...');
+                console.log('[Renderer] Demo mode:', demoMode);
+                
                 const result = await window.electronAPI.startGoogleOAuth({ demoMode });
-                console.log('📨 Frontend: Received result from IPC:', { success: result.success, hasCalendars: !!result.calendars, calendarCount: result.calendars?.length });
+                
+                console.log('[Renderer] IPC call completed');
+                console.log('[Renderer] Full result received:', result);
+                console.log('[Renderer] Result structure:', {
+                    success: result.success,
+                    hasError: !!result.error,
+                    hasCalendars: !!result.calendars,
+                    calendarCount: result.calendars?.length,
+                    hasUser: !!result.user,
+                    hasTokens: !!result.tokens
+                });
                 
                 if (result.error) {
                     updateGoogleStatus('error', result.error);
@@ -1348,22 +1360,37 @@
                     // Keep button disabled while OAuth is in progress
                 } else if (result.success && result.calendars) {
                     // Handle successful OAuth with calendars
-                    console.log(`✅ Google OAuth successful with ${result.calendars.length} calendars`);
+                    console.log(`[Renderer] SUCCESS: Processing ${result.calendars.length} calendars`);
+                    console.log('[Renderer] Calendar preview:', result.calendars.slice(0, 3));
+                    
+                    console.log('[Renderer] Updating UI state...');
                     isGoogleConnected = true;
                     isGoogleConnecting = false;
                     btn.disabled = false;
                     text.textContent = 'Connected';
                     
-                    // Update connection status
+                    console.log('[Renderer] Updating connection pill...');
                     updateConnectionPill('google', true);
                     
-                    // Display calendars
+                    console.log('[Renderer] Calling displayCalendars...');
                     displayCalendars(result.calendars);
+                    console.log('[Renderer] displayCalendars completed');
+                } else if (result.success) {
+                    console.log('[Renderer] OAuth succeeded but no calendars in result');
+                    isGoogleConnected = true;
+                    isGoogleConnecting = false;
+                    btn.disabled = false;
+                    text.textContent = 'Connected (No Calendars)';
+                    updateConnectionPill('google', true);
                 } else {
                     // Success will be handled by oauth-success event
                     // Status text removed - spinner on button is sufficient
                 }
             } catch (error) {
+                console.error('[Renderer] Exception caught:', error);
+                console.error('[Renderer] Error message:', error.message);
+                console.error('[Renderer] Error stack:', error.stack);
+                
                 updateGoogleStatus('error', `Connection failed: ${error.message}`);
                 showErrorToast(`Google connection failed: ${error.message}`);
                 // Re-enable button on error

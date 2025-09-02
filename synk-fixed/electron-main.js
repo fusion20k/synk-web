@@ -69,33 +69,55 @@ app.on('window-all-closed', () => {
 
 // IPC Handlers
 ipcMain.handle('start-google-oauth', async (event, options = {}) => {
-  console.log('🔄 Starting Google OAuth flow...');
-  console.log('📋 Handler is firing when button clicked');
+  console.log('[OAuth] Handler triggered');
+  console.log('[OAuth] Options received:', options);
   
   try {
     // Use the complete OAuth implementation from src/oauth.js
     const { googleOAuth } = require('./src/oauth');
-    console.log('📦 Loading googleOAuth function from src/oauth.js');
+    console.log('[OAuth] Loading googleOAuth function from src/oauth.js');
     
+    console.log('[OAuth] About to call googleOAuth(shell)...');
     const result = await googleOAuth(shell);
-    console.log('🔍 OAuth result:', { ok: result.ok, hasCalendars: !!result.calendars, calendarCount: result.calendars?.length });
+    console.log('[OAuth] googleOAuth completed, result structure:', {
+      ok: result.ok,
+      hasUser: !!result.user,
+      hasTokens: !!result.tokens,
+      hasCalendars: !!result.calendars,
+      calendarCount: result.calendars?.length,
+      error: result.error
+    });
     
     if (result.ok && result.calendars) {
-      console.log(`✅ Google OAuth completed with ${result.calendars.length} calendars`);
-      console.log('📅 Calendar list preview:', result.calendars.slice(0, 3).map(cal => ({ id: cal.id, name: cal.name })));
-      return { 
+      console.log(`[OAuth] SUCCESS: ${result.calendars.length} calendars fetched`);
+      console.log('[OAuth] Calendar list preview:', result.calendars.slice(0, 3).map(cal => ({ 
+        id: cal.id, 
+        name: cal.name,
+        primary: cal.primary 
+      })));
+      
+      const returnValue = { 
         success: true, 
         calendars: result.calendars,
         user: result.user,
         tokens: result.tokens 
       };
-    } else {
-      console.log('⚠️ Google OAuth completed but no calendars returned');
+      console.log('[OAuth] Returning to renderer:', {
+        success: returnValue.success,
+        calendarCount: returnValue.calendars.length,
+        hasUser: !!returnValue.user
+      });
+      return returnValue;
+    } else if (result.ok) {
+      console.log('[OAuth] OAuth succeeded but no calendars returned');
       return { success: true, calendars: [] };
+    } else {
+      console.log('[OAuth] OAuth failed:', result.error);
+      return { success: false, error: result.error };
     }
   } catch (error) {
-    console.error('❌ Google OAuth error:', error);
-    log.error('Google OAuth error:', error);
+    console.error('[OAuth] Error in handler:', error);
+    console.error('[OAuth] Error stack:', error.stack);
     return { success: false, error: error.message };
   }
 });

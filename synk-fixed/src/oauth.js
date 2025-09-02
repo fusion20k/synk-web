@@ -254,7 +254,10 @@ class OAuthServerManager {
       
       // Immediately fetch calendar data to stop loading spinner
       try {
-        console.log('🔄 Fetching Google calendars immediately after OAuth...');
+        console.log('[OAuth] Tokens received, about to fetch calendars...');
+        console.log('[OAuth] Access token present:', !!tokens.access_token);
+        console.log('[OAuth] Token scopes:', tokens.scope);
+        
         const calendarsResponse = await fetch('https://www.googleapis.com/calendar/v3/users/me/calendarList', {
           headers: {
             'Authorization': `Bearer ${tokens.access_token}`,
@@ -262,8 +265,17 @@ class OAuthServerManager {
           }
         });
 
+        console.log('[OAuth] Calendar API response status:', calendarsResponse.status);
+        console.log('[OAuth] Calendar API response ok:', calendarsResponse.ok);
+
         if (calendarsResponse.ok) {
           const calendarsData = await calendarsResponse.json();
+          console.log('[OAuth] Raw calendar data received:', {
+            hasItems: !!calendarsData.items,
+            itemCount: calendarsData.items?.length,
+            firstItem: calendarsData.items?.[0]
+          });
+          
           const calendars = calendarsData.items.map(cal => ({
             id: cal.id,
             name: cal.summary,
@@ -274,14 +286,17 @@ class OAuthServerManager {
             timeZone: cal.timeZone
           }));
           
-          console.log(`✅ Successfully fetched ${calendars.length} Google calendars`);
+          console.log(`[OAuth] Successfully processed ${calendars.length} calendars`);
+          console.log('[OAuth] Calendar preview:', calendars.slice(0, 2));
           return { ok: true, user: userInfo, tokens: tokenData, calendars: calendars };
         } else {
-          console.warn('⚠️ Could not fetch calendars immediately, but OAuth succeeded');
+          const errorText = await calendarsResponse.text();
+          console.error('[OAuth] Calendar API error:', calendarsResponse.status, errorText);
           return { ok: true, user: userInfo, tokens: tokenData, calendars: [] };
         }
       } catch (calendarError) {
-        console.warn('⚠️ Calendar fetch failed after OAuth, but OAuth succeeded:', calendarError.message);
+        console.error('[OAuth] Calendar fetch exception:', calendarError);
+        console.error('[OAuth] Calendar fetch stack:', calendarError.stack);
         return { ok: true, user: userInfo, tokens: tokenData, calendars: [] };
       }
     } else {
@@ -462,14 +477,22 @@ async function exchangeGoogleCodeForTokens({ code, redirectUri, clientId, client
 
 async function googleOAuth(shell) {
   return new Promise(async (resolve, reject) => {
+    console.log('[OAuth] googleOAuth function called');
+    
     // Check if Google OAuth credentials are configured
     if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
+      console.error('[OAuth] Missing credentials:', { 
+        hasClientId: !!GOOGLE_CLIENT_ID, 
+        hasClientSecret: !!GOOGLE_CLIENT_SECRET 
+      });
       reject(new Error('Google OAuth credentials not configured. Please check your .env file.'));
       return;
     }
 
-    console.log(`Google OAuth starting in ${DEMO_MODE ? 'DEMO' : 'PRODUCTION'} mode`);
-    console.log(`Google scopes: ${GOOGLE_SCOPES}`);
+    console.log(`[OAuth] Starting in ${DEMO_MODE ? 'DEMO' : 'PRODUCTION'} mode`);
+    console.log(`[OAuth] Client ID: ${GOOGLE_CLIENT_ID}`);
+    console.log(`[OAuth] Redirect URI: ${GOOGLE_REDIRECT_URI}`);
+    console.log(`[OAuth] Scopes: ${GOOGLE_SCOPES}`);
 
     try {
       // Start centralized OAuth server
