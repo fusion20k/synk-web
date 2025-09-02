@@ -90,25 +90,16 @@ ipcMain.handle('start-google-oauth', async (event, options = {}) => {
       response_type: 'code',
       scope: process.env.GOOGLE_SCOPES || 'https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar',
       access_type: 'offline',
-      prompt: 'consent',
+      prompt: 'select_account',
       state: state
     });
     
     const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
     
-    // Open OAuth window
-    const authWindow = new BrowserWindow({
-      width: 500,
-      height: 600,
-      webPreferences: {
-        nodeIntegration: false,
-        contextIsolation: true
-      }
-    });
-
-    await authWindow.loadURL(authUrl);
+    // Instead of opening a BrowserWindow, open in default browser
+    await shell.openExternal(authUrl);
     
-    return { success: true, authUrl };
+    return { success: true };
   } catch (error) {
     log.error('Google OAuth error:', error);
     return { success: false, error: error.message };
@@ -152,19 +143,10 @@ ipcMain.handle('start-notion-oauth', async (event, options = {}) => {
 
     const authUrl = `https://api.notion.com/v1/oauth/authorize?${params}`;
     
-    // Open OAuth window
-    const authWindow = new BrowserWindow({
-      width: 500,
-      height: 600,
-      webPreferences: {
-        nodeIntegration: false,
-        contextIsolation: true
-      }
-    });
-
-    await authWindow.loadURL(authUrl);
+    // Instead of opening a BrowserWindow, open in default browser
+    await shell.openExternal(authUrl);
     
-    return { success: true, authUrl };
+    return { success: true };
   } catch (error) {
     log.error('Notion OAuth error:', error);
     return { success: false, error: error.message };
