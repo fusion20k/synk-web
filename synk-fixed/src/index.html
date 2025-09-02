@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Synk - Notion & Google Calendar Sync</title>
-    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <link rel="icon" type="image/jpeg" href="../favicon.jpg">
     <style>
         * {
             margin: 0;
@@ -1346,7 +1346,7 @@
                     // Keep button disabled while OAuth is in progress
                 } else {
                     // Success will be handled by oauth-success event
-                    updateGoogleStatus('success', 'Connection in progress...');
+                    // Status text removed - spinner on button is sufficient
                 }
             } catch (error) {
                 updateGoogleStatus('error', `Connection failed: ${error.message}`);
@@ -1385,7 +1385,7 @@
                     // Keep button disabled while OAuth is in progress
                 } else {
                     // Success will be handled by oauth-success event
-                    updateNotionStatus('success', 'Connection in progress...');
+                    // Status text removed - spinner on button is sufficient
                 }
             } catch (error) {
                 updateNotionStatus('error', `Connection failed: ${error.message}`);
