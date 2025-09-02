@@ -13,7 +13,7 @@ function createWindow() {
   console.log('🪟 Creating main window...');
   console.log("Created window in:", __filename);
   
-  const iconPath = path.join(__dirname, 'favicon.ico'); // keep within synk-fixed
+  const iconPath = path.join(__dirname, 'favicon.jpg'); // keep within synk-fixed
 
   mainWindow = new BrowserWindow({
     width: 1200,
