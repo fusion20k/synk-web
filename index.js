@@ -45,6 +45,9 @@ app.use((err, req, res, next) => {
 app.use("/auth/notion", notionOAuthRoutes);
 app.use("/auth/google", googleOAuthRoutes);
 
+// Desktop client OAuth endpoints (production server polling)
+app.use("/", googleOAuthRoutes); // This allows /oauth2callback and /api/oauth/result
+
 // Setup routes
 app.use("/setup", setupRoutes);
 

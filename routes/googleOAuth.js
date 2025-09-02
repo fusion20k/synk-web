@@ -5,6 +5,10 @@ const { v4: uuidv4 } = require('uuid');
 
 const router = express.Router();
 
+// In-memory store for OAuth tokens by state (for desktop client)
+// TODO: Move to Redis or database for production scaling
+const tokensByState = {};
+
 // Initialize Google OAuth2 client
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
@@ -111,6 +115,108 @@ router.get('/callback', async (req, res) => {
   }
 });
 
+// OAuth2 callback for desktop client (production server polling)
+router.get('/oauth2callback', async (req, res) => {
+  try {
+    const { code, state } = req.query;
+    
+    console.log('[OAuth2Callback] Received callback:', { code: !!code, state });
+
+    if (!code) {
+      console.error('[OAuth2Callback] No authorization code provided');
+      return res.status(400).send('❌ Authorization code not provided');
+    }
+
+    if (!state) {
+      console.error('[OAuth2Callback] No state parameter provided');
+      return res.status(400).send('❌ State parameter not provided');
+    }
+
+    // Create OAuth2 client with production redirect URI
+    const oauth2Client = new google.auth.OAuth2(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
+      'https://synk-official.com/oauth2callback'
+    );
+
+    console.log('[OAuth2Callback] Exchanging code for tokens...');
+    
+    // Exchange code for tokens
+    const { tokens } = await oauth2Client.getToken(code);
+    
+    if (!tokens.access_token) {
+      console.error('[OAuth2Callback] Failed to obtain access token');
+      return res.status(400).send('❌ Failed to obtain access token');
+    }
+
+    console.log('[OAuth2Callback] Tokens obtained successfully');
+
+    // Store tokens temporarily in memory under the given state
+    tokensByState[state] = tokens;
+    
+    console.log('[OAuth2Callback] Tokens stored for state:', state);
+
+    // Set a cleanup timeout (5 minutes)
+    setTimeout(() => {
+      if (tokensByState[state]) {
+        console.log('[OAuth2Callback] Cleaning up expired tokens for state:', state);
+        delete tokensByState[state];
+      }
+    }, 5 * 60 * 1000);
+
+    // Respond with success message
+    res.send(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Google Account Linked</title>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; text-align: center; padding: 50px; background: #f5f5f5; }
+          .success { background: #4CAF50; color: white; padding: 20px; border-radius: 8px; display: inline-block; }
+          .icon { font-size: 48px; margin-bottom: 20px; }
+        </style>
+      </head>
+      <body>
+        <div class="success">
+          <div class="icon">✅</div>
+          <h2>Google Account Linked Successfully!</h2>
+          <p>You can close this tab and return to the Synk app.</p>
+        </div>
+        <script>
+          // Auto-close after 3 seconds
+          setTimeout(() => {
+            window.close();
+          }, 3000);
+        </script>
+      </body>
+      </html>
+    `);
+
+  } catch (error) {
+    console.error('[OAuth2Callback] Error:', error);
+    res.status(500).send(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>OAuth Error</title>
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; text-align: center; padding: 50px; background: #f5f5f5; }
+          .error { background: #f44336; color: white; padding: 20px; border-radius: 8px; display: inline-block; }
+          .icon { font-size: 48px; margin-bottom: 20px; }
+        </style>
+      </head>
+      <body>
+        <div class="error">
+          <div class="icon">❌</div>
+          <h2>OAuth Failed</h2>
+          <p>Please try again in the Synk app.</p>
+        </div>
+      </body>
+      </html>
+    `);
+  }
+});
+
 // Refresh Google access token
 async function refreshGoogleToken(userId) {
   try {
@@ -195,6 +301,83 @@ async function getGoogleCalendarClient(userId) {
     throw error;
   }
 }
+
+// API endpoint for desktop client polling
+router.get('/api/oauth/result', async (req, res) => {
+  try {
+    const { state } = req.query;
+    
+    console.log('[OAuth Result] Polling request for state:', state);
+
+    if (!state) {
+      console.log('[OAuth Result] No state parameter provided');
+      return res.json({ status: 'error', error: 'missing_state' });
+    }
+
+    const tokens = tokensByState[state];
+
+    if (!tokens) {
+      console.log('[OAuth Result] No tokens found for state:', state);
+      return res.json({ status: 'pending' });
+    }
+
+    console.log('[OAuth Result] Tokens found, fetching calendars...');
+
+    try {
+      // Create OAuth2 client and set credentials
+      const oauth2Client = new google.auth.OAuth2(
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET,
+        'https://synk-official.com/oauth2callback'
+      );
+      oauth2Client.setCredentials(tokens);
+
+      // Fetch user's calendars
+      const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+      const result = await calendar.calendarList.list();
+      const calendars = result.data.items || [];
+
+      console.log('[OAuth Result] Successfully fetched calendars:', calendars.length);
+
+      // Clean up tokens after successful use
+      delete tokensByState[state];
+      console.log('[OAuth Result] Cleaned up tokens for state:', state);
+
+      // Return calendars in the format expected by the desktop client
+      return res.json({
+        status: 'ready',
+        calendars: calendars.map(cal => ({
+          id: cal.id,
+          name: cal.summary,
+          summary: cal.summary,
+          primary: cal.primary || false,
+          accessRole: cal.accessRole || 'reader',
+          timeZone: cal.timeZone || 'UTC'
+        }))
+      });
+
+    } catch (calendarError) {
+      console.error('[OAuth Result] Calendar API error:', calendarError);
+      
+      // Clean up tokens on error
+      delete tokensByState[state];
+      
+      return res.json({ 
+        status: 'error', 
+        error: 'calendar_fetch_failed',
+        details: calendarError.message 
+      });
+    }
+
+  } catch (error) {
+    console.error('[OAuth Result] Unexpected error:', error);
+    return res.json({ 
+      status: 'error', 
+      error: 'server_error',
+      details: error.message 
+    });
+  }
+});
 
 // Test Google Calendar connection
 router.get('/test/:userId', async (req, res) => {
