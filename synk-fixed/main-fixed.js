@@ -5,11 +5,13 @@ require('dotenv').config();
 console.log('✅ Environment loaded');
 console.log(`🔧 DEMO_MODE: ${process.env.DEMO_MODE || 'false'}`);
 
-// Load Electron with proper error handling
+// Load Electron with proper error handling using electron-fix
 let app, BrowserWindow, ipcMain, shell, protocol;
 
 try {
-  const electron = require('electron');
+  const loadElectronFix = require('./electron-fix');
+  const electron = loadElectronFix();
+  
   app = electron.app;
   BrowserWindow = electron.BrowserWindow;
   ipcMain = electron.ipcMain;
@@ -17,9 +19,10 @@ try {
   protocol = electron.protocol;
   
   console.log('✅ Electron APIs loaded successfully');
+  console.log('🔍 app object after loading:', !!app);
+  console.log('🔍 BrowserWindow object after loading:', !!BrowserWindow);
 } catch (error) {
   console.error('❌ Failed to load Electron:', error.message);
-  console.error('This might be a module resolution issue. Try reinstalling Electron.');
   process.exit(1);
 }
 
@@ -39,44 +42,45 @@ if (app && app.setAsDefaultProtocolClient) {
 let mainWindow = null;
 let oauthServerInstance = null;
 
-// Start OAuth server
-console.log('🚀 Starting OAuth server...');
-const { startOAuthServer } = require('./src/oauth-server');
+// Start OAuth server (temporarily commented out for debugging)
+console.log('🚀 OAuth server startup temporarily disabled for debugging...');
+// const { startOAuthServer } = require('./src/oauth-server');
 
-startOAuthServer().then(({ server, port }) => {
-  console.log(`✅ OAuth server running on port ${port}`);
-  oauthServerInstance = server;
-  
-  // Connect main window to OAuth server when available
-  if (mainWindow) {
-    server.setMainWindow(mainWindow);
-    console.log('✅ Main window connected to OAuth server');
-  }
-}).catch(error => {
-  console.error('❌ Failed to start OAuth server:', error);
-});
+// startOAuthServer().then(({ server, port }) => {
+//   console.log(`✅ OAuth server running on port ${port}`);
+//   oauthServerInstance = server;
+//   
+//   // Connect main window to OAuth server when available
+//   if (mainWindow) {
+//     server.setMainWindow(mainWindow);
+//     console.log('✅ Main window connected to OAuth server');
+//   }
+// }).catch(error => {
+//   console.error('❌ Failed to start OAuth server:', error);
+// });
 
 function createWindow() {
   console.log('🪟 Creating main window...');
+  console.log("Created window in:", __filename);
   
-  // Convert favicon.jpg to .ico for Windows
-  const iconPath = path.join(__dirname, 'favicon.ico');
-  
+  const iconPath = path.join(__dirname, 'favicon.ico'); // keep within synk-fixed
+
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
-    frame: false, // Remove Windows default border
-    titleBarStyle: 'hiddenInset', // Custom titlebar
+    frame: false,                 // <<< MUST be false to remove OS border
+    show: false,                  // show after ready-to-show
+    autoHideMenuBar: true,        // hide menu bar (toggle with Alt if needed)
+    resizable: true,
     webPreferences: {
-      nodeIntegration: false,
+      preload: path.join(__dirname, 'src', 'preload.js'),
       contextIsolation: true,
-      preload: path.join(__dirname, 'src', 'preload.js')
+      nodeIntegration: false,
     },
-    icon: iconPath, // Use favicon.ico for Windows taskbar
-    show: false
+    icon: iconPath
   });
 
-  // Hide menu bar
+  // hide menu always (extra safety)
   mainWindow.setMenuBarVisibility(false);
 
   // Load the app
@@ -130,10 +134,15 @@ if (app) {
   });
 }
 
+console.log('🔍 About to set up app event handlers...');
+console.log('🔍 app object exists:', !!app);
+
 // App event handlers
 if (app) {
+  console.log('🚀 Setting up app.whenReady() handler...');
   app.whenReady().then(() => {
     console.log('✅ Electron app ready');
+    console.log('🪟 About to call createWindow()...');
     createWindow();
 
     app.on('activate', () => {
@@ -150,32 +159,8 @@ if (app) {
   });
 }
 
-// IPC handlers for OAuth and app functionality
+// IPC handlers for OAuth
 if (ipcMain) {
-  // Window controls
-  ipcMain.handle('window-minimize', () => {
-    if (mainWindow) mainWindow.minimize();
-  });
-
-  ipcMain.handle('window-maximize', () => {
-    if (mainWindow) {
-      if (mainWindow.isMaximized()) {
-        mainWindow.unmaximize();
-      } else {
-        mainWindow.maximize();
-      }
-    }
-  });
-
-  ipcMain.handle('window-close', () => {
-    if (mainWindow) mainWindow.close();
-  });
-
-  ipcMain.handle('window-is-maximized', () => {
-    return mainWindow ? mainWindow.isMaximized() : false;
-  });
-
-  // OAuth handlers
   ipcMain.handle('start-google-oauth', async (event, options = {}) => {
     console.log('🔄 Starting Google OAuth flow...');
     
@@ -215,13 +200,13 @@ if (ipcMain) {
     }
   });
 
-  ipcMain.handle('start-notion-oauth', async (event, options = {}) => {
+  ipcMain.handle('start-notion-oauth', async (event, { demoMode }) => {
     console.log('🔄 Starting Notion OAuth flow...');
     
     try {
-      const demoMode = options?.demoMode || process.env.DEMO_MODE === 'true';
-      const NOTION_CLIENT_ID = demoMode ? process.env.NOTION_CLIENT_ID_DEMO : process.env.NOTION_CLIENT_ID;
-      const NOTION_REDIRECT_URI = demoMode ? process.env.NOTION_REDIRECT_URI_DEMO : process.env.NOTION_REDIRECT_URI;
+      const DEMO_MODE = demoMode || process.env.DEMO_MODE === 'true';
+      const NOTION_CLIENT_ID = DEMO_MODE ? process.env.NOTION_CLIENT_ID_DEMO : process.env.NOTION_CLIENT_ID;
+      const NOTION_REDIRECT_URI = DEMO_MODE ? process.env.NOTION_REDIRECT_URI_DEMO : process.env.NOTION_REDIRECT_URI;
       
       if (!NOTION_CLIENT_ID || !NOTION_REDIRECT_URI) {
         throw new Error('Missing Notion OAuth configuration');
@@ -250,100 +235,6 @@ if (ipcMain) {
       console.error('❌ Notion OAuth start failed:', error.message);
       return { error: error.message };
     }
-  });
-
-  // Data fetching handlers
-  ipcMain.handle('list-google-calendars', async () => {
-    console.log('🔄 Fetching Google calendars...');
-    
-    try {
-      if (oauthServerInstance) {
-        const calendars = oauthServerInstance.getCalendars();
-        if (calendars) {
-          console.log(`✅ Returning ${calendars.items?.length || 0} calendars`);
-          return calendars;
-        }
-      }
-      
-      console.log('⚠️ No calendars available - user needs to authenticate first');
-      return { items: [] };
-    } catch (error) {
-      console.error('❌ Failed to get calendars:', error.message);
-      throw error;
-    }
-  });
-
-  ipcMain.handle('list-notion-databases', async () => {
-    console.log('🔄 Fetching Notion databases...');
-    // TODO: Implement Notion database fetching
-    return { results: [] };
-  });
-
-  ipcMain.handle('get-google-user-info', async () => {
-    console.log('🔄 Fetching Google user info...');
-    // TODO: Implement Google user info fetching
-    return { name: 'User', email: 'user@example.com' };
-  });
-
-  // Settings handlers
-  ipcMain.handle('toggle-demo', async (event, enabled) => {
-    console.log(`🔄 Toggling demo mode: ${enabled}`);
-    process.env.DEMO_MODE = enabled ? 'true' : 'false';
-    return { success: true, demoMode: enabled };
-  });
-
-  ipcMain.handle('clear-all-data', async () => {
-    console.log('🔄 Clearing all data...');
-    
-    try {
-      // Clear OAuth server data
-      if (oauthServerInstance) {
-        oauthServerInstance.tokens = null;
-        oauthServerInstance.calendars = null;
-      }
-      
-      // Send event to frontend to reset UI
-      if (mainWindow && mainWindow.webContents) {
-        mainWindow.webContents.send('connections-cleared');
-      }
-      
-      console.log('✅ All data cleared');
-      return { success: true };
-    } catch (error) {
-      console.error('❌ Failed to clear data:', error.message);
-      throw error;
-    }
-  });
-
-  // Sync handlers (placeholder implementations)
-  ipcMain.handle('sync-trigger', async (event, googleCalendarId, notionDatabaseId) => {
-    console.log(`🔄 Triggering sync: ${googleCalendarId} -> ${notionDatabaseId}`);
-    return { success: true, message: 'Sync triggered' };
-  });
-
-  ipcMain.handle('sync-status', async () => {
-    return { status: 'idle', lastSync: null };
-  });
-
-  ipcMain.handle('sync-clear-data', async () => {
-    console.log('🔄 Clearing sync data...');
-    return { success: true };
-  });
-
-  ipcMain.handle('start-sync', async (event, options) => {
-    console.log('🔄 Starting sync with options:', options);
-    return { success: true, message: 'Sync started' };
-  });
-
-  // Utility handlers
-  ipcMain.handle('open-external', async (event, url) => {
-    console.log('🌐 Opening external URL:', url);
-    await shell.openExternal(url);
-    return { success: true };
-  });
-
-  ipcMain.handle('get-demo-mode', () => {
-    return process.env.DEMO_MODE === 'true';
   });
 }
 

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OAuth Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 10px 0; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>OAuth Flow Test</h1>
+    
+    <div id="status" class="status info">
+        Ready to test OAuth flow
+    </div>
+    
+    <button onclick="checkServerStatus()">Check OAuth Server Status</button>
+    <button onclick="startOAuthFlow()">Start Google OAuth</button>
+    <button onclick="checkCalendars()">Check Calendars</button>
+    
+    <h3>Server Response:</h3>
+    <pre id="response">No response yet</pre>
+    
+    <h3>Console Logs:</h3>
+    <div id="logs"></div>
+
+    <script>
+        function log(message) {
+            console.log(message);
+            const logs = document.getElementById('logs');
+            logs.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
+        }
+        
+        function setStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = 'status ' + type;
+        }
+        
+        function setResponse(data) {
+            document.getElementById('response').textContent = JSON.stringify(data, null, 2);
+        }
+        
+        async function checkServerStatus() {
+            log('Checking OAuth server status...');
+            try {
+                const response = await fetch('http://127.0.0.1:3000/health');
+                const data = await response.json();
+                log('Server status: ' + JSON.stringify(data));
+                setResponse(data);
+                setStatus('Server is running', 'success');
+            } catch (error) {
+                log('Server check failed: ' + error.message);
+                setStatus('Server not running', 'error');
+            }
+        }
+        
+        async function startOAuthFlow() {
+            log('Starting OAuth flow...');
+            
+            // Get the OAuth URL from environment
+            const DEMO_MODE = false; // Set based on your .env
+            const CLIENT_ID = '544344031124-1m1d09ighljp5i94g3l1fns74ss3vadg.apps.googleusercontent.com';
+            const REDIRECT_URI = 'https://synk-official.com/oauth2callback';
+            const SCOPES = 'https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar';
+            
+            const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' +
+                new URLSearchParams({
+                    client_id: CLIENT_ID,
+                    redirect_uri: REDIRECT_URI,
+                    response_type: 'code',
+                    scope: SCOPES,
+                    access_type: 'offline',
+                    prompt: 'consent',
+                }).toString();
+            
+            log('Opening OAuth URL: ' + authUrl);
+            setStatus('OAuth flow started - check new browser tab', 'info');
+            
+            // Open OAuth URL in new tab
+            window.open(authUrl, '_blank');
+            
+            // Start polling for results
+            pollForResults();
+        }
+        
+        async function pollForResults() {
+            log('Polling for OAuth results...');
+            let attempts = 0;
+            const maxAttempts = 60; // 5 minutes
+            
+            const poll = async () => {
+                attempts++;
+                try {
+                    const response = await fetch('http://127.0.0.1:3000/health');
+                    const data = await response.json();
+                    
+                    if (data.hasTokens && data.hasCalendars) {
+                        log('✅ OAuth completed! Tokens and calendars available');
+                        setStatus('OAuth completed successfully!', 'success');
+                        await checkCalendars();
+                        return;
+                    }
+                    
+                    if (attempts < maxAttempts) {
+                        log(`Polling attempt ${attempts}/${maxAttempts} - waiting for OAuth completion...`);
+                        setTimeout(poll, 5000); // Poll every 5 seconds
+                    } else {
+                        log('❌ Polling timeout - OAuth may have failed');
+                        setStatus('OAuth timeout - check console for errors', 'error');
+                    }
+                } catch (error) {
+                    log('Polling error: ' + error.message);
+                    if (attempts < maxAttempts) {
+                        setTimeout(poll, 5000);
+                    }
+                }
+            };
+            
+            poll();
+        }
+        
+        async function checkCalendars() {
+            log('Checking calendars...');
+            try {
+                const response = await fetch('http://127.0.0.1:3000/calendars');
+                if (response.ok) {
+                    const data = await response.json();
+                    log('Calendars received: ' + data.items?.length + ' calendars');
+                    setResponse(data);
+                    setStatus('Calendars loaded successfully!', 'success');
+                } else {
+                    const error = await response.text();
+                    log('Calendar fetch failed: ' + error);
+                    setStatus('No calendars available', 'error');
+                }
+            } catch (error) {
+                log('Calendar check failed: ' + error.message);
+                setStatus('Calendar check failed', 'error');
+            }
+        }
+        
+        // Auto-check server status on load
+        window.onload = () => {
+            log('Page loaded, checking server status...');
+            checkServerStatus();
+        };
+    </script>
+</body>
+</html>
