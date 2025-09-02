@@ -70,37 +70,31 @@ app.on('window-all-closed', () => {
 // IPC Handlers
 ipcMain.handle('start-google-oauth', async (event, options = {}) => {
   console.log('🔄 Starting Google OAuth flow...');
+  console.log('📋 Handler is firing when button clicked');
   
   try {
-    const DEMO_MODE = options.demoMode || process.env.DEMO_MODE === 'true';
-    const GOOGLE_CLIENT_ID = DEMO_MODE ? process.env.GOOGLE_CLIENT_ID_DEMO : process.env.GOOGLE_CLIENT_ID;
-    const GOOGLE_REDIRECT_URI = DEMO_MODE ? process.env.GOOGLE_REDIRECT_URI_DEMO : process.env.GOOGLE_REDIRECT_URI;
+    // Use the complete OAuth implementation from src/oauth.js
+    const { googleOAuth } = require('./src/oauth');
+    console.log('📦 Loading googleOAuth function from src/oauth.js');
     
-    if (!GOOGLE_CLIENT_ID || !GOOGLE_REDIRECT_URI) {
-      throw new Error('Missing Google OAuth configuration');
+    const result = await googleOAuth(shell);
+    console.log('🔍 OAuth result:', { ok: result.ok, hasCalendars: !!result.calendars, calendarCount: result.calendars?.length });
+    
+    if (result.ok && result.calendars) {
+      console.log(`✅ Google OAuth completed with ${result.calendars.length} calendars`);
+      console.log('📅 Calendar list preview:', result.calendars.slice(0, 3).map(cal => ({ id: cal.id, name: cal.name })));
+      return { 
+        success: true, 
+        calendars: result.calendars,
+        user: result.user,
+        tokens: result.tokens 
+      };
+    } else {
+      console.log('⚠️ Google OAuth completed but no calendars returned');
+      return { success: true, calendars: [] };
     }
-    
-    // Generate OAuth URL
-    const crypto = require('crypto');
-    const state = crypto.randomBytes(16).toString('hex');
-    
-    const params = new URLSearchParams({
-      client_id: GOOGLE_CLIENT_ID,
-      redirect_uri: GOOGLE_REDIRECT_URI,
-      response_type: 'code',
-      scope: process.env.GOOGLE_SCOPES || 'https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar',
-      access_type: 'offline',
-      prompt: 'select_account',
-      state: state
-    });
-    
-    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
-    
-    // Instead of opening a BrowserWindow, open in default browser
-    await shell.openExternal(authUrl);
-    
-    return { success: true };
   } catch (error) {
+    console.error('❌ Google OAuth error:', error);
     log.error('Google OAuth error:', error);
     return { success: false, error: error.message };
   }

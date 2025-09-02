@@ -1330,7 +1330,9 @@
             text.innerHTML = '<span class="spinner"></span> Connecting...';
             
             try {
+                console.log('🔄 Frontend: Calling startGoogleOAuth...');
                 const result = await window.electronAPI.startGoogleOAuth({ demoMode });
+                console.log('📨 Frontend: Received result from IPC:', { success: result.success, hasCalendars: !!result.calendars, calendarCount: result.calendars?.length });
                 
                 if (result.error) {
                     updateGoogleStatus('error', result.error);
@@ -1344,6 +1346,19 @@
                 } else if (result.inProgress) {
                     updateGoogleStatus('success', result.message);
                     // Keep button disabled while OAuth is in progress
+                } else if (result.success && result.calendars) {
+                    // Handle successful OAuth with calendars
+                    console.log(`✅ Google OAuth successful with ${result.calendars.length} calendars`);
+                    isGoogleConnected = true;
+                    isGoogleConnecting = false;
+                    btn.disabled = false;
+                    text.textContent = 'Connected';
+                    
+                    // Update connection status
+                    updateConnectionPill('google', true);
+                    
+                    // Display calendars
+                    displayCalendars(result.calendars);
                 } else {
                     // Success will be handled by oauth-success event
                     // Status text removed - spinner on button is sufficient
