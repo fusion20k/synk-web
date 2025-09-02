@@ -4,6 +4,17 @@ const fetch = require('node-fetch');
 const http = require('http');
 const crypto = require('crypto');
 const { URL } = require('url');
+const { google } = require('googleapis');
+const express = require('express');
+
+// Load environment variables
+require('dotenv').config();
+
+// Define Google Calendar scopes
+const SCOPES = [
+  "https://www.googleapis.com/auth/calendar",
+  "https://www.googleapis.com/auth/calendar.events"
+];
 
 // Centralized OAuth server manager to prevent port conflicts
 class OAuthServerManager {
@@ -376,22 +387,57 @@ const SERVICE = 'Synk';
 const GOOGLE_ACCOUNT = 'google-oauth';
 const NOTION_ACCOUNT = 'notion-oauth';
 
-// Use env first; fallback to a safe default (full calendar access).
-const GOOGLE_SCOPES = (process.env.GOOGLE_SCOPES && process.env.GOOGLE_SCOPES.trim()) ||
-  'https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.readonly';
+// Google OAuth Configuration - Production only
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
-// Determine if we're in demo mode
-const DEMO_MODE = process.env.DEMO_MODE === 'true';
+// Force production redirect URI
+const redirectUri = "https://synk-official.com/oauth2callback";
+const GOOGLE_REDIRECT_URI = redirectUri;
 
-// Google OAuth Configuration from .env (dual-ID system)
-const GOOGLE_CLIENT_ID = DEMO_MODE ? process.env.GOOGLE_CLIENT_ID_DEMO : process.env.GOOGLE_CLIENT_ID;
-const GOOGLE_CLIENT_SECRET = DEMO_MODE ? process.env.GOOGLE_CLIENT_SECRET_DEMO : process.env.GOOGLE_CLIENT_SECRET;
-const GOOGLE_REDIRECT_URI = DEMO_MODE ? process.env.GOOGLE_REDIRECT_URI_DEMO : process.env.GOOGLE_REDIRECT_URI;
+// Create OAuth2 client
+const oauth2Client = new google.auth.OAuth2(
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  redirectUri
+);
 
-// Notion OAuth Configuration from .env (dual-ID system)
-const NOTION_CLIENT_ID = DEMO_MODE ? process.env.NOTION_CLIENT_ID_DEMO : process.env.NOTION_CLIENT_ID;
-const NOTION_CLIENT_SECRET = DEMO_MODE ? process.env.NOTION_CLIENT_SECRET_DEMO : process.env.NOTION_CLIENT_SECRET;
-const NOTION_REDIRECT_URI = DEMO_MODE ? process.env.NOTION_REDIRECT_URI_DEMO : process.env.NOTION_REDIRECT_URI;
+// Express app for OAuth callback
+const app = express();
+let mainWindow = null;
+let server = null;
+
+// Set main window reference
+function setMainWindow(window) {
+  mainWindow = window;
+}
+
+// Start Express server
+function startOAuthServer(port = 3000) {
+  if (server) {
+    console.log('[OAuth] Server already running');
+    return Promise.resolve(port);
+  }
+
+  return new Promise((resolve, reject) => {
+    server = app.listen(port, (err) => {
+      if (err) {
+        console.error('[OAuth] Failed to start server:', err);
+        reject(err);
+      } else {
+        console.log(`[OAuth] Express server running on port ${port}`);
+        resolve(port);
+      }
+    });
+  });
+}
+
+// Note: Server will be started by the OAuth flow when needed
+
+// Notion OAuth Configuration - Production only
+const NOTION_CLIENT_ID = process.env.NOTION_CLIENT_ID;
+const NOTION_CLIENT_SECRET = process.env.NOTION_CLIENT_SECRET;
+const NOTION_REDIRECT_URI = process.env.NOTION_REDIRECT_URI;
 
 // PKCE helper functions
 function base64UrlEncode(buffer) {
@@ -475,63 +521,72 @@ async function exchangeGoogleCodeForTokens({ code, redirectUri, clientId, client
   return tokens;
 }
 
-async function googleOAuth(shell) {
-  return new Promise(async (resolve, reject) => {
-    console.log('[OAuth] googleOAuth function called');
-    
-    // Check if Google OAuth credentials are configured
-    if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
-      console.error('[OAuth] Missing credentials:', { 
-        hasClientId: !!GOOGLE_CLIENT_ID, 
-        hasClientSecret: !!GOOGLE_CLIENT_SECRET 
-      });
-      reject(new Error('Google OAuth credentials not configured. Please check your .env file.'));
-      return;
-    }
+// Google OAuth via production server + polling
+async function googleOAuthViaProduction(shellRef) {
+  const CLIENT_ID = process.env.GOOGLE_CLIENT_ID; // keep using env var
+  const REDIRECT_URI = 'https://synk-official.com/oauth2callback';
+  const SCOPES = [
+    'https://www.googleapis.com/auth/calendar',
+    'https://www.googleapis.com/auth/calendar.events'
+  ];
 
-    console.log(`[OAuth] Starting in ${DEMO_MODE ? 'DEMO' : 'PRODUCTION'} mode`);
-    console.log(`[OAuth] Client ID: ${GOOGLE_CLIENT_ID}`);
-    console.log(`[OAuth] Redirect URI: ${GOOGLE_REDIRECT_URI}`);
-    console.log(`[OAuth] Scopes: ${GOOGLE_SCOPES}`);
+  const state = crypto.randomBytes(16).toString('hex');
+  const authUrl =
+    'https://accounts.google.com/o/oauth2/v2/auth?' +
+    `client_id=${encodeURIComponent(CLIENT_ID)}&` +
+    `redirect_uri=${encodeURIComponent(REDIRECT_URI)}&` +
+    'response_type=code&' +
+    `scope=${encodeURIComponent(SCOPES.join(' '))}&` +
+    'access_type=offline&' +
+    'prompt=consent%20select_account&' +
+    `state=${encodeURIComponent(state)}`;
 
+  // Open in system browser (new tab if browser already open)
+  await shellRef.openExternal(authUrl);
+
+  // Poll production server for result
+  const pollEndpoint = `https://synk-official.com/api/oauth/result?state=${encodeURIComponent(state)}`;
+  const maxMs = 2 * 60 * 1000; // 2 minutes
+  const start = Date.now();
+
+  while (Date.now() - start < maxMs) {
+    await new Promise(r => setTimeout(r, 2000));
     try {
-      // Start centralized OAuth server
-      const port = await oauthServerManager.startServer();
-      oauthServerManager.setupRequestHandler();
-      
-      // Use the configured redirect URI from .env (not dynamic port)
-      const redirectUri = GOOGLE_REDIRECT_URI;
-      
-      // Build Google auth URL with new function
-      const { authUrl, state, codeVerifier } = await buildGoogleAuthUrl({
-        redirectUri,
-        clientId: GOOGLE_CLIENT_ID
-      });
-      
-      // Store code verifier for this state BEFORE registering flow
-      oauthServerManager.storeCodeVerifier(state, codeVerifier);
-      
-      // Register this OAuth flow BEFORE opening URL
-      oauthServerManager.registerFlow('google', state, resolve, reject);
-
-      console.log('Google Auth URL:', authUrl);
-      console.log('Google Redirect URI:', redirectUri);
-
-      // In production mode, open system browser; in demo mode, could use BrowserWindow
-      if (DEMO_MODE) {
-        // For demo mode, still use system browser but log it's demo
-        console.log('Demo mode: Opening system browser for Google OAuth');
-      } else {
-        console.log('Production mode: Opening system browser for Google OAuth');
+      const resp = await fetch(pollEndpoint, { method: 'GET' });
+      if (!resp.ok) {
+        // server not ready, continue polling
+        continue;
       }
-      
-      // Open the authorization URL in the system browser
-      shell.openExternal(authUrl);
-      
-    } catch (error) {
-      reject(error);
+      const data = await resp.json();
+      if (data.status === 'pending') continue;
+      if (data.status === 'ready') {
+        // data.calendars should be an array of {id, summary}
+        return { ok: true, calendars: data.calendars || [] };
+      }
+      if (data.status === 'error') {
+        return { ok: false, error: data.error || 'server_error' };
+      }
+    } catch (err) {
+      console.error('[Client OAuth] Polling error', err);
+      // continue polling until timeout
     }
-  });
+  }
+
+  return { ok: false, error: 'timeout' };
+}
+
+// Legacy function for backward compatibility - calls the new implementation
+async function googleOAuth(shell) {
+  const result = await googleOAuthViaProduction(shell);
+  if (result.ok) {
+    return { 
+      success: true, 
+      calendars: result.calendars,
+      message: 'OAuth flow completed successfully.' 
+    };
+  } else {
+    throw new Error(result.error || 'OAuth failed');
+  }
 }
 
 async function notionOAuth(shell) {
@@ -542,7 +597,7 @@ async function notionOAuth(shell) {
       return;
     }
 
-    console.log(`Notion OAuth starting in ${DEMO_MODE ? 'DEMO' : 'PRODUCTION'} mode`);
+    console.log(`Notion OAuth starting in PRODUCTION mode`);
 
     // Generate state for security
     const state = generateState();
@@ -640,9 +695,16 @@ async function getNotionToken() {
   }
 }
 
+// Note: OAuth callback is now handled by the production server at synk-official.com
+// The desktop app polls the production server for results instead of handling callbacks locally
+
 module.exports = {
   googleOAuth,
+  googleOAuthViaProduction,
   notionOAuth,
   getGoogleToken,
-  getNotionToken
+  getNotionToken,
+  setMainWindow,
+  startOAuthServer,
+  app
 };

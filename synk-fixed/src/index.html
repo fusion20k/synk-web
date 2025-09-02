@@ -1204,6 +1204,59 @@
                 });
             }
 
+            // Google OAuth success handler - receives calendars array directly
+            if (window.electronAPI.on) {
+                window.electronAPI.on('google-oauth-success', (event, calendars) => {
+                    console.log("[Renderer] Calendars received:", calendars);
+                    
+                    // Stop loading state
+                    isGoogleConnected = true;
+                    isGoogleConnecting = false;
+                    
+                    // Hide connect button
+                    const btn = document.getElementById('google-connect');
+                    if (btn) {
+                        btn.style.display = 'none';
+                        btn.disabled = false;
+                        btn.textContent = 'Connect Google';
+                    }
+                    
+                    // Update status and display calendars
+                    updateGoogleStatus('success', 'Connected to Google Calendar');
+                    
+                    if (calendars && calendars.length > 0) {
+                        console.log('📅 Displaying calendars:', calendars);
+                        displayCalendars(calendars);
+                        updateConnectionPill('google', true);
+                        showSuccessToast(`Connected to Google Calendar! Found ${calendars.length} calendars.`);
+                    } else {
+                        console.log('⚠️ No calendars found');
+                        updateGoogleStatus('warning', 'Connected but no calendars found');
+                    }
+                });
+
+                // Google OAuth failed handler
+                window.electronAPI.on('google-oauth-failed', (event, error) => {
+                    console.error("[Renderer] OAuth failed:", error);
+                    
+                    // Stop loading state
+                    isGoogleConnecting = false;
+                    isGoogleConnected = false;
+                    
+                    // Show connect button again
+                    const btn = document.getElementById('google-connect');
+                    if (btn) {
+                        btn.style.display = 'block';
+                        btn.disabled = false;
+                        btn.textContent = 'Connect Google';
+                    }
+                    
+                    // Update status and show error
+                    updateGoogleStatus('error', 'Connection failed');
+                    showErrorToast(`Google OAuth failed: ${error || 'Unknown error'}`);
+                });
+            }
+
             // Demo timeout handler - show sample data (DEMO MODE ONLY)
             window.electronAPI.onDemoTimeout((event, payload) => {
                 console.log('Demo timeout received:', payload);

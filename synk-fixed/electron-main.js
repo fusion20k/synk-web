@@ -73,62 +73,53 @@ ipcMain.handle('start-google-oauth', async (event, options = {}) => {
   console.log('[OAuth] Options received:', options);
   
   try {
-    // Use the complete OAuth implementation from src/oauth.js
-    const { googleOAuth } = require('./src/oauth');
-    console.log('[OAuth] Loading googleOAuth function from src/oauth.js');
+    // Use the new production OAuth implementation
+    const { googleOAuthViaProduction } = require('./src/oauth');
+    console.log('[OAuth] Loading googleOAuthViaProduction function from src/oauth.js');
     
-    console.log('[OAuth] About to call googleOAuth(shell)...');
-    const result = await googleOAuth(shell);
-    console.log('[OAuth] googleOAuth completed, result structure:', {
-      ok: result.ok,
-      hasUser: !!result.user,
-      hasTokens: !!result.tokens,
-      hasCalendars: !!result.calendars,
-      calendarCount: result.calendars?.length,
-      error: result.error
-    });
+    console.log('[OAuth] About to call googleOAuthViaProduction(shell)...');
+    const result = await googleOAuthViaProduction(shell);
+    console.log('[OAuth] googleOAuthViaProduction completed, result:', result);
     
-    if (result.ok && result.calendars) {
+    if (result.ok) {
       console.log(`[OAuth] SUCCESS: ${result.calendars.length} calendars fetched`);
-      console.log('[OAuth] Calendar list preview:', result.calendars.slice(0, 3).map(cal => ({ 
-        id: cal.id, 
-        name: cal.name,
-        primary: cal.primary 
-      })));
       
-      const returnValue = { 
+      // Send calendars to renderer
+      mainWindow.webContents.send('google-oauth-success', result.calendars);
+      
+      return { 
         success: true, 
-        calendars: result.calendars,
-        user: result.user,
-        tokens: result.tokens 
+        calendars: result.calendars
       };
-      console.log('[OAuth] Returning to renderer:', {
-        success: returnValue.success,
-        calendarCount: returnValue.calendars.length,
-        hasUser: !!returnValue.user
-      });
-      return returnValue;
-    } else if (result.ok) {
-      console.log('[OAuth] OAuth succeeded but no calendars returned');
-      return { success: true, calendars: [] };
     } else {
-      console.log('[OAuth] OAuth failed:', result.error);
+      console.error('[OAuth] production OAuth failed:', result.error);
+      mainWindow.webContents.send('google-oauth-failed', result.error || 'unknown');
       return { success: false, error: result.error };
     }
   } catch (error) {
     console.error('[OAuth] Error in handler:', error);
     console.error('[OAuth] Error stack:', error.stack);
+    mainWindow.webContents.send('google-oauth-failed', error.message || 'unknown');
     return { success: false, error: error.message };
   }
 });
 
 ipcMain.handle('connect-google', async () => {
   try {
-    const { googleOAuth } = require('./src/oauth');
-    const result = await googleOAuth(shell);
-    return result;
+    const { googleOAuthViaProduction } = require('./src/oauth');
+    const result = await googleOAuthViaProduction(shell);
+    
+    if (result.ok) {
+      // Send calendars to renderer
+      mainWindow.webContents.send('google-oauth-success', result.calendars);
+      return { success: true, calendars: result.calendars };
+    } else {
+      mainWindow.webContents.send('google-oauth-failed', result.error || 'unknown');
+      return { ok: false, error: result.error };
+    }
   } catch (error) {
     log.error('Google OAuth error:', error);
+    mainWindow.webContents.send('google-oauth-failed', error.message || 'unknown');
     return { ok: false, error: error.message };
   }
 });
