@@ -4,7 +4,23 @@ require('dotenv').config();
 
 console.log('🚀 Starting Synk in Production Mode...');
 
-const { app, BrowserWindow, nativeImage, ipcMain } = require('electron');
+// Import Electron with error handling
+let app, BrowserWindow, ipcMain, shell, nativeImage;
+
+try {
+  const electron = require('electron');
+  console.log('🔧 Electron object:', typeof electron);
+  app = electron.app;
+  BrowserWindow = electron.BrowserWindow;
+  ipcMain = electron.ipcMain;
+  shell = electron.shell;
+  nativeImage = electron.nativeImage;
+  console.log('🔧 App after assignment:', typeof app);
+  console.log('✅ Electron APIs loaded successfully');
+} catch (error) {
+  console.error('❌ Failed to load Electron:', error.message);
+  process.exit(1);
+}
 
 let mainWindow = null;
 
@@ -52,11 +68,6 @@ function createWindow() {
 // Register IPC handlers function
 function registerIpcHandlers() {
   console.log('🔧 Registering IPC handlers...');
-
-  if (!ipcMain) {
-    console.error('❌ ipcMain is undefined - Electron not loaded properly');
-    return;
-  }
 
   ipcMain.handle('start-google-oauth', async (event, options = {}) => {
     console.log('[OAuth] Google OAuth requested (Production mode)');
