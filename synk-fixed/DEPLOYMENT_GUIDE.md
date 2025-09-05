@@ -27,11 +27,11 @@ The app now uses the custom titlebar from `src/index.html` instead of Windows de
 
 #### **Add Environment Variables in Render:**
 ```bash
-GOOGLE_CLIENT_ID=544344031124-34jtjr3q7dko703jvgfru7dpo5krcran.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=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
+GOOGLE_CLIENT_ID=your_google_client_id_here
+GOOGLE_CLIENT_SECRET=your_google_client_secret_here
 GOOGLE_REDIRECT_URI=https://synk-backend.onrender.com/oauth2callback
-NOTION_CLIENT_ID=262d872b-594c-805a-b303-0037e81991ad
-NOTION_CLIENT_SECRET=secret_Jc6YH2auThHFyBNFyS4rXIM2ZZ5P591ZPkUIXd9F7LR
+NOTION_CLIENT_ID=your_notion_client_id_here
+NOTION_CLIENT_SECRET=your_notion_client_secret_here
 NOTION_REDIRECT_URI=https://synk-backend.onrender.com/oauth2callback/notion
 PORT=10000
 ```

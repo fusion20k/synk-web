@@ -180,8 +180,8 @@ Create simple HTML pages:
 Make sure these are set on the production server:
 
 ```bash
-GOOGLE_CLIENT_ID=544344031124-34jtjr3q7dko703jvgfru7dpo5krcran.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=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
+GOOGLE_CLIENT_ID=your_google_client_id_here
+GOOGLE_CLIENT_SECRET=your_google_client_secret_here
 ```
 
 ## Testing the Fix
