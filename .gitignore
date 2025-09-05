@@ -1,11 +1,16 @@
 # Environment files - NEVER commit secrets!
 .env
 .env.*
+*.env
 .env.local
 .env.production
 .env.development
 **/.env
 **/.env.*
+backend.env
+synk-app/.env.production
+synk-fixed/.env.production
+synk-fixed/.env.development
 
 node_modules/
 dist/
