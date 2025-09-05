@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Synk - Notion & Google Calendar Sync</title>
-    <link rel="icon" type="image/jpeg" href="../favicon.jpg">
+    <link rel="icon" type="image/x-icon" href="../assets/icon.ico">
     <style>
         * {
             margin: 0;
@@ -806,8 +806,8 @@
                     <div class="content-card about-card">
                         <h2>About Synk</h2>
                         <p style="color: #ccc; margin-bottom: 20px;">Synk syncs Notion and Google Calendar events.</p>
-                        <p style="color: #ccc; margin-bottom: 10px;">Website: <a id="homepage-link" href="#" style="color: #4a9eff; text-decoration: none;">https://synk-official.com</a></p>
-                        <p style="color: #ccc; margin-bottom: 10px;">Support: <a id="support-mail" href="mailto:support@synk-official.com" style="color: #4a9eff; text-decoration: none;">support@synk-official.com</a></p>
+                        <p style="color: #ccc; margin-bottom: 10px;">Backend: <a id="homepage-link" href="#" style="color: #4a9eff; text-decoration: none;">https://synk-backend.onrender.com</a></p>
+                        <p style="color: #ccc; margin-bottom: 10px;">Support: <a id="support-mail" href="mailto:support@synk-backend.onrender.com" style="color: #4a9eff; text-decoration: none;">support@synk-backend.onrender.com</a></p>
                         <p style="color: #ccc;">Version: <span id="app-version">1.0.0</span></p>
                     </div>
                 </div>
@@ -845,7 +845,7 @@
             // About page link handlers
             document.getElementById('homepage-link').addEventListener('click', (e) => {
                 e.preventDefault();
-                window.electronAPI.openExternal('https://synk-official.com');
+                window.electronAPI.openExternal('https://synk-backend.onrender.com');
             });
 
             // Support email is handled by default mailto: behavior
@@ -858,18 +858,7 @@
         let isNotionConnected = false;
         let currentTab = 'dashboard';
         
-        // Detect demo mode from environment (will be passed from main process)
-        let demoMode = true; // Default to demo mode for safety
-        
-        // Initialize demo mode detection
-        if (window.electronAPI && window.electronAPI.isDemoMode) {
-            window.electronAPI.isDemoMode().then(isDemo => {
-                demoMode = isDemo;
-                console.log(`🎭 Demo mode detected: ${demoMode}`);
-            }).catch(err => {
-                console.warn('Failed to detect demo mode, defaulting to true:', err);
-            });
-        }
+        // Production mode only - no demo mode detection needed
 
         // Tab Navigation
         document.querySelectorAll('.nav-item').forEach(item => {
@@ -949,7 +938,6 @@
                 <button class="sync-item calendar-item ${cal.primary ? 'primary' : ''}" data-id="${cal.id}" onclick="toggleSelect('${cal.id}', 'google')" aria-label="Select ${cal.name} calendar">
                     <div class="item-title">
                         ${cal.name}
-                        ${cal._demo ? '<span class="demo-badge">DEMO</span>' : ''}
                     </div>
                     <div class="item-meta">
                         ${cal.primary ? 'Primary Calendar • ' : ''}${cal.accessRole} • ${cal.timeZone || 'No timezone'}
@@ -969,7 +957,6 @@
                 <button class="sync-item database-item" data-id="${db.id}" onclick="toggleSelect('${db.id}', 'notion')" aria-label="Select ${db.title} database">
                     <div class="item-title">
                         ${db.title}
-                        ${db._demo ? '<span class="demo-badge">DEMO</span>' : ''}
                     </div>
                     <div class="item-meta">
                         ${db.properties ? db.properties.join(', ') : 'No properties'} • 
@@ -1113,51 +1100,7 @@
             }
         }
 
-        // Demo sample data
-        const sampleData = {
-            notionDatabases: [
-                {
-                    id: 'db-demo-1',
-                    name: 'Demo Tasks',
-                    description: 'Sample task database for demo purposes',
-                    pages: [
-                        { id: 'page-1', title: 'Complete project proposal', status: 'In Progress' },
-                        { id: 'page-2', title: 'Review design mockups', status: 'To Do' },
-                        { id: 'page-3', title: 'Schedule team meeting', status: 'Done' }
-                    ]
-                },
-                {
-                    id: 'db-demo-2', 
-                    name: 'Demo Projects',
-                    description: 'Sample project tracking database',
-                    pages: [
-                        { id: 'proj-1', title: 'Website Redesign', status: 'Active' },
-                        { id: 'proj-2', title: 'Mobile App Development', status: 'Planning' }
-                    ]
-                }
-            ],
-            googleCalendars: [
-                {
-                    id: 'cal-demo-1',
-                    name: 'Demo Calendar',
-                    description: 'Primary demo calendar',
-                    primary: true,
-                    events: [
-                        { id: 'event-1', title: 'Team Standup', start: '2024-01-15T09:00:00Z', end: '2024-01-15T09:30:00Z' },
-                        { id: 'event-2', title: 'Client Meeting', start: '2024-01-15T14:00:00Z', end: '2024-01-15T15:00:00Z' }
-                    ]
-                },
-                {
-                    id: 'cal-demo-2',
-                    name: 'Demo Work Calendar',
-                    description: 'Work-related demo events',
-                    primary: false,
-                    events: [
-                        { id: 'work-1', title: 'Project Review', start: '2024-01-16T10:00:00Z', end: '2024-01-16T11:00:00Z' }
-                    ]
-                }
-            ]
-        };
+        // Production mode only - no sample data needed
 
         // Event listeners for OAuth success and demo timeout
         if (window.electronAPI) {
@@ -1352,34 +1295,7 @@
                 });
             }
 
-            // Demo timeout handler - show sample data (DEMO MODE ONLY)
-            window.electronAPI.onDemoTimeout((event, payload) => {
-                console.log('Demo timeout received:', payload);
-                
-                if (payload.provider === 'notion') {
-                    isNotionConnected = true; // Mark as connected in demo mode
-                    isNotionConnecting = false;
-                    const btn = document.getElementById('notion-connect');
-                    if (btn) {
-                        btn.style.display = 'none'; // Hide button after demo connection
-                        console.log('✅ Notion connect button hidden (demo mode)');
-                    }
-                    updateNotionStatus('success', 'Demo Mode - Sample Data');
-                    displayDatabases(sampleData.notionDatabases);
-                    updateConnectionPill('notion', true);
-                } else if (payload.provider === 'google') {
-                    isGoogleConnected = true; // Mark as connected in demo mode
-                    isGoogleConnecting = false;
-                    const btn = document.getElementById('google-connect');
-                    if (btn) {
-                        btn.style.display = 'none'; // Hide button after demo connection
-                        console.log('✅ Google connect button hidden (demo mode)');
-                    }
-                    updateGoogleStatus('success', 'Demo Mode - Sample Data');
-                    displayCalendars(sampleData.googleCalendars);
-                    updateConnectionPill('google', true);
-                }
-            });
+            // Production mode only - no demo timeout handler needed
 
             // Connections cleared handler - reset UI
             window.electronAPI.onConnectionsCleared(() => {
@@ -1475,9 +1391,8 @@
             
             try {
                 console.log('[Renderer] Starting Google OAuth...');
-                console.log('[Renderer] Demo mode:', demoMode);
                 
-                const result = await window.electronAPI.startGoogleOAuth({ demoMode });
+                const result = await window.electronAPI.startGoogleOAuth();
                 
                 console.log('[Renderer] OAuth result:', {
                     success: result.success,
@@ -1547,7 +1462,7 @@
             text.innerHTML = '<span class="spinner"></span> Connecting...';
             
             try {
-                const result = await window.electronAPI.startNotionOAuth({ demoMode });
+                const result = await window.electronAPI.startNotionOAuth();
                 
                 if (result.error) {
                     updateNotionStatus('error', result.error);

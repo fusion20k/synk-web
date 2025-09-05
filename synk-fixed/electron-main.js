@@ -1,26 +1,39 @@
-const { app, BrowserWindow, ipcMain, shell } = require('electron');
+// Production-only Electron main process
 const path = require('path');
 const Store = require('electron-store');
-const log = require('electron-log');
-
-// Load environment variables
 require('dotenv').config();
 
+console.log('🚀 Starting Synk in Production Mode...');
+
+// Import Electron with error handling
+let app, BrowserWindow, ipcMain, shell;
+
+try {
+  const electron = require('electron');
+  app = electron.app;
+  BrowserWindow = electron.BrowserWindow;
+  ipcMain = electron.ipcMain;
+  shell = electron.shell;
+  console.log('✅ Electron APIs loaded successfully');
+} catch (error) {
+  console.error('❌ Failed to load Electron:', error.message);
+  process.exit(1);
+}
+
 const store = new Store();
-let mainWindow;
+let mainWindow = null;
 
 function createWindow() {
   console.log('🪟 Creating main window...');
-  console.log("Created window in:", __filename);
   
-  const iconPath = path.join(__dirname, 'favicon.jpg'); // keep within synk-fixed
+  const iconPath = path.join(__dirname, 'favicon.jpg');
 
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
-    frame: false,                 // <<< MUST be false to remove OS border
-    show: false,                  // show after ready-to-show
-    autoHideMenuBar: true,        // hide menu bar (toggle with Alt if needed)
+    frame: false,
+    show: false,
+    autoHideMenuBar: true,
     resizable: true,
     webPreferences: {
       preload: path.join(__dirname, 'src', 'preload.js'),
@@ -30,200 +43,160 @@ function createWindow() {
     icon: iconPath
   });
 
-  // hide menu always (extra safety)
   mainWindow.setMenuBarVisibility(false);
-
   mainWindow.loadFile(path.join(__dirname, 'src', 'index.html'));
 
-  // Show window when ready
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
+    console.log('✅ Window shown');
   });
 
-  // Open DevTools only in development when explicitly needed
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  });
+
   if (
     process.env.NODE_ENV === 'development' &&
     (process.env.DEBUG_PROD === 'true' || process.env.OPEN_DEVTOOLS === 'true')
   ) {
-    // dev only: open devtools on the right for debugging
     mainWindow.webContents.openDevTools({ mode: 'right' });
   }
 }
 
-// App event handlers
-app.whenReady().then(() => {
-  createWindow();
-
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
+// Register IPC handlers
+function registerIpcHandlers() {
+  // Production OAuth handlers
+  ipcMain.handle('start-google-oauth', async (event, options = {}) => {
+    console.log('[OAuth] Google OAuth requested (Production mode)');
+    
+    try {
+      const { googleOAuthViaProduction } = require('./src/oauth');
+      console.log('[OAuth] Starting production Google OAuth...');
+      
+      const result = await googleOAuthViaProduction(shell);
+      console.log('[OAuth] Google OAuth result:', result);
+      
+      if (result.ok) {
+        console.log(`[OAuth] SUCCESS: ${result.calendars.length} calendars fetched`);
+        if (mainWindow && mainWindow.webContents) {
+          mainWindow.webContents.send('google-oauth-success', result.calendars);
+        }
+        return { 
+          success: true, 
+          calendars: result.calendars
+        };
+      } else {
+        console.error('[OAuth] Google OAuth failed:', result.error);
+        if (mainWindow && mainWindow.webContents) {
+          mainWindow.webContents.send('google-oauth-failed', result.error || 'unknown');
+        }
+        return { success: false, error: result.error };
+      }
+    } catch (error) {
+      console.error('[OAuth] Google OAuth error:', error);
+      if (mainWindow && mainWindow.webContents) {
+        mainWindow.webContents.send('google-oauth-failed', error.message);
+      }
+      return { success: false, error: error.message };
     }
   });
-});
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
-
-// IPC Handlers
-ipcMain.handle('start-google-oauth', async (event, options = {}) => {
-  console.log('[OAuth] Handler triggered');
-  console.log('[OAuth] Options received:', options);
-  
-  try {
-    // Use the new production OAuth implementation
-    const { googleOAuthViaProduction } = require('./src/oauth');
-    console.log('[OAuth] Loading googleOAuthViaProduction function from src/oauth.js');
+  ipcMain.handle('start-notion-oauth', async (event, options = {}) => {
+    console.log('[OAuth] Notion OAuth requested (Production mode)');
     
-    console.log('[OAuth] About to call googleOAuthViaProduction(shell)...');
-    const result = await googleOAuthViaProduction(shell);
-    console.log('[OAuth] googleOAuthViaProduction completed, result:', result);
-    
-    if (result.ok) {
-      console.log(`[OAuth] SUCCESS: ${result.calendars.length} calendars fetched`);
+    try {
+      const { notionOAuthViaProduction } = require('./src/oauth');
+      console.log('[OAuth] Starting production Notion OAuth...');
       
-      // Send calendars to renderer
-      mainWindow.webContents.send('google-oauth-success', result.calendars);
+      const result = await notionOAuthViaProduction(shell);
+      console.log('[OAuth] Notion OAuth result:', result);
       
-      return { 
-        success: true, 
-        calendars: result.calendars
-      };
-    } else {
-      console.error('[OAuth] production OAuth failed:', result.error);
-      mainWindow.webContents.send('google-oauth-failed', result.error || 'unknown');
-      return { success: false, error: result.error };
+      if (result.ok) {
+        console.log(`[OAuth] SUCCESS: Notion workspace connected`);
+        if (mainWindow && mainWindow.webContents) {
+          mainWindow.webContents.send('notion-oauth-success', result.workspace);
+        }
+        return { 
+          success: true, 
+          workspace: result.workspace,
+          databases: result.databases
+        };
+      } else {
+        console.error('[OAuth] Notion OAuth failed:', result.error);
+        if (mainWindow && mainWindow.webContents) {
+          mainWindow.webContents.send('notion-oauth-failed', result.error || 'unknown');
+        }
+        return { success: false, error: result.error };
+      }
+    } catch (error) {
+      console.error('[OAuth] Notion OAuth error:', error);
+      if (mainWindow && mainWindow.webContents) {
+        mainWindow.webContents.send('notion-oauth-failed', error.message);
+      }
+      return { success: false, error: error.message };
     }
-  } catch (error) {
-    console.error('[OAuth] Error in handler:', error);
-    console.error('[OAuth] Error stack:', error.stack);
-    mainWindow.webContents.send('google-oauth-failed', error.message || 'unknown');
-    return { success: false, error: error.message };
-  }
-});
+  });
 
-ipcMain.handle('connect-google', async () => {
-  try {
-    const { googleOAuthViaProduction } = require('./src/oauth');
-    const result = await googleOAuthViaProduction(shell);
-    
-    if (result.ok) {
-      // Send calendars to renderer
-      mainWindow.webContents.send('google-oauth-success', result.calendars);
-      return { success: true, calendars: result.calendars };
-    } else {
-      mainWindow.webContents.send('google-oauth-failed', result.error || 'unknown');
-      return { ok: false, error: result.error };
-    }
-  } catch (error) {
-    log.error('Google OAuth error:', error);
-    mainWindow.webContents.send('google-oauth-failed', error.message || 'unknown');
-    return { ok: false, error: error.message };
-  }
-});
+  // Window controls
+  ipcMain.handle('window-minimize', () => {
+    if (mainWindow) mainWindow.minimize();
+  });
 
-ipcMain.handle('start-notion-oauth', async (event, options = {}) => {
-  console.log('🔄 Starting Notion OAuth flow...');
-  
-  try {
-    const DEMO_MODE = options.demoMode || process.env.DEMO_MODE === 'true';
-    const NOTION_CLIENT_ID = DEMO_MODE ? process.env.NOTION_CLIENT_ID_DEMO : process.env.NOTION_CLIENT_ID;
-    const NOTION_REDIRECT_URI = DEMO_MODE ? process.env.NOTION_REDIRECT_URI_DEMO : process.env.NOTION_REDIRECT_URI;
-    
-    if (!NOTION_CLIENT_ID || !NOTION_REDIRECT_URI) {
-      throw new Error('Missing Notion OAuth configuration');
+  ipcMain.handle('window-maximize', () => {
+    if (mainWindow) {
+      if (mainWindow.isMaximized()) {
+        mainWindow.unmaximize();
+      } else {
+        mainWindow.maximize();
+      }
     }
+  });
+
+  ipcMain.handle('window-close', () => {
+    if (mainWindow) mainWindow.close();
+  });
+
+  // Store handlers
+  ipcMain.handle('store-get', (event, key) => {
+    return store.get(key);
+  });
+
+  ipcMain.handle('store-set', (event, key, value) => {
+    store.set(key, value);
+  });
+
+  ipcMain.handle('store-delete', (event, key) => {
+    store.delete(key);
+  });
+
+  console.log('✅ IPC handlers registered (Production mode only)');
+}
+
+// App events
+if (app) {
+  app.whenReady().then(() => {
+    console.log('✅ App ready');
     
-    // Generate OAuth URL
-    const crypto = require('crypto');
-    const state = crypto.randomBytes(16).toString('hex');
+    // Register IPC handlers AFTER app is ready
+    registerIpcHandlers();
     
-    const params = new URLSearchParams({
-      client_id: NOTION_CLIENT_ID,
-      redirect_uri: NOTION_REDIRECT_URI,
-      response_type: 'code',
-      owner: 'user',
-      state: state
+    createWindow();
+
+    app.on('activate', () => {
+      if (BrowserWindow.getAllWindows().length === 0) {
+        createWindow();
+      }
     });
+  });
 
-    const authUrl = `https://api.notion.com/v1/oauth/authorize?${params}`;
-    
-    // Instead of opening a BrowserWindow, open in default browser
-    await shell.openExternal(authUrl);
-    
-    return { success: true };
-  } catch (error) {
-    log.error('Notion OAuth error:', error);
-    return { success: false, error: error.message };
-  }
-});
-
-ipcMain.handle('connect-notion', async () => {
-  try {
-    const { notionOAuth } = require('./src/oauth');
-    const result = await notionOAuth(shell);
-    return result;
-  } catch (error) {
-    log.error('Notion OAuth error:', error);
-    return { ok: false, error: error.message };
-  }
-});
-
-ipcMain.handle('list-google-calendars', async () => {
-  try {
-    const { listGoogleCalendars } = require('./src/google');
-    return await listGoogleCalendars();
-  } catch (error) {
-    log.error('List calendars error:', error);
-    return [];
-  }
-});
-
-ipcMain.handle('list-notion-databases', async () => {
-  try {
-    const { listDatabases } = require('./src/notion');
-    return await listDatabases();
-  } catch (error) {
-    log.error('List databases error:', error);
-    return [];
-  }
-});
-
-ipcMain.handle('get-google-user-info', async () => {
-  try {
-    const { getGoogleUserInfo } = require('./src/google');
-    return await getGoogleUserInfo();
-  } catch (error) {
-    log.error('Get user info error:', error);
-    return null;
-  }
-});
-
-// Window controls
-ipcMain.handle('window-minimize', () => {
-  if (mainWindow) mainWindow.minimize();
-});
-
-ipcMain.handle('window-maximize', () => {
-  if (mainWindow) {
-    if (mainWindow.isMaximized()) {
-      mainWindow.unmaximize();
-    } else {
-      mainWindow.maximize();
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      app.quit();
     }
-  }
-});
+  });
+} else {
+  console.error('❌ App is undefined - Electron not loaded properly');
+  process.exit(1);
+}
 
-ipcMain.handle('window-close', () => {
-  if (mainWindow) mainWindow.close();
-});
-
-// Demo mode toggle
-ipcMain.handle('toggle-demo', async (event, enabled) => {
-  log.info('Demo mode toggled:', enabled);
-  return { ok: true, demoMode: enabled };
-});
-
-console.log('Synk app initialized successfully');
+console.log('✅ Electron main process initialized (Production mode only)');

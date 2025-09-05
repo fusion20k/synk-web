@@ -73,17 +73,13 @@ try {
   if (googleConfig.redirectUri) {
     logSuccess(`Google Redirect URI: ${googleConfig.redirectUri}`);
     
-    // Validate redirect URI format
-    if (config.isDevelopment() && !googleConfig.redirectUri.includes('localhost:3000')) {
-      logWarning('Development mode should use localhost:3000 redirect URI');
+    // Validate redirect URI format for production
+    if (!googleConfig.redirectUri.includes('synk-official.com')) {
+      logWarning('Should use synk-official.com redirect URI for production');
     }
     
-    if (config.isProduction() && !googleConfig.redirectUri.includes('synk-official.com')) {
-      logWarning('Production mode should use synk-official.com redirect URI');
-    }
-    
-    if (!googleConfig.redirectUri.includes('/oauth/google/callback')) {
-      logError('Google redirect URI should end with /oauth/google/callback');
+    if (!googleConfig.redirectUri.includes('/oauth2callback')) {
+      logError('Google redirect URI should end with /oauth2callback');
     }
   } else {
     logError('Google Redirect URI is missing');
@@ -106,17 +102,13 @@ try {
   if (notionConfig.redirectUri) {
     logSuccess(`Notion Redirect URI: ${notionConfig.redirectUri}`);
     
-    // Validate redirect URI format
-    if (config.isDevelopment() && !notionConfig.redirectUri.includes('localhost:3000')) {
-      logWarning('Development mode should use localhost:3000 redirect URI');
+    // Validate redirect URI format for production
+    if (!notionConfig.redirectUri.includes('synk-official.com')) {
+      logWarning('Should use synk-official.com redirect URI for production');
     }
     
-    if (config.isProduction() && !notionConfig.redirectUri.includes('synk-official.com')) {
-      logWarning('Production mode should use synk-official.com redirect URI');
-    }
-    
-    if (!notionConfig.redirectUri.includes('/oauth/notion/callback')) {
-      logError('Notion redirect URI should end with /oauth/notion/callback');
+    if (!notionConfig.redirectUri.includes('/oauth2callback/notion')) {
+      logError('Notion redirect URI should end with /oauth2callback/notion');
     }
   } else {
     logError('Notion Redirect URI is missing');

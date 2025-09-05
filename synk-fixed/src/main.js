@@ -5,21 +5,18 @@ const path = require('path');
 require('dotenv').config();
 
 console.log('✅ Environment loaded');
-console.log(`📋 MODE: ${process.env.NODE_ENV || 'development'}`);
-console.log(`🔧 DEMO_MODE: ${process.env.DEMO_MODE || 'true'}`);
+console.log(`📋 MODE: production (demo mode removed)`);
+console.log(`🚀 Running in PRODUCTION mode only`);
 
-// Validate that all required OAuth variables are present
-const DEMO_MODE = process.env.DEMO_MODE === 'true';
+// Production OAuth variables only
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
 
-// Google OAuth variables (dual-ID system)
-const GOOGLE_CLIENT_ID = DEMO_MODE ? process.env.GOOGLE_CLIENT_ID_DEMO : process.env.GOOGLE_CLIENT_ID;
-const GOOGLE_CLIENT_SECRET = DEMO_MODE ? process.env.GOOGLE_CLIENT_SECRET_DEMO : process.env.GOOGLE_CLIENT_SECRET;
-const GOOGLE_REDIRECT_URI = DEMO_MODE ? process.env.GOOGLE_REDIRECT_URI_DEMO : process.env.GOOGLE_REDIRECT_URI;
-
-// Notion OAuth variables (dual-ID system)
-const NOTION_CLIENT_ID = DEMO_MODE ? process.env.NOTION_CLIENT_ID_DEMO : process.env.NOTION_CLIENT_ID;
-const NOTION_CLIENT_SECRET = DEMO_MODE ? process.env.NOTION_CLIENT_SECRET_DEMO : process.env.NOTION_CLIENT_SECRET;
-const NOTION_REDIRECT_URI = DEMO_MODE ? process.env.NOTION_REDIRECT_URI_DEMO : process.env.NOTION_REDIRECT_URI;
+// Notion OAuth variables (production only)
+const NOTION_CLIENT_ID = process.env.NOTION_CLIENT_ID;
+const NOTION_CLIENT_SECRET = process.env.NOTION_CLIENT_SECRET;
+const NOTION_REDIRECT_URI = process.env.NOTION_REDIRECT_URI;
 
 console.log('✅ OAuth variables loaded from .env:');
 console.log(`   Google Client ID: ${GOOGLE_CLIENT_ID ? 'Present' : 'Missing'}`);
@@ -194,17 +191,8 @@ function loadElectron() {
   return true;
 }
 
-// Always start the OAuth server first, before anything else
-console.log('🚀 Starting OAuth server...');
-const { startOAuthServer, getOAuthServer } = require('./oauth-server');
-let oauthServerInstance = null;
-
-startOAuthServer().then(({ server, port }) => {
-  console.log(`✅ OAuth server running on port ${port}`);
-  oauthServerInstance = server;
-}).catch(error => {
-  console.error('❌ Failed to start OAuth server:', error);
-});
+// Production mode - no local OAuth server needed
+console.log('✅ Production mode - using remote OAuth endpoints only');
 
 // Disable GPU acceleration for more stability (fixes GPU warning)
 if (typeof require !== 'undefined') {

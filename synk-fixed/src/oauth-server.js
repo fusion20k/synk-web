@@ -4,8 +4,7 @@ const axios = require('axios');
 const cors = require('cors');
 require('dotenv').config();
 
-// Detect environment (dev vs production)
-const isDev = process.env.NODE_ENV === 'development';
+// Production-only OAuth server
 
 class OAuthServer {
   constructor() {
@@ -59,14 +58,11 @@ class OAuthServer {
         // 1) Exchange code for tokens
         console.log('[OAuth] Code received:', code);
         console.log('[OAuth] Exchanging code for tokens...');
-        const DEMO_MODE = process.env.DEMO_MODE === 'true';
-        const GOOGLE_CLIENT_ID = DEMO_MODE ? process.env.GOOGLE_CLIENT_ID_DEMO : process.env.GOOGLE_CLIENT_ID;
-        const GOOGLE_CLIENT_SECRET = DEMO_MODE ? process.env.GOOGLE_CLIENT_SECRET_DEMO : process.env.GOOGLE_CLIENT_SECRET;
         
-        // Use localhost redirect in dev, production URL otherwise
-        const GOOGLE_REDIRECT_URI = isDev
-          ? "http://localhost:3000/oauth2callback"
-          : (DEMO_MODE ? process.env.GOOGLE_REDIRECT_URI_DEMO : process.env.GOOGLE_REDIRECT_URI);
+        // Use production OAuth credentials only
+        const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+        const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+        const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
 
         const { data: tokens } = await axios.post('https://oauth2.googleapis.com/token', {
           client_id: GOOGLE_CLIENT_ID,

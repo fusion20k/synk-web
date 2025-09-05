@@ -1,4 +1,4 @@
-// Synk - Production Mode Only
+// Production-only Electron main process
 const path = require('path');
 require('dotenv').config();
 
@@ -14,14 +14,15 @@ try {
   ipcMain = electron.ipcMain;
   shell = electron.shell;
   console.log('✅ Electron APIs loaded successfully');
-  console.log('🔍 Debug - app:', typeof app, app ? 'defined' : 'undefined');
-  console.log('🔍 Debug - BrowserWindow:', typeof BrowserWindow, BrowserWindow ? 'defined' : 'undefined');
 } catch (error) {
   console.error('❌ Failed to load Electron:', error.message);
   process.exit(1);
 }
 
 let mainWindow = null;
+
+// Production mode - no local OAuth server needed
+console.log('✅ Production mode - using remote OAuth endpoints only');
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -32,28 +33,32 @@ function createWindow() {
       contextIsolation: true,
       preload: path.join(__dirname, 'src', 'preload.js')
     },
-    show: false,
-    frame: false,
-    titleBarStyle: 'hidden'
+    show: false
   });
 
   mainWindow.loadFile(path.join(__dirname, 'src', 'index.html'));
-  
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
-    console.log('✅ Window created and shown');
+    console.log('✅ Window shown');
   });
 
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
+
+  // Open DevTools to see any errors
+  mainWindow.webContents.openDevTools();
 }
 
-// IPC Handlers
+// Register IPC handlers function
 function registerIpcHandlers() {
-  console.log('📡 Registering IPC handlers...');
+  console.log('🔧 Registering IPC handlers...');
 
-  // Google OAuth handler (production only)
+  if (!ipcMain) {
+    console.error('❌ ipcMain is undefined - Electron not loaded properly');
+    return;
+  }
+
   ipcMain.handle('start-google-oauth', async (event, options = {}) => {
     console.log('[OAuth] Google OAuth requested (Production mode)');
     
@@ -125,6 +130,36 @@ function registerIpcHandlers() {
     }
   });
 
+  // Window control handlers
+  ipcMain.handle('window-minimize', () => {
+    if (mainWindow) mainWindow.minimize();
+  });
+
+  ipcMain.handle('window-maximize', () => {
+    if (mainWindow) {
+      if (mainWindow.isMaximized()) {
+        mainWindow.unmaximize();
+      } else {
+        mainWindow.maximize();
+      }
+    }
+  });
+
+  ipcMain.handle('window-close', () => {
+    if (mainWindow) mainWindow.close();
+  });
+
+  ipcMain.handle('window-is-maximized', () => {
+    return mainWindow ? mainWindow.isMaximized() : false;
+  });
+
+  // External link handler
+  ipcMain.handle('open-external', async (event, url) => {
+    if (shell) {
+      await shell.openExternal(url);
+    }
+  });
+
   // Calendar and database handlers
   ipcMain.handle('list-google-calendars', async () => {
     console.log('[Data] Fetching Google calendars...');
@@ -162,72 +197,30 @@ function registerIpcHandlers() {
     }
   });
 
-  // Window control handlers
-  ipcMain.handle('window-minimize', () => {
-    if (mainWindow) mainWindow.minimize();
-  });
-
-  ipcMain.handle('window-maximize', () => {
-    if (mainWindow) {
-      if (mainWindow.isMaximized()) {
-        mainWindow.unmaximize();
-      } else {
-        mainWindow.maximize();
-      }
-    }
-  });
-
-  ipcMain.handle('window-close', () => {
-    if (mainWindow) mainWindow.close();
-  });
-
-  ipcMain.handle('window-is-maximized', () => {
-    return mainWindow ? mainWindow.isMaximized() : false;
-  });
-
-  // External link handler
-  ipcMain.handle('open-external', async (event, url) => {
-    await shell.openExternal(url);
-  });
-
   // Data clearing handler
   ipcMain.handle('clear-all-data', async () => {
     console.log('[Settings] Clearing all data...');
+    // Clear stored tokens and reset state
     if (mainWindow && mainWindow.webContents) {
       mainWindow.webContents.send('connections-cleared');
     }
     return { success: true };
   });
 
-  console.log('✅ IPC handlers registered');
+  console.log('✅ IPC handlers registered: OAuth, window controls, and utilities');
+}
+
+// Register custom protocol (will be called after app ready)
+if (app) {
+  app.setAsDefaultProtocolClient('synk');
 }
 
 // App events
 if (app) {
-  app.whenReady().then(() => {
-    console.log('✅ App ready');
-    registerIpcHandlers();
-    createWindow();
-
-    app.on('activate', () => {
-      if (BrowserWindow.getAllWindows().length === 0) {
-        createWindow();
-      }
-    });
-  });
-
-  app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-      app.quit();
-    }
-  });
-
-  // Protocol handler for OAuth callbacks
-  app.setAsDefaultProtocolClient('synk');
-
+  // Protocol handler
   app.on('open-url', (event, url) => {
     event.preventDefault();
-    console.log('🔗 Protocol handler received URL:', url);
+    console.log('🔧 Protocol handler received URL:', url);
     
     if (url.startsWith('synk://oauth-success')) {
       try {
@@ -249,9 +242,29 @@ if (app) {
       }
     }
   });
+
+  app.whenReady().then(() => {
+    console.log('✅ App ready');
+    
+    // Register IPC handlers AFTER app is ready
+    registerIpcHandlers();
+    
+    createWindow();
+
+    app.on('activate', () => {
+      if (BrowserWindow.getAllWindows().length === 0) {
+        createWindow();
+      }
+    });
+  });
+
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      app.quit();
+    }
+  });
 } else {
-  console.error('❌ App is undefined - cannot start application');
-  process.exit(1);
+  console.error('❌ App is undefined - Electron not loaded properly');
 }
 
-console.log('🔧 Main process loaded successfully');
+console.log('🔧 Main process loaded - IPC handler should be working!');

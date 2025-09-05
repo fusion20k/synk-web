@@ -1,10 +1,23 @@
-// Synk - Production Mode Only (Clean Version)
+// Production-only Electron main process
 const path = require('path');
 require('dotenv').config();
 
 console.log('🚀 Starting Synk in Production Mode...');
 
-const { app, BrowserWindow, nativeImage, ipcMain } = require('electron');
+// Import Electron with error handling
+let app, BrowserWindow, ipcMain, shell;
+
+try {
+  const electron = require('electron');
+  app = electron.app;
+  BrowserWindow = electron.BrowserWindow;
+  ipcMain = electron.ipcMain;
+  shell = electron.shell;
+  console.log('✅ Electron APIs loaded successfully');
+} catch (error) {
+  console.error('❌ Failed to load Electron:', error.message);
+  process.exit(1);
+}
 
 let mainWindow = null;
 
@@ -12,28 +25,16 @@ let mainWindow = null;
 console.log('✅ Production mode - using remote OAuth endpoints only');
 
 function createWindow() {
-  const iconPath = path.join(__dirname, 'assets', 'favicon.ico'); // adjust if needed
-  const iconImage = nativeImage.createFromPath(iconPath);
-
-  const win = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
-    frame: false,
-    autoHideMenuBar: true,
-    icon: iconImage,
     webPreferences: {
-      preload: path.join(__dirname, 'src', 'preload.js'),
+      nodeIntegration: false,
       contextIsolation: true,
-      nodeIntegration: false
-    }
+      preload: path.join(__dirname, 'src', 'preload.js')
+    },
+    show: false
   });
-
-  if (process.env.DEBUG === 'true') {
-    // debug only when explicitly set
-    win.webContents.openDevTools({ mode: 'detach' });
-  }
-
-  mainWindow = win;
 
   mainWindow.loadFile(path.join(__dirname, 'src', 'index.html'));
   mainWindow.once('ready-to-show', () => {
@@ -45,8 +46,8 @@ function createWindow() {
     mainWindow = null;
   });
 
-  // DevTools disabled for clean production experience
-  // mainWindow.webContents.openDevTools();
+  // Open DevTools to see any errors
+  mainWindow.webContents.openDevTools();
 }
 
 // Register IPC handlers function
@@ -91,17 +92,6 @@ function registerIpcHandlers() {
       }
       return { success: false, error: error.message };
     }
-  });
-
-  ipcMain.handle('window-close', async () => {
-    const wins = BrowserWindow.getAllWindows();
-    if (wins[0]) wins[0].close();
-    return true;
-  });
-
-  ipcMain.handle('get-demo-mode', async () => {
-    // demo mode permanently removed, always return false
-    return false;
   });
 
   console.log('✅ IPC handler registered: start-google-oauth');
@@ -162,7 +152,6 @@ if (app) {
   });
 } else {
   console.error('❌ App is undefined - Electron not loaded properly');
-  process.exit(1);
 }
 
 console.log('🔧 Main process loaded - IPC handler should be working!');

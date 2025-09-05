@@ -19,7 +19,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getUserInfo: () => ipcRenderer.invoke('get-google-user-info'),
 
   // Settings
-  toggleDemo: (enabled) => ipcRenderer.invoke('toggle-demo', enabled),
   clearAllData: () => ipcRenderer.invoke('clear-all-data'),
 
   // Sync management
@@ -31,11 +30,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // External links
   openExternal: (url) => ipcRenderer.invoke('open-external', url),
 
-  // Event listeners for OAuth and demo
+  // Event listeners for OAuth
   onOAuthSuccess: (callback) => ipcRenderer.on('oauth-success', callback),
   onOAuthFailed: (callback) => ipcRenderer.on('oauth-failed', callback),
   onGoogleCalendars: (callback) => ipcRenderer.on('google:calendars', callback),
-  onDemoTimeout: (callback) => ipcRenderer.on('demo-timeout', callback),
   onConnectionsCleared: (callback) => ipcRenderer.on('connections-cleared', callback),
   onConnectionError: (callback) => ipcRenderer.on('connection-error', callback),
   
@@ -43,7 +41,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   on: (channel, callback) => ipcRenderer.on(channel, callback),
 
   // Environment detection
-  isDemoMode: () => ipcRenderer.invoke('get-demo-mode'),
+  // Production mode only - no demo mode check needed
 
   // Logging (for debugging)
   log: (message) => console.log('[Renderer]', message)

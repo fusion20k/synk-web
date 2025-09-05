@@ -14,7 +14,7 @@ const SCOPES = [
   'https://www.googleapis.com/auth/calendar.events'
 ];
 
-const REDIRECT_URI = 'https://synk-official.com/oauth2callback';
+const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || 'https://synk-backend.onrender.com/oauth2callback';
 
 async function testCalendarAPI() {
   console.log('🧪 Testing Google Calendar API Configuration\n');

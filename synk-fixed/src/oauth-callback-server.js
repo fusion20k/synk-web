@@ -156,7 +156,6 @@ class OAuthCallbackServer {
       res.json({ 
         status: 'ok', 
         mode: config.get('MODE'),
-        demo: config.isDemoMode(),
         timestamp: new Date().toISOString()
       });
     });
