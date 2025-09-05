@@ -9,13 +9,11 @@ let app, BrowserWindow, ipcMain, shell, nativeImage;
 
 try {
   const electron = require('electron');
-  console.log('🔧 Electron object:', typeof electron);
   app = electron.app;
   BrowserWindow = electron.BrowserWindow;
   ipcMain = electron.ipcMain;
   shell = electron.shell;
   nativeImage = electron.nativeImage;
-  console.log('🔧 App after assignment:', typeof app);
   console.log('✅ Electron APIs loaded successfully');
 } catch (error) {
   console.error('❌ Failed to load Electron:', error.message);
