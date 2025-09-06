@@ -4,10 +4,7 @@
 [[redirects]]
   from = "/*"
   to = "/index.html"
-  status = 404
-
-[build.environment]
-  NODE_VERSION = "18"
+  status = 200
 
 [[headers]]
   for = "/*"
