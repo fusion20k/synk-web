@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connection Failed - Synk</title>
+    <meta name="description" content="There was an issue connecting your account to Synk.">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="assets/icons/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <style>
+        .oauth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .oauth-card {
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 3rem;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .error-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 2rem;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+        
+        .oauth-card h1 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+        
+        .oauth-card p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .error-details {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-bottom: 2rem;
+            color: #ff9999;
+            font-size: 0.9rem;
+            font-family: monospace;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .retry-button {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .close-button {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.75rem 2rem;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .retry-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-light);
+        }
+        
+        .close-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .auto-close-text {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="oauth-container">
+        <div class="oauth-card">
+            <div class="error-icon">
+                ❌
+            </div>
+            <h1>Connection Failed</h1>
+            <p>There was an issue connecting your account to Synk. This could be due to a temporary network issue or authorization problem.</p>
+            
+            <div class="error-details" id="error-details" style="display: none;">
+                <strong>Error Details:</strong><br>
+                <span id="error-message">Unknown error occurred</span>
+            </div>
+            
+            <div class="button-group">
+                <button class="retry-button" onclick="retryConnection()">Try Again</button>
+                <button class="close-button" onclick="window.close()">Close Tab</button>
+            </div>
+            
+            <p class="auto-close-text">This tab will automatically close in <span id="countdown">30</span> seconds.</p>
+        </div>
+    </div>
+
+    <script>
+        // Check for error parameter in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        const errorDescription = urlParams.get('error_description');
+        
+        if (error) {
+            const errorDetails = document.getElementById('error-details');
+            const errorMessage = document.getElementById('error-message');
+            
+            let message = error;
+            if (errorDescription) {
+                message += ': ' + errorDescription;
+            }
+            
+            errorMessage.textContent = message;
+            errorDetails.style.display = 'block';
+        }
+        
+        // Auto-close functionality
+        let countdown = 30;
+        const countdownElement = document.getElementById('countdown');
+        
+        const timer = setInterval(() => {
+            countdown--;
+            countdownElement.textContent = countdown;
+            
+            if (countdown <= 0) {
+                clearInterval(timer);
+                window.close();
+            }
+        }, 1000);
+        
+        function retryConnection() {
+            // Close this tab and let user retry from the app
+            window.close();
+        }
+    </script>
+</body>
+</html>

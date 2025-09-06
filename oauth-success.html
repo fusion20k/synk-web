@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connected Successfully - Synk</title>
+    <meta name="description" content="Your account has been successfully connected to Synk.">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="assets/icons/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <style>
+        .oauth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .oauth-card {
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 3rem;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 2rem;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+        
+        .oauth-card h1 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+        
+        .oauth-card p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .close-button {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .close-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-light);
+        }
+        
+        .auto-close-text {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="oauth-container">
+        <div class="oauth-card">
+            <div class="success-icon">
+                ✅
+            </div>
+            <h1>Successfully Connected!</h1>
+            <p>Your account has been connected to Synk. You can now close this tab and return to the app to start syncing your data.</p>
+            <button class="close-button" onclick="window.close()">Close This Tab</button>
+            <p class="auto-close-text">This tab will automatically close in <span id="countdown">10</span> seconds.</p>
+        </div>
+    </div>
+
+    <script>
+        // Auto-close functionality
+        let countdown = 10;
+        const countdownElement = document.getElementById('countdown');
+        
+        const timer = setInterval(() => {
+            countdown--;
+            countdownElement.textContent = countdown;
+            
+            if (countdown <= 0) {
+                clearInterval(timer);
+                window.close();
+            }
+        }, 1000);
+        
+        // Also try to close when user clicks anywhere
+        document.addEventListener('click', () => {
+            window.close();
+        });
+    </script>
+</body>
+</html>
