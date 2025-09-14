@@ -167,6 +167,7 @@
             <nav>
                 <a href="index.html">Home</a>
                 <a href="about.html">How It Works</a>
+                <a href="pricing.html">Pricing</a>
                 <a href="contact.html">Contact</a>
                 <a href="privacy.html">Privacy</a>
                 <a href="terms.html">Terms</a>
@@ -203,7 +204,7 @@
                 </div>
                 
                 <div class="button-group">
-                    <button class="retry-button" onclick="window.close()">Return to App</button>
+                    <button class="retry-button" onclick="closeWindow()">Return to App</button>
                     <a href="contact.html" class="close-button">Contact Support</a>
                 </div>
             </div>
@@ -227,6 +228,32 @@
             
             errorMessage.textContent = message;
             errorDetails.style.display = 'block';
+        }
+        
+        function closeWindow() {
+            // Try multiple methods to close the window
+            try {
+                // For popup windows
+                if (window.opener) {
+                    window.close();
+                    return;
+                }
+                
+                // For regular windows/tabs
+                window.close();
+                
+                // If window.close() doesn't work, try alternative methods
+                setTimeout(() => {
+                    if (!window.closed) {
+                        // Redirect to a blank page as fallback
+                        window.location.href = 'about:blank';
+                    }
+                }, 100);
+                
+            } catch (error) {
+                // Fallback: redirect to main site
+                window.location.href = 'index.html';
+            }
         }
     </script>
     <script src="js/scripts.js"></script>

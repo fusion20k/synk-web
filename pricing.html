@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - Synk</title>
+    <meta name="description" content="Choose the perfect plan for your productivity needs. Synk offers flexible pricing for individuals and teams.">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="assets/icons/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <style>
+        .pricing-section {
+            padding: 6rem 0;
+            min-height: calc(100vh - 80px);
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+            margin-top: 4rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .pricing-card {
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 3rem 2.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pricing-card.featured {
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 30px rgba(255, 69, 0, 0.2);
+        }
+        
+        .pricing-card.featured::before {
+            content: 'Most Popular';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+            border-color: rgba(255, 69, 0, 0.3);
+        }
+        
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        
+        .plan-price {
+            font-size: 3rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+        
+        .plan-period {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        .plan-description {
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+        
+        .plan-features {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 3rem;
+            text-align: left;
+        }
+        
+        .plan-features li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            position: relative;
+            padding-left: 2rem;
+        }
+        
+        .plan-features li:last-child {
+            border-bottom: none;
+        }
+        
+        .plan-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent-orange);
+            font-weight: bold;
+        }
+        
+        .plan-features li.unavailable {
+            opacity: 0.5;
+        }
+        
+        .plan-features li.unavailable::before {
+            content: '✗';
+            color: var(--text-muted);
+        }
+        
+        .plan-button {
+            width: 100%;
+            background: var(--gradient-primary);
+            color: var(--text-primary);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 16px rgba(255, 69, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .plan-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform: translateX(-100%) translateY(-100%) rotate(45deg);
+            transition: transform 0.6s ease;
+        }
+        
+        .plan-button:hover::before {
+            transform: translateX(100%) translateY(100%) rotate(45deg);
+        }
+        
+        .plan-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 69, 0, 0.4);
+            background: var(--gradient-secondary);
+        }
+        
+        .plan-button.secondary {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-secondary);
+            box-shadow: none;
+        }
+        
+        .plan-button.secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: var(--text-primary);
+            box-shadow: none;
+        }
+        
+        .faq-section {
+            padding: 4rem 0;
+            background: var(--bg-secondary);
+        }
+        
+        .faq-item {
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .faq-question {
+            padding: 1.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .faq-answer {
+            padding: 0 1.5rem 1.5rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            display: none;
+        }
+        
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+        
+        .faq-toggle {
+            color: var(--accent-orange);
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .faq-item.active .faq-toggle {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">Synk</a>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="about.html">How It Works</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="contact.html">Contact</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="terms.html">Terms</a>
+            </nav>
+            <div class="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Pricing Section -->
+        <section class="pricing-section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Choose Your Plan</h1>
+                    <p>Select the perfect plan for your productivity needs. Start syncing your workflow today.</p>
+                </div>
+                
+                <div class="pricing-grid">
+                    <!-- Free Plan -->
+                    <div class="pricing-card">
+                        <h3 class="plan-name">Free</h3>
+                        <div class="plan-price">$0</div>
+                        <div class="plan-period">Forever</div>
+                        <p class="plan-description">Perfect for trying out Synk and basic personal use.</p>
+                        
+                        <ul class="plan-features">
+                            <li>1 Notion database sync</li>
+                            <li>1 Google Calendar sync</li>
+                            <li>Manual sync only</li>
+                            <li>Basic support</li>
+                            <li class="unavailable">Real-time sync</li>
+                            <li class="unavailable">Multiple calendars</li>
+                            <li class="unavailable">Priority support</li>
+                        </ul>
+                        
+                        <button class="plan-button secondary" onclick="handlePurchase('free')">Get Started Free</button>
+                    </div>
+                    
+                    <!-- Pro Plan -->
+                    <div class="pricing-card featured">
+                        <h3 class="plan-name">Pro</h3>
+                        <div class="plan-price">$9</div>
+                        <div class="plan-period">per month</div>
+                        <p class="plan-description">Ideal for professionals and power users who need advanced features.</p>
+                        
+                        <ul class="plan-features">
+                            <li>Unlimited Notion databases</li>
+                            <li>Unlimited Google Calendars</li>
+                            <li>Real-time automatic sync</li>
+                            <li>Advanced filtering options</li>
+                            <li>Priority email support</li>
+                            <li>Custom sync intervals</li>
+                            <li>Sync history and logs</li>
+                        </ul>
+                        
+                        <button class="plan-button" onclick="handlePurchase('pro')">Start Pro Trial</button>
+                    </div>
+                    
+                    <!-- Team Plan -->
+                    <div class="pricing-card">
+                        <h3 class="plan-name">Team</h3>
+                        <div class="plan-price">$25</div>
+                        <div class="plan-period">per month</div>
+                        <p class="plan-description">Perfect for teams and organizations with shared workflows.</p>
+                        
+                        <ul class="plan-features">
+                            <li>Everything in Pro</li>
+                            <li>Up to 10 team members</li>
+                            <li>Shared sync configurations</li>
+                            <li>Team dashboard</li>
+                            <li>Admin controls</li>
+                            <li>24/7 priority support</li>
+                            <li>Custom integrations</li>
+                        </ul>
+                        
+                        <button class="plan-button" onclick="handlePurchase('team')">Contact Sales</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- FAQ Section -->
+        <section class="faq-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Frequently Asked Questions</h2>
+                    <p>Everything you need to know about Synk pricing and features</p>
+                </div>
+                
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            Can I change my plan anytime?
+                            <span class="faq-toggle">↓</span>
+                        </div>
+                        <div class="faq-answer">
+                            Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately, and billing is prorated.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            Is there a free trial for paid plans?
+                            <span class="faq-toggle">↓</span>
+                        </div>
+                        <div class="faq-answer">
+                            Yes, we offer a 14-day free trial for both Pro and Team plans. No credit card required to start your trial.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            What happens to my data if I cancel?
+                            <span class="faq-toggle">↓</span>
+                        </div>
+                        <div class="faq-answer">
+                            Your data remains in your Notion and Google Calendar accounts. Synk only facilitates synchronization and doesn't store your content permanently.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            Do you offer refunds?
+                            <span class="faq-toggle">↓</span>
+                        </div>
+                        <div class="faq-answer">
+                            Yes, we offer a 30-day money-back guarantee for all paid plans. Contact support for assistance with refunds.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            Is my data secure?
+                            <span class="faq-toggle">↓</span>
+                        </div>
+                        <div class="faq-answer">
+                            Absolutely. We use OAuth authentication, encrypt all data in transit, and follow industry best practices for security. We never store your passwords.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Synk</h3>
+                    <p>Seamlessly connecting your productivity tools for a more organized workflow.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Product</h3>
+                    <a href="about.html">How It Works</a><br>
+                    <a href="pricing.html">Pricing</a><br>
+                    <a href="contact.html">Support</a><br>
+                    <a href="#features">Features</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <a href="privacy.html">Privacy Policy</a><br>
+                    <a href="terms.html">Terms of Service</a><br>
+                    <a href="contact.html">Contact Us</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Synk. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleFAQ(element) {
+            const faqItem = element.parentElement;
+            const isActive = faqItem.classList.contains('active');
+            
+            // Close all FAQ items
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Open clicked item if it wasn't active
+            if (!isActive) {
+                faqItem.classList.add('active');
+            }
+        }
+        
+        function handlePurchase(plan) {
+            // Placeholder function - will be implemented when app is complete
+            alert(`${plan.charAt(0).toUpperCase() + plan.slice(1)} plan selected. Purchase functionality will be available when the app is complete.`);
+        }
+    </script>
+    <script src="js/scripts.js"></script>
+</body>
+</html>
