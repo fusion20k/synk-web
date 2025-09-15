@@ -49,7 +49,7 @@ function loadElectron() {
     shell = electron.shell;
     Menu = electron.Menu;
     
-    console.log('🔍 Electron API check:', {
+    console.log('Electron API check:', {
       app: !!app,
       BrowserWindow: !!BrowserWindow,
       ipcMain: !!ipcMain,
@@ -99,14 +99,14 @@ function loadElectron() {
   }
   
   // Fallback to mock mode only if not in Electron
-  console.log('⚠️ Not running in Electron context - creating mock objects for testing...');
+  console.log('Warning: Not running in Electron context - creating mock objects for testing...');
   
   app = {
     whenReady: () => Promise.resolve(),
     on: (event, callback) => {
       console.log(`Mock app.on('${event}') called`);
       if (event === 'browser-window-created') {
-        console.log('⛔️ DevTools keyboard shortcuts blocked for all windows');
+        console.log('BLOCKED: DevTools keyboard shortcuts blocked for all windows');
       }
       // Don't auto-trigger activate event to prevent extra windows
     },
@@ -126,7 +126,7 @@ function loadElectron() {
         on: (event, callback) => {
           console.log(`Mock webContents.on('${event}') called`);
           if (event === 'devtools-opened') {
-            console.log('⛔️ DevTools blocked: would auto-close if opened');
+            console.log('BLOCKED: DevTools blocked: would auto-close if opened');
           }
         }
       };
@@ -290,7 +290,7 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js'),
-      devTools: false    // ⛔️ Hard-disable DevTools
+      devTools: false    // BLOCKED: Hard-disable DevTools
     }
   });
 
@@ -303,7 +303,7 @@ function createWindow() {
     console.log('✅ OAuth server connected to main window');
   }
 
-  // ⛔️ DevTools permanently disabled - force-close if anything reopens it
+  // BLOCKED: DevTools permanently disabled - force-close if anything reopens it
   mainWindow.webContents.on('devtools-opened', () => {
     mainWindow.webContents.closeDevTools();
   });
@@ -321,7 +321,7 @@ if (app && BrowserWindow && ipcMain) {
   app.whenReady().then(() => {
     console.log('App is ready, creating window...');
     
-    // ⛔️ Remove app menu so user cannot open DevTools via menu
+    // BLOCKED: Remove app menu so user cannot open DevTools via menu
     Menu.setApplicationMenu(null);
     
     createWindow();
@@ -334,7 +334,7 @@ if (app && BrowserWindow && ipcMain) {
     });
   });
 
-  // ⛔️ Block keyboard shortcuts that open DevTools (F12, Ctrl+Shift+I)
+  // BLOCKED: Block keyboard shortcuts that open DevTools (F12, Ctrl+Shift+I)
   app.on('browser-window-created', (_e, win) => {
     win.webContents.on('before-input-event', (event, input) => {
       const isDevToolsCombo =
@@ -583,7 +583,7 @@ if (app && BrowserWindow && ipcMain) {
         
         console.log('✅ Keytar entries cleared');
       } catch (keytarError) {
-        console.log('⚠️ Keytar not available or failed to clear:', keytarError.message);
+        console.log('Warning: Keytar not available or failed to clear:', keytarError.message);
       }
       
       // 4) Notify renderer to reset UI
@@ -617,7 +617,7 @@ if (app && BrowserWindow && ipcMain) {
   
 } else {
   console.error('❌ Failed to load Electron APIs');
-  console.log('⚠️ Running in OAuth server only mode');
+  console.log('Warning: Running in OAuth server only mode');
   console.log('📋 OAuth server is still running and can handle callbacks');
   console.log('🔗 You can test OAuth flows by opening the browser manually');
   

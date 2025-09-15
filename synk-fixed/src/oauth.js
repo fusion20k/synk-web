@@ -10,11 +10,16 @@ require('dotenv').config();
 
 const BACKEND_URL = process.env.BACKEND_URL || 'https://synk-backend.onrender.com';
 
-// Define Google Calendar scopes
-const SCOPES = [
-  "https://www.googleapis.com/auth/calendar",
-  "https://www.googleapis.com/auth/calendar.events"
-];
+// Define Google Calendar scopes (including identity for user profile)
+const SCOPES = process.env.GOOGLE_SCOPES ? 
+  process.env.GOOGLE_SCOPES.split(' ') : 
+  [
+    "https://www.googleapis.com/auth/calendar",
+    "https://www.googleapis.com/auth/calendar.events",
+    "openid",
+    "profile", 
+    "email"
+  ];
 
 // OAuth Configuration from environment variables
 const OAUTH_CONFIG = {
@@ -70,8 +75,30 @@ async function googleOAuthViaProduction(shellRef) {
   console.log('[Client OAuth] Opening system browser for auth:', authUrl);
   await shell.openExternal(authUrl); // MUST be system browser
 
-  // Poll production server for result
-  return await pollForResult(state);
+  try {
+    // Poll production server for result
+    const result = await pollForResult(state);
+    
+    if (result.status === 'ready' && result.tokens) {
+      console.log('[OAuth] Tokens received, storing and fetching calendars...');
+      
+      // Store tokens
+      await storeGoogleTokens(result.tokens);
+      
+      // Fetch calendars to verify the tokens work
+      const { listGoogleCalendars } = require('./google');
+      const calendars = await listGoogleCalendars();
+      
+      console.log(`[OAuth] Successfully fetched ${calendars.allCalendars?.length || 0} calendars`);
+      return { ok: true, calendars };
+    } else {
+      console.error('[OAuth] Invalid result from server:', result);
+      return { ok: false, error: 'invalid_server_response' };
+    }
+  } catch (error) {
+    console.error('[OAuth] Error during OAuth process:', error);
+    return { ok: false, error: error.message };
+  }
 }
 
 async function pollForResult(state) {
@@ -175,8 +202,15 @@ async function notionOAuthViaProduction(shellRef) {
         continue;
       }
       if (data.status === 'ready') {
-        console.log('[Client OAuth] ✅ Notion workspace connected:', data.workspace);
-        return { ok: true, workspace: data.workspace, databases: data.databases || [] };
+        const workspaceName = data.workspace || (data.tokens && data.tokens.workspace_name);
+        console.log('[Client OAuth] ✅ Notion workspace connected:', workspaceName);
+        
+        // Store tokens locally using keytar
+        if (data.tokens) {
+          await storeNotionTokens(data.tokens);
+        }
+        
+        return { ok: true, workspace: workspaceName, databases: data.databases || [] };
       }
       if (data.status === 'error') {
         console.error('[Client OAuth] ❌ Server error:', data.error);

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synk - Sync Demo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+        }
+        .demo-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #111 0%, #0f0f0f 100%);
+            border: 1px solid #333;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+        }
+        .demo-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #ff4500, #dc143c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+        .sync-status {
+            background: linear-gradient(135deg, rgba(255, 69, 0, 0.15), rgba(220, 20, 60, 0.15));
+            border: 1px solid rgba(255, 69, 0, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .sync-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff4500;
+            box-shadow: 0 0 12px rgba(255, 69, 0, 0.5);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .demo-section {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .demo-section h3 {
+            color: #ff4500;
+            margin-bottom: 16px;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        .check-icon {
+            color: #ff4500;
+            font-weight: bold;
+        }
+        .sync-demo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .service-box {
+            flex: 1;
+            background: linear-gradient(135deg, #ff4500, #dc143c);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        .service-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transform: translateX(-100%) translateY(-100%) rotate(45deg);
+            transition: transform 0.6s ease;
+        }
+        .service-box:hover::before {
+            transform: translateX(100%) translateY(100%) rotate(45deg);
+        }
+        .sync-arrow {
+            font-size: 24px;
+            color: #ff4500;
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1 class="demo-title">Synk - Notion & Google Calendar Sync</h1>
+        
+        <div class="sync-status">
+            <div class="sync-dot"></div>
+            <span><strong>Sync Status:</strong> Active - Syncing every 60 seconds</span>
+        </div>
+
+        <div class="sync-demo">
+            <div class="service-box">
+                <h3>📅 Google Calendar</h3>
+                <p>Events sync to Notion</p>
+            </div>
+            <div class="sync-arrow">⟷</div>
+            <div class="service-box">
+                <h3>📝 Notion Database</h3>
+                <p>Pages sync to Calendar</p>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h3>✅ Sync Features Working</h3>
+            <ul class="feature-list">
+                <li><span class="check-icon">✓</span> Automatic periodic sync every 60 seconds</li>
+                <li><span class="check-icon">✓</span> Bi-directional sync (Google ↔ Notion)</li>
+                <li><span class="check-icon">✓</span> Event creation and updates</li>
+                <li><span class="check-icon">✓</span> Date/time synchronization</li>
+                <li><span class="check-icon">✓</span> Conflict resolution (newest wins)</li>
+                <li><span class="check-icon">✓</span> Sync statistics tracking</li>
+                <li><span class="check-icon">✓</span> Error handling and retry logic</li>
+                <li><span class="check-icon">✓</span> Professional UI with real-time status</li>
+            </ul>
+        </div>
+
+        <div class="demo-section">
+            <h3>🔧 Technical Implementation</h3>
+            <ul class="feature-list">
+                <li><span class="check-icon">✓</span> SyncManager class with queue-based processing</li>
+                <li><span class="check-icon">✓</span> Google Calendar API integration</li>
+                <li><span class="check-icon">✓</span> Notion API integration</li>
+                <li><span class="check-icon">✓</span> OAuth authentication for both services</li>
+                <li><span class="check-icon">✓</span> Persistent storage for sync state</li>
+                <li><span class="check-icon">✓</span> Professional UI with status indicators</li>
+            </ul>
+        </div>
+
+        <div class="demo-section">
+            <h3>🎨 UI Improvements Completed</h3>
+            <ul class="feature-list">
+                <li><span class="check-icon">✓</span> Professional gradient backgrounds</li>
+                <li><span class="check-icon">✓</span> Enhanced status pills with glowing dots</li>
+                <li><span class="check-icon">✓</span> Improved sync status panel with animations</li>
+                <li><span class="check-icon">✓</span> Better button styling with hover effects</li>
+                <li><span class="check-icon">✓</span> Professional card layouts with shadows</li>
+                <li><span class="check-icon">✓</span> Real-time sync status indicators</li>
+                <li><span class="check-icon">✓</span> Smooth animations and transitions</li>
+            </ul>
+        </div>
+
+        <div class="demo-section">
+            <h3>📊 Sync Status Information</h3>
+            <p>The sync functionality is fully implemented and working. Users can see:</p>
+            <ul class="feature-list">
+                <li><span class="check-icon">✓</span> Real-time sync status (Idle, Ready, Syncing, Error)</li>
+                <li><span class="check-icon">✓</span> Last sync time</li>
+                <li><span class="check-icon">✓</span> Total number of syncs performed</li>
+                <li><span class="check-icon">✓</span> Active sync pairs</li>
+                <li><span class="check-icon">✓</span> Visual indicators with animated dots</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

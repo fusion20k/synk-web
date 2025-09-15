@@ -26,6 +26,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getSyncStatus: () => ipcRenderer.invoke('sync-status'),
   clearSyncData: () => ipcRenderer.invoke('sync-clear-data'),
   startSync: (options) => ipcRenderer.invoke('start-sync', options),
+  getSyncStats: () => ipcRenderer.invoke('get-sync-stats'),
 
   // External links
   openExternal: (url) => ipcRenderer.invoke('open-external', url),
