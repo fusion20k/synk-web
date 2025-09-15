@@ -354,18 +354,13 @@
                         </p>
                     </div>
 
-                    <!-- Business Plan -->
+                    <!-- Ultimate Plan -->
                     <div class="pricing-card">
-                        <h3 class="plan-name">Business</h3>
-                        <div class="plan-price" id="business-price">$24.99</div>
-                        <div class="plan-period" id="business-period">per month</div>
-                        <div class="yearly-savings" id="business-savings" style="display: none; color: #ff4500; font-size: 0.9rem; margin-top: 5px;">Save $59.89 per year</div>
+                        <h3 class="plan-name">Ultimate</h3>
+                        <div class="plan-price" id="ultimate-price">$24.99</div>
+                        <div class="plan-period" id="ultimate-period">per month</div>
+                        <div class="yearly-savings" id="ultimate-savings" style="display: none; color: #ff4500; font-size: 0.9rem; margin-top: 5px;">Save $59.89 per year</div>
                         <p class="plan-description">Advanced features for power users who need more control.</p>
-                        
-                        <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 12px; margin: 20px 0; text-align: center;">
-                            <strong style="color: #fff;">14-Day Free Trial</strong>
-                            <p style="margin: 5px 0 0; font-size: 0.9rem; color: #ccc;">No credit card required</p>
-                        </div>
                         
                         <ul class="plan-features">
                             <li><strong>Everything in Pro, plus:</strong></li>
@@ -377,10 +372,7 @@
                             <li>Priority email support</li>
                         </ul>
                         
-                        <button class="plan-button secondary" onclick="handlePurchase('business')">Start Free Trial</button>
-                        <p style="margin-top: 15px; font-size: 0.85rem; color: #888; text-align: center;">
-                            Trial begins when you connect both services
-                        </p>
+                        <button class="plan-button secondary" onclick="handlePurchase('ultimate')">Get Ultimate</button>
                     </div>
                 </div>
             </div>
@@ -417,11 +409,11 @@
                     
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
-                            What's the difference between Pro and Business?
+                            What's the difference between Pro and Ultimate?
                             <span class="faq-toggle">↓</span>
                         </div>
                         <div class="faq-answer">
-                            Pro includes all core sync features perfect for individuals and small teams. Business adds advanced features like custom field mapping, advanced filtering conditions, bulk operations, detailed analytics, and configuration export/import for power users.
+                            Pro includes all core sync features perfect for individuals and small teams. Ultimate adds advanced features like custom field mapping, advanced filtering conditions, bulk operations, detailed analytics, and configuration export/import for power users.
                         </div>
                     </div>
                     
@@ -518,9 +510,21 @@
                 monthly: 12.99,
                 yearly: 124.99 // ~20% discount
             },
-            business: {
+            ultimate: {
                 monthly: 24.99,
                 yearly: 239.99 // ~20% discount
+            }
+        };
+        
+        // Payment links
+        const paymentLinks = {
+            pro: {
+                monthly: 'https://buy.stripe.com/5kQ5kw0cZ8k46Hjh0AbMQ03',
+                yearly: 'https://buy.stripe.com/fZufZae3P43O5DfbGgbMQ05'
+            },
+            ultimate: {
+                monthly: 'https://buy.stripe.com/aFa3co4tfeIsaXz5hSbMQ04',
+                yearly: 'https://buy.stripe.com/fZu14g1h39o8fdPh0AbMQ06'
             }
         };
         
@@ -551,37 +555,44 @@
             const proPeriod = document.getElementById('pro-period');
             const proSavings = document.getElementById('pro-savings');
             
-            // Business plan
-            const businessPrice = document.getElementById('business-price');
-            const businessPeriod = document.getElementById('business-period');
-            const businessSavings = document.getElementById('business-savings');
+            // Ultimate plan
+            const ultimatePrice = document.getElementById('ultimate-price');
+            const ultimatePeriod = document.getElementById('ultimate-period');
+            const ultimateSavings = document.getElementById('ultimate-savings');
             
             if (isYearly) {
                 proPrice.textContent = `$${pricing.pro.yearly}`;
                 proPeriod.textContent = 'per year';
                 proSavings.style.display = 'block';
                 
-                businessPrice.textContent = `$${pricing.business.yearly}`;
-                businessPeriod.textContent = 'per year';
-                businessSavings.style.display = 'block';
+                ultimatePrice.textContent = `$${pricing.ultimate.yearly}`;
+                ultimatePeriod.textContent = 'per year';
+                ultimateSavings.style.display = 'block';
             } else {
                 proPrice.textContent = `$${pricing.pro.monthly}`;
                 proPeriod.textContent = 'per month';
                 proSavings.style.display = 'none';
                 
-                businessPrice.textContent = `$${pricing.business.monthly}`;
-                businessPeriod.textContent = 'per month';
-                businessSavings.style.display = 'none';
+                ultimatePrice.textContent = `$${pricing.ultimate.monthly}`;
+                ultimatePeriod.textContent = 'per month';
+                ultimateSavings.style.display = 'none';
             }
         }
         
         function handlePurchase(plan) {
             const isYearly = document.getElementById('billing-toggle').checked;
             const billingType = isYearly ? 'yearly' : 'monthly';
-            const planName = plan.charAt(0).toUpperCase() + plan.slice(1);
             
-            // Placeholder function - will be implemented when app is complete
-            alert(`${planName} plan (${billingType}) selected. Purchase functionality will be available when the app is complete.`);
+            // Get the payment link for the selected plan and billing type
+            const paymentUrl = paymentLinks[plan][billingType];
+            
+            if (paymentUrl) {
+                // Redirect to Stripe payment page
+                window.open(paymentUrl, '_blank');
+            } else {
+                console.error('Payment link not found for:', plan, billingType);
+                alert('Payment link not available. Please contact support.');
+            }
         }
     </script>
     <script src="js/scripts.js"></script>
