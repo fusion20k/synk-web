@@ -247,69 +247,38 @@
         <section class="pricing-section">
             <div class="container">
                 <div class="section-header">
-                    <h1>Choose Your Plan</h1>
-                    <p>Select the perfect plan for your productivity needs. Start syncing your workflow today.</p>
+                    <h1>Simple, Transparent Pricing</h1>
+                    <p>One plan with everything you need. Start with a free trial and experience seamless sync.</p>
                 </div>
                 
-                <div class="pricing-grid">
-                    <!-- Free Plan -->
-                    <div class="pricing-card">
-                        <h3 class="plan-name">Free</h3>
-                        <div class="plan-price">$0</div>
-                        <div class="plan-period">Forever</div>
-                        <p class="plan-description">Perfect for trying out Synk and basic personal use.</p>
-                        
-                        <ul class="plan-features">
-                            <li>1 Notion database sync</li>
-                            <li>1 Google Calendar sync</li>
-                            <li>Manual sync only</li>
-                            <li>Basic support</li>
-                            <li class="unavailable">Real-time sync</li>
-                            <li class="unavailable">Multiple calendars</li>
-                            <li class="unavailable">Priority support</li>
-                        </ul>
-                        
-                        <button class="plan-button secondary" onclick="handlePurchase('free')">Get Started Free</button>
-                    </div>
-                    
+                <div class="pricing-grid" style="justify-content: center;">
                     <!-- Pro Plan -->
-                    <div class="pricing-card featured">
-                        <h3 class="plan-name">Pro</h3>
-                        <div class="plan-price">$9</div>
+                    <div class="pricing-card featured" style="max-width: 400px;">
+                        <h3 class="plan-name">Synk Pro</h3>
+                        <div class="plan-price">$12.99</div>
                         <div class="plan-period">per month</div>
-                        <p class="plan-description">Ideal for professionals and power users who need advanced features.</p>
+                        <p class="plan-description">Full access to all sync features with unlimited databases and calendars.</p>
+                        
+                        <div style="background: rgba(255, 69, 0, 0.1); border: 1px solid rgba(255, 69, 0, 0.3); border-radius: 8px; padding: 12px; margin: 20px 0; text-align: center;">
+                            <strong style="color: #ff4500;">14-Day Free Trial</strong>
+                            <p style="margin: 5px 0 0; font-size: 0.9rem; color: #ccc;">No credit card required</p>
+                        </div>
                         
                         <ul class="plan-features">
                             <li>Unlimited Notion databases</li>
                             <li>Unlimited Google Calendars</li>
-                            <li>Real-time automatic sync</li>
+                            <li>Real-time bidirectional sync</li>
                             <li>Advanced filtering options</li>
                             <li>Priority email support</li>
                             <li>Custom sync intervals</li>
                             <li>Sync history and logs</li>
+                            <li>Conflict resolution</li>
                         </ul>
                         
-                        <button class="plan-button" onclick="handlePurchase('pro')">Start Pro Trial</button>
-                    </div>
-                    
-                    <!-- Team Plan -->
-                    <div class="pricing-card">
-                        <h3 class="plan-name">Team</h3>
-                        <div class="plan-price">$25</div>
-                        <div class="plan-period">per month</div>
-                        <p class="plan-description">Perfect for teams and organizations with shared workflows.</p>
-                        
-                        <ul class="plan-features">
-                            <li>Everything in Pro</li>
-                            <li>Up to 10 team members</li>
-                            <li>Shared sync configurations</li>
-                            <li>Team dashboard</li>
-                            <li>Admin controls</li>
-                            <li>24/7 priority support</li>
-                            <li>Custom integrations</li>
-                        </ul>
-                        
-                        <button class="plan-button" onclick="handlePurchase('team')">Contact Sales</button>
+                        <button class="plan-button" onclick="handlePurchase('pro')">Start Free Trial</button>
+                        <p style="margin-top: 15px; font-size: 0.85rem; color: #888; text-align: center;">
+                            Trial begins when you connect both services
+                        </p>
                     </div>
                 </div>
             </div>
@@ -326,21 +295,31 @@
                 <div class="faq-container">
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
-                            Can I change my plan anytime?
+                            How does the free trial work?
                             <span class="faq-toggle">↓</span>
                         </div>
                         <div class="faq-answer">
-                            Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately, and billing is prorated.
+                            Your 14-day free trial begins automatically when you connect both Notion and Google Calendar. No credit card required to start. You'll have full access to all features during the trial.
                         </div>
                     </div>
                     
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
-                            Is there a free trial for paid plans?
+                            What happens after my trial ends?
                             <span class="faq-toggle">↓</span>
                         </div>
                         <div class="faq-answer">
-                            Yes, we offer a 14-day free trial for both Pro and Team plans. No credit card required to start your trial.
+                            After your trial ends, you'll need to subscribe to continue using Synk. Your sync configurations will be saved, and you can resume immediately upon subscription.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            Can I cancel anytime?
+                            <span class="faq-toggle">↓</span>
+                        </div>
+                        <div class="faq-answer">
+                            Yes, you can cancel your subscription at any time. Your service will continue until the end of your current billing period.
                         </div>
                     </div>
                     
@@ -360,7 +339,7 @@
                             <span class="faq-toggle">↓</span>
                         </div>
                         <div class="faq-answer">
-                            Yes, we offer a 30-day money-back guarantee for all paid plans. Contact support for assistance with refunds.
+                            Yes, we offer a 30-day money-back guarantee. Contact support for assistance with refunds.
                         </div>
                     </div>
                     
