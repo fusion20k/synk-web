@@ -248,16 +248,16 @@
             <div class="container">
                 <div class="section-header">
                     <h1>Simple, Transparent Pricing</h1>
-                    <p>One plan with everything you need. Start with a free trial and experience seamless sync.</p>
+                    <p>Choose the plan that fits your workflow. Start with a free trial and experience seamless sync.</p>
                 </div>
                 
-                <div class="pricing-grid" style="justify-content: center;">
+                <div class="pricing-grid">
                     <!-- Pro Plan -->
-                    <div class="pricing-card featured" style="max-width: 400px;">
-                        <h3 class="plan-name">Synk Pro</h3>
+                    <div class="pricing-card featured">
+                        <h3 class="plan-name">Pro</h3>
                         <div class="plan-price">$12.99</div>
                         <div class="plan-period">per month</div>
-                        <p class="plan-description">Full access to all sync features with unlimited databases and calendars.</p>
+                        <p class="plan-description">Perfect for individuals and small teams who need reliable sync.</p>
                         
                         <div style="background: rgba(255, 69, 0, 0.1); border: 1px solid rgba(255, 69, 0, 0.3); border-radius: 8px; padding: 12px; margin: 20px 0; text-align: center;">
                             <strong style="color: #ff4500;">14-Day Free Trial</strong>
@@ -269,13 +269,41 @@
                             <li>Unlimited Google Calendars</li>
                             <li>Real-time bidirectional sync</li>
                             <li>Advanced filtering options</li>
-                            <li>Priority email support</li>
+                            <li>Email support</li>
                             <li>Custom sync intervals</li>
                             <li>Sync history and logs</li>
-                            <li>Conflict resolution</li>
                         </ul>
                         
                         <button class="plan-button" onclick="handlePurchase('pro')">Start Free Trial</button>
+                        <p style="margin-top: 15px; font-size: 0.85rem; color: #888; text-align: center;">
+                            Trial begins when you connect both services
+                        </p>
+                    </div>
+
+                    <!-- Business Plan -->
+                    <div class="pricing-card">
+                        <h3 class="plan-name">Business</h3>
+                        <div class="plan-price">$24.99</div>
+                        <div class="plan-period">per month</div>
+                        <p class="plan-description">Advanced features for teams and power users who need more control.</p>
+                        
+                        <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 12px; margin: 20px 0; text-align: center;">
+                            <strong style="color: #fff;">14-Day Free Trial</strong>
+                            <p style="margin: 5px 0 0; font-size: 0.9rem; color: #ccc;">No credit card required</p>
+                        </div>
+                        
+                        <ul class="plan-features">
+                            <li><strong>Everything in Pro, plus:</strong></li>
+                            <li>Multiple workspace support</li>
+                            <li>Team collaboration features</li>
+                            <li>Advanced automation rules</li>
+                            <li>Priority support & phone calls</li>
+                            <li>Custom field mapping</li>
+                            <li>Bulk operations & batch sync</li>
+                            <li>Advanced analytics dashboard</li>
+                        </ul>
+                        
+                        <button class="plan-button secondary" onclick="handlePurchase('business')">Start Free Trial</button>
                         <p style="margin-top: 15px; font-size: 0.85rem; color: #888; text-align: center;">
                             Trial begins when you connect both services
                         </p>
@@ -310,6 +338,16 @@
                         </div>
                         <div class="faq-answer">
                             After your trial ends, you'll need to subscribe to continue using Synk. Your sync configurations will be saved, and you can resume immediately upon subscription.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            What's the difference between Pro and Business?
+                            <span class="faq-toggle">↓</span>
+                        </div>
+                        <div class="faq-answer">
+                            Pro includes all core sync features perfect for individuals and small teams. Business adds advanced features like multiple workspace support, team collaboration, automation rules, and priority support for larger teams and power users.
                         </div>
                     </div>
                     
