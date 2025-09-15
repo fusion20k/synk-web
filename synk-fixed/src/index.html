@@ -1326,9 +1326,14 @@
             if (planTypeElement && planDescriptionElement) {
                 let displayName = planData.name || 'Unknown';
                 
-                // Add trial days remaining if applicable
+                // Add trial days remaining ONLY for trial plans
                 if (planData.type === 'trial' && planData.trialDaysRemaining !== undefined) {
                     displayName += ` (${planData.trialDaysRemaining} days remaining)`;
+                }
+                
+                // For paid plans, show billing cycle if available
+                if ((planData.type === 'pro' || planData.type === 'ultimate') && planData.billingCycle) {
+                    displayName += ` (${planData.billingCycle})`;
                 }
                 
                 planTypeElement.textContent = displayName;

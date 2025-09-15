@@ -20,10 +20,22 @@ async function setupWebhooks() {
     console.log('This script will help you configure Stripe webhooks for automatic plan management.\n');
     
     // Step 1: Get webhook secret
-    console.log('📋 Step 1: Stripe Webhook Secret');
+    console.log('📋 Step 1: Stripe Webhook Configuration');
     console.log('1. Go to https://dashboard.stripe.com/webhooks');
-    console.log('2. Create a new webhook endpoint');
-    console.log('3. Copy the webhook signing secret (starts with whsec_)\n');
+    console.log('2. Click "Add endpoint"');
+    console.log('3. Enter your webhook URL (we\'ll configure this next)');
+    console.log('4. Select "Select events" and choose EXACTLY these events:');
+    console.log('   ✅ checkout.session.completed');
+    console.log('   ✅ checkout.session.async_payment_succeeded');
+    console.log('   ✅ customer.subscription.created');
+    console.log('   ✅ customer.subscription.updated');
+    console.log('   ✅ customer.subscription.deleted');
+    console.log('   ✅ invoice.payment_succeeded');
+    console.log('   ✅ invoice.payment_failed');
+    console.log('   ✅ customer.subscription.trial_will_end');
+    console.log('5. Set API version to 2023-10-16 (or latest)');
+    console.log('6. Enable webhook signing (should be default)');
+    console.log('7. Create the webhook and copy the signing secret\n');
     
     const webhookSecret = await question('Enter your Stripe webhook secret: ');
     
@@ -99,12 +111,19 @@ async function setupWebhooks() {
     console.log('\n⚙️ Step 4: Stripe Dashboard Configuration');
     console.log('Configure your Stripe webhook with these settings:');
     console.log(`\n📡 Endpoint URL: ${webhookUrl}`);
-    console.log('\n📋 Events to send:');
+    console.log('\n📋 Events to send (select EXACTLY these 8 events):');
     console.log('   • checkout.session.completed');
-    console.log('   • invoice.payment_succeeded');
+    console.log('   • checkout.session.async_payment_succeeded');
     console.log('   • customer.subscription.created');
     console.log('   • customer.subscription.updated');
     console.log('   • customer.subscription.deleted');
+    console.log('   • invoice.payment_succeeded');
+    console.log('   • invoice.payment_failed');
+    console.log('   • customer.subscription.trial_will_end');
+    console.log('\n⚙️ Additional Settings:');
+    console.log('   • API Version: 2023-10-16 (or latest stable)');
+    console.log('   • Webhook Signing: ✅ Enabled');
+    console.log('   • Automatic Retries: ✅ Enabled (3 retries max)');
     
     // Step 5: Test instructions
     console.log('\n🧪 Step 5: Testing');

@@ -49,7 +49,7 @@ class PlanManager {
             if (fs.existsSync(this.planFilePath)) {
                 const planData = JSON.parse(fs.readFileSync(this.planFilePath, 'utf8'));
                 
-                // Check if trial has expired
+                // Only check trial expiration for actual trial plans
                 if (planData.type === 'trial' && planData.trialEndsAt) {
                     const trialEnd = new Date(planData.trialEndsAt);
                     const now = new Date();
@@ -69,6 +69,13 @@ class PlanManager {
                         const daysRemaining = Math.ceil((trialEnd - now) / (1000 * 60 * 60 * 24));
                         planData.trialDaysRemaining = daysRemaining;
                     }
+                }
+                
+                // For paid plans (pro/ultimate), ensure no trial data is shown
+                if (planData.type === 'pro' || planData.type === 'ultimate') {
+                    delete planData.trialDaysRemaining;
+                    delete planData.trialStartedAt;
+                    delete planData.trialEndsAt;
                 }
                 
                 console.log('✅ Plan data loaded:', planData.type);
