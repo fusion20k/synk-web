@@ -1324,7 +1324,14 @@
             const planDescriptionElement = document.getElementById('plan-description');
             
             if (planTypeElement && planDescriptionElement) {
-                planTypeElement.textContent = planData.name || 'Unknown';
+                let displayName = planData.name || 'Unknown';
+                
+                // Add trial days remaining if applicable
+                if (planData.type === 'trial' && planData.trialDaysRemaining !== undefined) {
+                    displayName += ` (${planData.trialDaysRemaining} days remaining)`;
+                }
+                
+                planTypeElement.textContent = displayName;
                 planDescriptionElement.textContent = planData.description || 'No description available';
                 
                 // Update color based on plan type
@@ -1334,12 +1341,76 @@
                     planTypeElement.style.color = '#FF6B35'; // Orange for Ultimate
                 } else if (planData.type === 'trial') {
                     planTypeElement.style.color = '#2196F3'; // Blue for Trial
+                } else if (planData.type === 'expired') {
+                    planTypeElement.style.color = '#f44336'; // Red for Expired
                 } else {
                     planTypeElement.style.color = '#ff4500'; // Default orange
                 }
                 
                 console.log('✅ Plan display updated:', planData.name);
             }
+        }
+        
+        // Start trial when both services are connected
+        async function startTrialIfEligible() {
+            try {
+                const result = await window.electronAPI.startTrial();
+                if (result.success) {
+                    console.log('✅ Trial started');
+                    updatePlanDisplay(result.plan);
+                    showSuccessToast('Your 14-day free trial has started!');
+                }
+            } catch (error) {
+                console.error('❌ Error starting trial:', error);
+            }
+        }
+        
+        // Check if user has access to a feature
+        async function checkFeatureAccess(feature) {
+            try {
+                const result = await window.electronAPI.checkFeatureAccess(feature);
+                return result.hasAccess;
+            } catch (error) {
+                console.error('❌ Error checking feature access:', error);
+                return false;
+            }
+        }
+        
+        // Show feature restriction message
+        function showFeatureRestriction(featureName) {
+            showErrorToast(`${featureName} is only available in Ultimate plan. Please upgrade to access this feature.`);
+        }
+        
+        // Success toast function
+        function showSuccessToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #4CAF50, #45a049);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 10000;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                font-size: 14px;
+                max-width: 300px;
+                animation: slideIn 0.3s ease-out;
+            `;
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
         }
         
         // Titlebar Controls
@@ -1666,6 +1737,9 @@
 
         function checkAndTriggerAutoSync() {
             if (selected.notion && selected.google) {
+                // Start trial if both services are connected for the first time
+                startTrialIfEligible();
+                
                 clearTimeout(autoSyncTimer);
                 autoSyncTimer = setTimeout(async () => {
                     try {

@@ -34,6 +34,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Plan management
   getUserPlan: () => ipcRenderer.invoke('get-user-plan'),
   setUserPlan: (planData) => ipcRenderer.invoke('set-user-plan', planData),
+  startTrial: () => ipcRenderer.invoke('start-trial'),
+  checkFeatureAccess: (feature) => ipcRenderer.invoke('check-feature-access', feature),
+  getPlanLimits: () => ipcRenderer.invoke('get-plan-limits'),
 
   // Event listeners for OAuth
   onOAuthSuccess: (callback) => ipcRenderer.on('oauth-success', callback),

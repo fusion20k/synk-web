@@ -4,6 +4,10 @@ const path = require('path');
 // Load environment variables first
 require('dotenv').config();
 
+// Import plan management
+const PlanManager = require('./planManager');
+const WebhookServer = require('./webhookServer');
+
 console.log('✅ Environment loaded');
 console.log(`📋 MODE: production (demo mode removed)`);
 console.log(`🚀 Running in PRODUCTION mode only`);
@@ -28,6 +32,11 @@ console.log(`   Notion Redirect URI: ${NOTION_REDIRECT_URI}`);
 
 // Try to load Electron with multiple fallback methods
 let app, BrowserWindow, ipcMain, shell, Menu;
+
+// Initialize plan manager and webhook server
+let planManager;
+let webhookServer;
+let mainWindow;
 
 function loadElectron() {
   console.log('Attempting to load Electron APIs...');
@@ -316,6 +325,22 @@ loadElectron();
 
 if (app && BrowserWindow && ipcMain) {
   console.log('✅ Electron APIs loaded successfully');
+  
+  // Initialize plan manager
+  planManager = new PlanManager();
+  console.log('✅ Plan manager initialized');
+  
+  // Initialize webhook server
+  try {
+    webhookServer = new WebhookServer(3001);
+    webhookServer.start().then(() => {
+      console.log('✅ Webhook server started on port 3001');
+    }).catch(error => {
+      console.warn('⚠️ Webhook server failed to start:', error.message);
+    });
+  } catch (error) {
+    console.warn('⚠️ Webhook server initialization failed:', error.message);
+  }
   
   // App event handlers
   app.whenReady().then(() => {
@@ -608,35 +633,7 @@ if (app && BrowserWindow && ipcMain) {
   ipcMain.handle('get-user-plan', async () => {
     try {
       console.log('🔍 Checking user plan...');
-      
-      // For now, we'll implement a simple plan detection system
-      // This can be enhanced later with actual Stripe webhook integration
-      
-      // Check if user has any stored plan information
-      const fs = require('fs');
-      const os = require('os');
-      const planFilePath = path.join(os.homedir(), '.synk', 'plan.json');
-      
-      try {
-        if (fs.existsSync(planFilePath)) {
-          const planData = JSON.parse(fs.readFileSync(planFilePath, 'utf8'));
-          console.log('✅ Plan data found:', planData);
-          return planData;
-        }
-      } catch (error) {
-        console.log('⚠️ Error reading plan file:', error.message);
-      }
-      
-      // Default to trial/free plan if no plan data found
-      return {
-        type: 'trial',
-        name: 'Free Trial',
-        description: 'You are currently on a free trial. Connect both services to start your 14-day trial.',
-        features: ['14-day free trial', 'All Pro features included'],
-        status: 'active',
-        trialDaysRemaining: 14
-      };
-      
+      return planManager.getCurrentPlan();
     } catch (error) {
       console.error('❌ Error checking user plan:', error);
       return {
@@ -653,26 +650,45 @@ if (app && BrowserWindow && ipcMain) {
   ipcMain.handle('set-user-plan', async (event, planData) => {
     try {
       console.log('💾 Saving user plan:', planData);
-      
-      const fs = require('fs');
-      const os = require('os');
-      const synkDir = path.join(os.homedir(), '.synk');
-      const planFilePath = path.join(synkDir, 'plan.json');
-      
-      // Create .synk directory if it doesn't exist
-      if (!fs.existsSync(synkDir)) {
-        fs.mkdirSync(synkDir, { recursive: true });
-      }
-      
-      // Save plan data
-      fs.writeFileSync(planFilePath, JSON.stringify(planData, null, 2));
-      console.log('✅ Plan data saved successfully');
-      
-      return { success: true };
-      
+      const success = planManager.savePlan(planData);
+      return { success };
     } catch (error) {
       console.error('❌ Error saving user plan:', error);
       return { success: false, error: error.message };
+    }
+  });
+
+  // Start trial handler
+  ipcMain.handle('start-trial', async () => {
+    try {
+      console.log('🚀 Starting trial...');
+      const plan = planManager.startTrial();
+      return { success: true, plan };
+    } catch (error) {
+      console.error('❌ Error starting trial:', error);
+      return { success: false, error: error.message };
+    }
+  });
+
+  // Check feature access handler
+  ipcMain.handle('check-feature-access', async (event, feature) => {
+    try {
+      const hasAccess = planManager.hasFeatureAccess(feature);
+      return { hasAccess };
+    } catch (error) {
+      console.error('❌ Error checking feature access:', error);
+      return { hasAccess: false };
+    }
+  });
+
+  // Get plan limits handler
+  ipcMain.handle('get-plan-limits', async () => {
+    try {
+      const limits = planManager.getPlanLimits();
+      return { success: true, limits };
+    } catch (error) {
+      console.error('❌ Error getting plan limits:', error);
+      return { success: false, limits: {} };
     }
   });
 
