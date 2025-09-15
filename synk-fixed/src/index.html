@@ -1218,19 +1218,45 @@
                         <p style="color: #ccc; margin-bottom: 20px;">Synk syncs Notion and Google Calendar events seamlessly in real-time.</p>
                         
                         <div style="margin-bottom: 30px;">
-                            <h3 style="color: #ff4500; margin-bottom: 15px;">Pricing</h3>
-                            <div style="background: linear-gradient(135deg, #111 0%, #0f0f0f 100%); border: 1px solid #333; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-                                <h4 style="color: #fff; margin-bottom: 10px;">Synk Pro - $12.99/month</h4>
-                                <p style="color: #ccc; margin-bottom: 15px;">Full access to all sync features with unlimited databases and calendars.</p>
+                            <h3 style="color: #ff4500; margin-bottom: 15px;">Your Plan</h3>
+                            <div id="current-plan-display" style="background: linear-gradient(135deg, #111 0%, #0f0f0f 100%); border: 1px solid #333; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                                <div id="plan-status">
+                                    <p style="color: #888; margin-bottom: 10px;">Plan Status: <span id="plan-type" style="color: #ff4500;">Detecting...</span></p>
+                                    <p style="color: #888; margin-bottom: 15px;" id="plan-description">Checking your subscription status...</p>
+                                </div>
+                            </div>
+                            
+                            <h3 style="color: #ff4500; margin-bottom: 15px;">Available Plans</h3>
+                            
+                            <!-- Pro Plan -->
+                            <div style="background: linear-gradient(135deg, #111 0%, #0f0f0f 100%); border: 1px solid #333; border-radius: 12px; padding: 20px; margin-bottom: 15px;">
+                                <h4 style="color: #fff; margin-bottom: 10px;">Pro - $12.99/month</h4>
+                                <p style="color: #ccc; margin-bottom: 15px;">Perfect for individuals and small teams who need reliable sync.</p>
                                 <div style="color: #888; font-size: 0.9rem;">
                                     <p style="margin-bottom: 5px;">• 14-day free trial (no credit card required)</p>
                                     <p style="margin-bottom: 5px;">• Unlimited Notion databases</p>
                                     <p style="margin-bottom: 5px;">• Unlimited Google calendars</p>
                                     <p style="margin-bottom: 5px;">• Real-time bidirectional sync</p>
-                                    <p style="margin-bottom: 5px;">• Priority support</p>
+                                    <p style="margin-bottom: 5px;">• Email support</p>
                                 </div>
                             </div>
-                            <p style="color: #888; font-size: 0.85rem; font-style: italic;">Your free trial will begin automatically when you first connect both services.</p>
+                            
+                            <!-- Ultimate Plan -->
+                            <div style="background: linear-gradient(135deg, #111 0%, #0f0f0f 100%); border: 1px solid #333; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                                <h4 style="color: #fff; margin-bottom: 10px;">Ultimate - $24.99/month</h4>
+                                <p style="color: #ccc; margin-bottom: 15px;">Advanced features for power users who need more control.</p>
+                                <div style="color: #888; font-size: 0.9rem;">
+                                    <p style="margin-bottom: 5px;">• Everything in Pro, plus:</p>
+                                    <p style="margin-bottom: 5px;">• Custom sync field mapping</p>
+                                    <p style="margin-bottom: 5px;">• Advanced filtering & conditions</p>
+                                    <p style="margin-bottom: 5px;">• Bulk sync operations</p>
+                                    <p style="margin-bottom: 5px;">• Detailed sync analytics</p>
+                                    <p style="margin-bottom: 5px;">• Export/import configurations</p>
+                                    <p style="margin-bottom: 5px;">• Priority email support</p>
+                                </div>
+                            </div>
+                            
+                            <p style="color: #888; font-size: 0.85rem; font-style: italic;">Your free trial will begin automatically when you first connect both services (Pro plan only).</p>
                         </div>
                         
                         <div style="border-top: 1px solid #333; padding-top: 20px;">
@@ -1272,8 +1298,55 @@
     </div>
 
     <script>
+        // Plan detection and display
+        async function loadUserPlan() {
+            try {
+                console.log('🔍 Loading user plan...');
+                const planData = await window.electronAPI.getUserPlan();
+                console.log('📋 Plan data received:', planData);
+                
+                updatePlanDisplay(planData);
+            } catch (error) {
+                console.error('❌ Error loading user plan:', error);
+                // Show default/error state
+                updatePlanDisplay({
+                    type: 'unknown',
+                    name: 'Unknown',
+                    description: 'Unable to determine plan status. Please contact support.',
+                    features: [],
+                    status: 'unknown'
+                });
+            }
+        }
+        
+        function updatePlanDisplay(planData) {
+            const planTypeElement = document.getElementById('plan-type');
+            const planDescriptionElement = document.getElementById('plan-description');
+            
+            if (planTypeElement && planDescriptionElement) {
+                planTypeElement.textContent = planData.name || 'Unknown';
+                planDescriptionElement.textContent = planData.description || 'No description available';
+                
+                // Update color based on plan type
+                if (planData.type === 'pro') {
+                    planTypeElement.style.color = '#4CAF50'; // Green for Pro
+                } else if (planData.type === 'ultimate') {
+                    planTypeElement.style.color = '#FF6B35'; // Orange for Ultimate
+                } else if (planData.type === 'trial') {
+                    planTypeElement.style.color = '#2196F3'; // Blue for Trial
+                } else {
+                    planTypeElement.style.color = '#ff4500'; // Default orange
+                }
+                
+                console.log('✅ Plan display updated:', planData.name);
+            }
+        }
+        
         // Titlebar Controls
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load user plan information
+            await loadUserPlan();
+            
             // Titlebar button handlers
             document.getElementById('minimize-btn').addEventListener('click', () => {
                 window.electronAPI.minimize();

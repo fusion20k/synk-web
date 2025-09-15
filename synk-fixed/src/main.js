@@ -604,6 +604,78 @@ if (app && BrowserWindow && ipcMain) {
     return process.env.DEMO_MODE === 'true';
   });
 
+  // Plan detection handler
+  ipcMain.handle('get-user-plan', async () => {
+    try {
+      console.log('🔍 Checking user plan...');
+      
+      // For now, we'll implement a simple plan detection system
+      // This can be enhanced later with actual Stripe webhook integration
+      
+      // Check if user has any stored plan information
+      const fs = require('fs');
+      const os = require('os');
+      const planFilePath = path.join(os.homedir(), '.synk', 'plan.json');
+      
+      try {
+        if (fs.existsSync(planFilePath)) {
+          const planData = JSON.parse(fs.readFileSync(planFilePath, 'utf8'));
+          console.log('✅ Plan data found:', planData);
+          return planData;
+        }
+      } catch (error) {
+        console.log('⚠️ Error reading plan file:', error.message);
+      }
+      
+      // Default to trial/free plan if no plan data found
+      return {
+        type: 'trial',
+        name: 'Free Trial',
+        description: 'You are currently on a free trial. Connect both services to start your 14-day trial.',
+        features: ['14-day free trial', 'All Pro features included'],
+        status: 'active',
+        trialDaysRemaining: 14
+      };
+      
+    } catch (error) {
+      console.error('❌ Error checking user plan:', error);
+      return {
+        type: 'unknown',
+        name: 'Unknown',
+        description: 'Unable to determine plan status. Please contact support.',
+        features: [],
+        status: 'unknown'
+      };
+    }
+  });
+
+  // Set user plan handler (for when user purchases)
+  ipcMain.handle('set-user-plan', async (event, planData) => {
+    try {
+      console.log('💾 Saving user plan:', planData);
+      
+      const fs = require('fs');
+      const os = require('os');
+      const synkDir = path.join(os.homedir(), '.synk');
+      const planFilePath = path.join(synkDir, 'plan.json');
+      
+      // Create .synk directory if it doesn't exist
+      if (!fs.existsSync(synkDir)) {
+        fs.mkdirSync(synkDir, { recursive: true });
+      }
+      
+      // Save plan data
+      fs.writeFileSync(planFilePath, JSON.stringify(planData, null, 2));
+      console.log('✅ Plan data saved successfully');
+      
+      return { success: true };
+      
+    } catch (error) {
+      console.error('❌ Error saving user plan:', error);
+      return { success: false, error: error.message };
+    }
+  });
+
   console.log('✅ All IPC handlers registered with .env dual-ID system');
   
   // Summary of fixes

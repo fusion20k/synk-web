@@ -31,6 +31,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // External links
   openExternal: (url) => ipcRenderer.invoke('open-external', url),
 
+  // Plan management
+  getUserPlan: () => ipcRenderer.invoke('get-user-plan'),
+  setUserPlan: (planData) => ipcRenderer.invoke('set-user-plan', planData),
+
   // Event listeners for OAuth
   onOAuthSuccess: (callback) => ipcRenderer.on('oauth-success', callback),
   onOAuthFailed: (callback) => ipcRenderer.on('oauth-failed', callback),
