@@ -220,6 +220,69 @@
         .faq-item.active .faq-toggle {
             transform: rotate(180deg);
         }
+        
+        /* Billing Toggle Styles */
+        .billing-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .billing-option {
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
+        }
+        
+        .billing-option.active {
+            color: var(--text-primary);
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: 0.4s;
+            border-radius: 30px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: var(--accent-orange);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
     </style>
 </head>
 <body>
@@ -249,14 +312,25 @@
                 <div class="section-header">
                     <h1>Simple, Transparent Pricing</h1>
                     <p>Choose the plan that fits your workflow. Start with a free trial and experience seamless sync.</p>
+                    
+                    <!-- Billing Toggle -->
+                    <div class="billing-toggle" style="margin: 2rem 0;">
+                        <span class="billing-option" id="monthly-label">Monthly</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="billing-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="billing-option" id="yearly-label">Yearly <span style="color: #ff4500; font-size: 0.8rem;">(Save 20%)</span></span>
+                    </div>
                 </div>
                 
                 <div class="pricing-grid">
                     <!-- Pro Plan -->
                     <div class="pricing-card featured">
                         <h3 class="plan-name">Pro</h3>
-                        <div class="plan-price">$12.99</div>
-                        <div class="plan-period">per month</div>
+                        <div class="plan-price" id="pro-price">$12.99</div>
+                        <div class="plan-period" id="pro-period">per month</div>
+                        <div class="yearly-savings" id="pro-savings" style="display: none; color: #ff4500; font-size: 0.9rem; margin-top: 5px;">Save $31.18 per year</div>
                         <p class="plan-description">Perfect for individuals and small teams who need reliable sync.</p>
                         
                         <div style="background: rgba(255, 69, 0, 0.1); border: 1px solid rgba(255, 69, 0, 0.3); border-radius: 8px; padding: 12px; margin: 20px 0; text-align: center;">
@@ -283,9 +357,10 @@
                     <!-- Business Plan -->
                     <div class="pricing-card">
                         <h3 class="plan-name">Business</h3>
-                        <div class="plan-price">$24.99</div>
-                        <div class="plan-period">per month</div>
-                        <p class="plan-description">Advanced features for teams and power users who need more control.</p>
+                        <div class="plan-price" id="business-price">$24.99</div>
+                        <div class="plan-period" id="business-period">per month</div>
+                        <div class="yearly-savings" id="business-savings" style="display: none; color: #ff4500; font-size: 0.9rem; margin-top: 5px;">Save $59.98 per year</div>
+                        <p class="plan-description">Advanced features for power users who need more control.</p>
                         
                         <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 12px; margin: 20px 0; text-align: center;">
                             <strong style="color: #fff;">14-Day Free Trial</strong>
@@ -294,13 +369,12 @@
                         
                         <ul class="plan-features">
                             <li><strong>Everything in Pro, plus:</strong></li>
-                            <li>Multiple workspace support</li>
-                            <li>Team collaboration features</li>
-                            <li>Advanced automation rules</li>
-                            <li>Priority support & phone calls</li>
-                            <li>Custom field mapping</li>
-                            <li>Bulk operations & batch sync</li>
-                            <li>Advanced analytics dashboard</li>
+                            <li>Custom sync field mapping</li>
+                            <li>Advanced filtering & conditions</li>
+                            <li>Bulk sync operations</li>
+                            <li>Detailed sync analytics</li>
+                            <li>Export/import configurations</li>
+                            <li>Priority email support</li>
                         </ul>
                         
                         <button class="plan-button secondary" onclick="handlePurchase('business')">Start Free Trial</button>
@@ -347,7 +421,7 @@
                             <span class="faq-toggle">↓</span>
                         </div>
                         <div class="faq-answer">
-                            Pro includes all core sync features perfect for individuals and small teams. Business adds advanced features like multiple workspace support, team collaboration, automation rules, and priority support for larger teams and power users.
+                            Pro includes all core sync features perfect for individuals and small teams. Business adds advanced features like custom field mapping, advanced filtering conditions, bulk operations, detailed analytics, and configuration export/import for power users.
                         </div>
                     </div>
                     
@@ -438,9 +512,76 @@
             }
         }
         
+        // Pricing data
+        const pricing = {
+            pro: {
+                monthly: 12.99,
+                yearly: 124.70 // 20% discount
+            },
+            business: {
+                monthly: 24.99,
+                yearly: 239.90 // 20% discount
+            }
+        };
+        
+        // Initialize billing toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const billingToggle = document.getElementById('billing-toggle');
+            const monthlyLabel = document.getElementById('monthly-label');
+            const yearlyLabel = document.getElementById('yearly-label');
+            
+            // Set initial state
+            monthlyLabel.classList.add('active');
+            
+            billingToggle.addEventListener('change', function() {
+                const isYearly = this.checked;
+                
+                // Update label states
+                monthlyLabel.classList.toggle('active', !isYearly);
+                yearlyLabel.classList.toggle('active', isYearly);
+                
+                // Update prices
+                updatePricing(isYearly);
+            });
+        });
+        
+        function updatePricing(isYearly) {
+            // Pro plan
+            const proPrice = document.getElementById('pro-price');
+            const proPeriod = document.getElementById('pro-period');
+            const proSavings = document.getElementById('pro-savings');
+            
+            // Business plan
+            const businessPrice = document.getElementById('business-price');
+            const businessPeriod = document.getElementById('business-period');
+            const businessSavings = document.getElementById('business-savings');
+            
+            if (isYearly) {
+                proPrice.textContent = `$${pricing.pro.yearly}`;
+                proPeriod.textContent = 'per year';
+                proSavings.style.display = 'block';
+                
+                businessPrice.textContent = `$${pricing.business.yearly}`;
+                businessPeriod.textContent = 'per year';
+                businessSavings.style.display = 'block';
+            } else {
+                proPrice.textContent = `$${pricing.pro.monthly}`;
+                proPeriod.textContent = 'per month';
+                proSavings.style.display = 'none';
+                
+                businessPrice.textContent = `$${pricing.business.monthly}`;
+                businessPeriod.textContent = 'per month';
+                businessSavings.style.display = 'none';
+            }
+        }
+        
         function handlePurchase(plan) {
+            const isYearly = document.getElementById('billing-toggle').checked;
+            const billingType = isYearly ? 'yearly' : 'monthly';
+            const planName = plan.charAt(0).toUpperCase() + plan.slice(1);
+            
             // Placeholder function - will be implemented when app is complete
-            alert(`${plan.charAt(0).toUpperCase() + plan.slice(1)} plan selected. Purchase functionality will be available when the app is complete.`);
+            alert(`${planName} plan (${billingType}) selected. Purchase functionality will be available when the app is complete.`);
         }
     </script>
     <script src="js/scripts.js"></script>
