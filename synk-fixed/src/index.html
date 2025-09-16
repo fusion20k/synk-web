@@ -1225,38 +1225,6 @@
                                     <p style="color: #888; margin-bottom: 15px;" id="plan-description">Checking your subscription status...</p>
                                 </div>
                             </div>
-                            
-                            <h3 style="color: #ff4500; margin-bottom: 15px;">Available Plans</h3>
-                            
-                            <!-- Pro Plan -->
-                            <div style="background: linear-gradient(135deg, #111 0%, #0f0f0f 100%); border: 1px solid #333; border-radius: 12px; padding: 20px; margin-bottom: 15px;">
-                                <h4 style="color: #fff; margin-bottom: 10px;">Pro - $12.99/month</h4>
-                                <p style="color: #ccc; margin-bottom: 15px;">Perfect for individuals and small teams who need reliable sync.</p>
-                                <div style="color: #888; font-size: 0.9rem;">
-                                    <p style="margin-bottom: 5px;">• 14-day free trial (no credit card required)</p>
-                                    <p style="margin-bottom: 5px;">• Unlimited Notion databases</p>
-                                    <p style="margin-bottom: 5px;">• Unlimited Google calendars</p>
-                                    <p style="margin-bottom: 5px;">• Real-time bidirectional sync</p>
-                                    <p style="margin-bottom: 5px;">• Email support</p>
-                                </div>
-                            </div>
-                            
-                            <!-- Ultimate Plan -->
-                            <div style="background: linear-gradient(135deg, #111 0%, #0f0f0f 100%); border: 1px solid #333; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-                                <h4 style="color: #fff; margin-bottom: 10px;">Ultimate - $24.99/month</h4>
-                                <p style="color: #ccc; margin-bottom: 15px;">Advanced features for power users who need more control.</p>
-                                <div style="color: #888; font-size: 0.9rem;">
-                                    <p style="margin-bottom: 5px;">• Everything in Pro, plus:</p>
-                                    <p style="margin-bottom: 5px;">• Custom sync field mapping</p>
-                                    <p style="margin-bottom: 5px;">• Advanced filtering & conditions</p>
-                                    <p style="margin-bottom: 5px;">• Bulk sync operations</p>
-                                    <p style="margin-bottom: 5px;">• Detailed sync analytics</p>
-                                    <p style="margin-bottom: 5px;">• Export/import configurations</p>
-                                    <p style="margin-bottom: 5px;">• Priority email support</p>
-                                </div>
-                            </div>
-                            
-                            <p style="color: #888; font-size: 0.85rem; font-style: italic;">Your free trial will begin automatically when you first connect both services (Pro plan only).</p>
                         </div>
                         
                         <div style="border-top: 1px solid #333; padding-top: 20px;">
@@ -1423,6 +1391,12 @@
             // Load user plan information
             await loadUserPlan();
             
+            // Initially hide sync status panel (dashboard is default tab)
+            const syncStatusPanel = document.getElementById('sync-status-panel');
+            if (syncStatusPanel) {
+                syncStatusPanel.style.display = 'none';
+            }
+            
             // Titlebar button handlers
             document.getElementById('minimize-btn').addEventListener('click', () => {
                 window.electronAPI.minimize();
@@ -1470,6 +1444,16 @@
             // Update content
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             document.getElementById(`${tabId}-tab`).classList.add('active');
+
+            // Show/hide sync status panel only on sync tab
+            const syncStatusPanel = document.getElementById('sync-status-panel');
+            if (syncStatusPanel) {
+                if (tabId === 'sync') {
+                    syncStatusPanel.style.display = 'block';
+                } else {
+                    syncStatusPanel.style.display = 'none';
+                }
+            }
 
             // Update header title
             const titles = {
