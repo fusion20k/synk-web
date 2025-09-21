@@ -353,14 +353,62 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
         }
 
+        .sync-icon-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            align-self: center;
+            margin-top: 60px;
+        }
+
         .sync-icon {
             font-size: 32px;
             background: linear-gradient(135deg, #ff4500, #dc143c);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            align-self: center;
-            margin-top: 60px;
+        }
+
+        .refresh-btn {
+            background: rgba(255, 69, 0, 0.1);
+            border: 1px solid #ff4500;
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            color: #ff4500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .refresh-btn:hover {
+            background: rgba(255, 69, 0, 0.2);
+            transform: scale(1.05);
+        }
+
+        .refresh-btn:active {
+            transform: scale(0.95);
+        }
+
+        .refresh-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .refresh-btn svg {
+            transition: transform 0.3s ease;
+        }
+
+        .refresh-btn.spinning svg {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .service-header {
@@ -991,7 +1039,8 @@
 
         .sync-stats span::before {
             content: '•';
-            color: #667eea;
+            color: #ff4500; /* Dragon's breath orange */
+            text-shadow: 0 0 6px rgba(255, 69, 0, 0.5);
             font-size: 14px;
         }
 
@@ -1003,11 +1052,15 @@
 
         .last-sync::before {
             content: "T";
+            color: #ff4500;
+            text-shadow: 0 0 6px rgba(255, 69, 0, 0.5);
             font-size: 10px;
         }
 
         .sync-count::before {
             content: "C";
+            color: #ff4500;
+            text-shadow: 0 0 6px rgba(255, 69, 0, 0.5);
             font-size: 10px;
         }
     </style>
@@ -1129,7 +1182,17 @@
                             </div>
                         </div>
 
-                        <div class="sync-icon">↔</div>
+                        <div class="sync-icon-container">
+                            <div class="sync-icon">↔</div>
+                            <button class="refresh-btn" id="refresh-sync-btn" title="Refresh and sync now">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                                    <path d="M21 3v5h-5"/>
+                                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                                    <path d="M3 21v-5h5"/>
+                                </svg>
+                            </button>
+                        </div>
 
                         <div class="service-section">
                             <div class="service-header">
@@ -1165,16 +1228,7 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Manual Refresh Section -->
-                    <div class="refresh-section" style="text-align: center; margin-top: 30px;">
-                        <button class="action-btn" id="manual-refresh-btn">
-                            <span>Refresh & Sync Now</span>
-                        </button>
-                        <p style="color: #ccc; font-size: 0.9rem; margin-top: 10px;">
-                            Refresh calendar/database lists and force immediate sync
-                        </p>
-                    </div>
+
                 </div>
 
                 <!-- Settings Tab -->
@@ -1218,22 +1272,65 @@
                         <p style="color: #ccc; margin-bottom: 20px;">Synk syncs Notion and Google Calendar events seamlessly in real-time.</p>
                         
                         <div style="margin-bottom: 30px;">
-                            <h3 style="color: #ff4500; margin-bottom: 15px;">Your Plan</h3>
+                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                                <h3 style="color: #ff4500; margin-bottom: 15px;">Your Plan</h3>
+                                <div>
+                                    <button id="refresh-plan-btn" class="action-btn" title="Fetch latest plan from backend">Refresh Plan</button>
+                                </div>
+                            </div>
                             <div id="current-plan-display" style="background: linear-gradient(135deg, #111 0%, #0f0f0f 100%); border: 1px solid #333; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
                                 <div id="plan-status">
-                                    <p style="color: #888; margin-bottom: 10px;">Plan Status: <span id="plan-type" style="color: #ff4500;">Detecting...</span></p>
+                                    <p style="color: #fff; font-weight: 600; margin-bottom: 6px; display:flex; align-items:center; gap:10px;">
+                                        <span id="plan-title">Detecting...</span>
+                                        <span id="trial-badge" style="display:none; background: linear-gradient(135deg, #ff4500, #dc143c); color:#fff; padding:2px 8px; border-radius:4px; font-size:0.8rem; font-weight:bold; box-shadow: 0 0 8px rgba(255,69,0,0.6);">Free Trial</span>
+                                    </p>
+                                    <p style="color: #9e9e9e; margin-bottom: 8px;" id="plan-cycle">&nbsp;</p>
+                                    <p style="color: #66b2ff; font-weight: 600; margin-bottom: 4px; display: none;" id="plan-trial-title">Free Trial (Pro)</p>
+                                    <p style="color: #66b2ff; margin-bottom: 10px; display: none;" id="plan-trial"></p>
                                     <p style="color: #888; margin-bottom: 15px;" id="plan-description">Checking your subscription status...</p>
                                 </div>
                             </div>
                         </div>
                         
-                        <div style="border-top: 1px solid #333; padding-top: 20px;">
-                            <p style="color: #ccc; margin-bottom: 10px;">Website: <a id="homepage-link" href="#" style="color: #ff4500; text-decoration: none;">synk-official.com</a></p>
+                        <div style="border-top: 1px solid #333; padding-top: 20px; margin-top: 20px;">
+                            <h3 style="color: #ff4500; margin-bottom: 12px;">Account</h3>
+
+                            <!-- Logged-in status + logout -->
+                            <div id="logged-in-container" style="display: none; display: flex; align-items: center; gap: 10px;">
+                                <span style="color:#ccc;">Logged in as <strong id="logged-in-email" style="color:#fff;"></strong></span>
+                                <button id="logout-btn" class="action-btn" style="background:#333;">Log out</button>
+                            </div>
+
+                            <p style="color: #ccc; margin-top: 16px;">Website: <a id="homepage-link" href="#" style="color: #ff4500; text-decoration: none;">synk-official.com</a></p>
                             <p style="color: #ccc; margin-bottom: 10px;">Support: <a id="support-mail" href="mailto:support@synk-official.com" style="color: #ff4500; text-decoration: none;">support@synk-official.com</a></p>
                             <p style="color: #ccc;">Version: <span id="app-version">1.0.0</span></p>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fullscreen Auth Overlay -->
+    <div id="auth-overlay" style="position: fixed; inset: 0; background: radial-gradient(1200px 800px at 20% -10%, rgba(255,69,0,0.15), transparent), radial-gradient(1000px 700px at 120% 120%, rgba(220,20,60,0.12), transparent), linear-gradient(180deg, #050505 0%, #0a0a0a 100%); display: none; z-index: 2000; align-items: center; justify-content: center;">
+        <div style="width: 100%; max-width: 520px; background: linear-gradient(135deg, #111 0%, #0f0f0f 100%); border: 1px solid #333; border-radius: 16px; padding: 28px; box-shadow: 0 20px 60px rgba(0,0,0,0.6);">
+            <div style="text-align: center; margin-bottom: 18px;">
+                <div style="font-size: 28px; font-weight: 800; background: linear-gradient(135deg, #ff4500, #dc143c); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Welcome to Synk</div>
+                <div style="color:#bbb; margin-top: 6px;">Sync Notion and Google Calendar seamlessly</div>
+            </div>
+
+            <div style="display:flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                <input id="auth-email" type="email" placeholder="Email" style="background:#0d0d0d; color:#fff; border:1px solid #333; border-radius:10px; padding:12px 14px; outline:none;" />
+                <input id="auth-password" type="password" placeholder="Password" style="background:#0d0d0d; color:#fff; border:1px solid #333; border-radius:10px; padding:12px 14px; outline:none;" />
+                <div style="display:flex; gap:8px; margin-top: 6px;">
+                    <button id="signup-btn" class="action-btn" style="flex:1;">Sign up</button>
+                    <button id="login-btn" class="action-btn" style="flex:1; background:#333;">Log in</button>
+                </div>
+                <p id="auth-status" style="color:#9e9e9e; min-height: 18px; text-align:center; margin-top:6px;"></p>
+            </div>
+
+            <div style="margin-top: 16px; text-align:center; color:#999; font-size: 12px;">
+                By continuing you agree to our <a href="#" onclick="window.electronAPI.openExternal('https://synk-official.com/terms.html'); return false;" style="color:#ff7043; text-decoration:none;">Terms</a> and <a href="#" onclick="window.electronAPI.openExternal('https://synk-official.com/privacy.html'); return false;" style="color:#ff7043; text-decoration:none;">Privacy</a>.
             </div>
         </div>
     </div>
@@ -1266,61 +1363,177 @@
     </div>
 
     <script>
-        // Plan detection and display
+        // Plan detection and display (prefer backend /me when logged in)
+        let __planPoller = null;
         async function loadUserPlan() {
             try {
                 console.log('🔍 Loading user plan...');
-                const planData = await window.electronAPI.getUserPlan();
-                console.log('📋 Plan data received:', planData);
-                
-                updatePlanDisplay(planData);
+                const base = (window.electronAPI && window.electronAPI.backendUrl) ? window.electronAPI.backendUrl : 'https://synk-backend.onrender.com';
+                const token = localStorage.getItem('auth_token');
+
+                if (token) {
+                    try {
+                        const meResp = await fetch(base + '/me', { headers: { 'Authorization': 'Bearer ' + token } });
+                        const me = await meResp.json().catch(() => ({ success: false }));
+                        if (me && me.success) {
+                            updatePlanDisplay({
+                                type: me.plan?.type || 'none',
+                                billingCycle: me.plan?.billingCycle || me.billing_period || null,
+                                description: me.plan?.description || undefined,
+                                is_trial: !!me.is_trial,
+                                trial_end: me.trial_end || null
+                            });
+                            return;
+                        }
+                    } catch (e) {
+                        console.warn('⚠️ /me fetch failed, falling back to local plan file:', e.message);
+                    }
+                }
+
+                // If no token or /me failed, show "no current plan" (do NOT use local file when logged out)
+                updatePlanDisplay({
+                    type: 'none',
+                    name: 'No current plan',
+                    description: 'No current plan. Sign up or log in, then purchase a plan to enable premium features.',
+                    features: [],
+                    status: 'none'
+                });
             } catch (error) {
                 console.error('❌ Error loading user plan:', error);
-                // Show default/error state
                 updatePlanDisplay({
-                    type: 'unknown',
-                    name: 'Unknown',
-                    description: 'Unable to determine plan status. Please contact support.',
+                    type: 'none',
+                    name: 'No current plan',
+                    description: 'No current plan. Sign up or log in, then purchase a plan to enable premium features.',
                     features: [],
-                    status: 'unknown'
+                    status: 'none'
                 });
             }
         }
+
+        // Start simple polling of /me to reflect Supabase changes quickly
+        function startPlanPolling() {
+            if (__planPoller) clearInterval(__planPoller);
+            __planPoller = setInterval(() => {
+                const token = localStorage.getItem('auth_token');
+                if (!token) return; // only poll when logged in
+                const base = (window.electronAPI && window.electronAPI.backendUrl) ? window.electronAPI.backendUrl : 'https://synk-backend.onrender.com';
+                fetch(base + '/me', { headers: { 'Authorization': 'Bearer ' + token } })
+                    .then(r => r.json())
+                    .then(me => {
+                        if (me && me.success) {
+                            updatePlanDisplay({
+                                type: me.plan?.type || 'none',
+                                billingCycle: me.plan?.billingCycle || me.billing_period || null,
+                                description: me.plan?.description || undefined,
+                                is_trial: !!me.is_trial,
+                                trial_end: me.trial_end || null
+                            });
+                        }
+                    })
+                    .catch(() => {});
+            }, 60000);
+        }
         
         function updatePlanDisplay(planData) {
-            const planTypeElement = document.getElementById('plan-type');
+            const planTitle = document.getElementById('plan-title');
+            const planCycle = document.getElementById('plan-cycle');
+            const planTrialTitle = document.getElementById('plan-trial-title');
+            const planTrial = document.getElementById('plan-trial');
             const planDescriptionElement = document.getElementById('plan-description');
+            const trialBadge = document.getElementById('trial-badge');
+
+            // Dragon's breath orange styling helper
+            const setDragonOrange = (el) => {
+                if (!el) return;
+                el.style.color = '#ff4500';
+                el.style.textShadow = '0 0 8px rgba(255,69,0,0.7), 0 0 16px rgba(255,69,0,0.4)';
+            };
             
-            if (planTypeElement && planDescriptionElement) {
-                let displayName = planData.name || 'Unknown';
-                
-                // Add trial days remaining ONLY for trial plans
-                if (planData.type === 'trial' && planData.trialDaysRemaining !== undefined) {
-                    displayName += ` (${planData.trialDaysRemaining} days remaining)`;
+            if (planTitle && planCycle && planDescriptionElement) {
+                // Detect states
+                const noPlan = !planData || !planData.type || planData.type === 'none' || planData.type === 'unknown' || planData.type === null;
+                const isTrial = !!(planData && (planData.is_trial === true || planData.type === 'trial'));
+
+                // Badge visibility
+                if (trialBadge) {
+                    trialBadge.style.display = isTrial ? 'inline-block' : 'none';
                 }
-                
-                // For paid plans, show billing cycle if available
-                if ((planData.type === 'pro' || planData.type === 'ultimate') && planData.billingCycle) {
-                    displayName += ` (${planData.billingCycle})`;
+
+                // Title
+                let titleText = 'No current plan';
+                if (!noPlan) {
+                    if (planData.type === 'ultimate') titleText = 'Ultimate';
+                    else if (planData.type === 'pro' || isTrial) titleText = 'Pro';
+                    else if (planData.type === 'expired') titleText = 'Trial expired';
                 }
-                
-                planTypeElement.textContent = displayName;
-                planDescriptionElement.textContent = planData.description || 'No description available';
-                
-                // Update color based on plan type
-                if (planData.type === 'pro') {
-                    planTypeElement.style.color = '#4CAF50'; // Green for Pro
-                } else if (planData.type === 'ultimate') {
-                    planTypeElement.style.color = '#FF6B35'; // Orange for Ultimate
-                } else if (planData.type === 'trial') {
-                    planTypeElement.style.color = '#2196F3'; // Blue for Trial
-                } else if (planData.type === 'expired') {
-                    planTypeElement.style.color = '#f44336'; // Red for Expired
+                planTitle.textContent = titleText;
+
+                // Cycle (only for paid plans and non-trial)
+                if (!noPlan && !isTrial && (planData.type === 'pro' || planData.type === 'ultimate') && planData.billingCycle) {
+                    const cycle = planData.billingCycle.toLowerCase();
+                    planCycle.textContent = cycle.includes('year') ? 'Yearly' : 'Monthly';
                 } else {
-                    planTypeElement.style.color = '#ff4500'; // Default orange
+                    planCycle.textContent = '';
                 }
-                
-                console.log('✅ Plan display updated:', planData.name);
+
+                // Trial days line (from real backend: trial_end or fallback trialDaysRemaining)
+                if (planTrial && planTrialTitle) {
+                    let daysLeft = null;
+                    if (planData && planData.trial_end) {
+                        const ms = new Date(planData.trial_end) - new Date();
+                        daysLeft = Math.max(0, Math.ceil(ms / (1000 * 60 * 60 * 24)));
+                    } else if (planData && typeof planData.trialDaysRemaining === 'number') {
+                        daysLeft = planData.trialDaysRemaining;
+                    }
+
+                    if (isTrial && daysLeft !== null) {
+                        planTrialTitle.style.display = 'none';
+                        planTrial.style.display = 'block';
+                        planTrial.textContent = `${daysLeft} days left`;
+                        setDragonOrange(planTrial);
+                    } else {
+                        planTrialTitle.style.display = 'none';
+                        planTrial.style.display = 'none';
+                        planTrial.textContent = '';
+                    }
+                }
+
+                // Description (specific per state)
+                if (noPlan) {
+                    planDescriptionElement.textContent = 'No current plan. Sign up or log in, then purchase a plan to enable premium features.';
+                    planTitle.textContent = 'No current plan';
+                    planCycle.textContent = '';
+                    // Gray for no plan
+                    planTitle.style.color = '#9e9e9e';
+                    planTitle.style.textShadow = 'none';
+                } else if (isTrial) {
+                    planDescriptionElement.textContent = 'Free trial active.';
+                    // Dragon's breath orange for trial state
+                    planTitle.style.color = '#ff4500';
+                    planTitle.style.textShadow = '0 0 8px rgba(255,69,0,0.7), 0 0 16px rgba(255,69,0,0.4)';
+                } else if (planData.type === 'pro') {
+                    const cycleText = planData.billingCycle && planData.billingCycle.toLowerCase().includes('year') ? 'Yearly billing' : 'Monthly billing';
+                    planDescriptionElement.textContent = `Pro plan active — ${cycleText}.`;
+                    // Dragon breath orange for plan title
+                    planTitle.style.color = '#ff4500';
+                    planTitle.style.textShadow = '0 0 8px rgba(255,69,0,0.7), 0 0 16px rgba(255,69,0,0.4)';
+                } else if (planData.type === 'ultimate') {
+                    const cycleText = planData.billingCycle && planData.billingCycle.toLowerCase().includes('year') ? 'Yearly billing' : 'Monthly billing';
+                    planDescriptionElement.textContent = `Ultimate plan active — ${cycleText}.`;
+                    // Dragon breath orange for plan title
+                    planTitle.style.color = '#ff4500';
+                    planTitle.style.textShadow = '0 0 8px rgba(255,69,0,0.7), 0 0 16px rgba(255,69,0,0.4)';
+                } else if (planData.type === 'expired') {
+                    planDescriptionElement.textContent = 'Your trial has expired. Please upgrade to continue using Synk.';
+                    planTitle.style.color = '#f44336';
+                    planTitle.style.textShadow = 'none';
+                } else {
+                    planDescriptionElement.textContent = 'Plan status unknown.';
+                    planTitle.style.color = '#9e9e9e';
+                    planTitle.style.textShadow = 'none';
+                }
+
+                console.log('✅ Plan display updated:', titleText, { isTrial });
             }
         }
         
@@ -1390,6 +1603,31 @@
         document.addEventListener('DOMContentLoaded', async () => {
             // Load user plan information
             await loadUserPlan();
+
+            // Update account UI state based on token
+            const tokenPresent = !!localStorage.getItem('auth_token');
+            const authOverlay = document.getElementById('auth-overlay');
+            const loggedInContainer = document.getElementById('logged-in-container');
+            const loggedInEmail = document.getElementById('logged-in-email');
+
+            if (tokenPresent) {
+                // Fetch email from /me for display
+                try {
+                    const base = (window.electronAPI && window.electronAPI.backendUrl) ? window.electronAPI.backendUrl : 'https://synk-backend.onrender.com';
+                    const resp = await fetch(base + '/me', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('auth_token') } });
+                    const me = await resp.json().catch(() => ({}));
+                    if (me && me.success && me.email) {
+                        loggedInEmail.textContent = me.email;
+                    }
+                } catch (_) {}
+
+                if (authOverlay) authOverlay.style.display = 'none';
+                if (loggedInContainer) loggedInContainer.style.display = 'flex';
+                startPlanPolling();
+            } else {
+                if (authOverlay) authOverlay.style.display = 'flex';
+                if (loggedInContainer) loggedInContainer.style.display = 'none';
+            }
             
             // Initially hide sync status panel (dashboard is default tab)
             const syncStatusPanel = document.getElementById('sync-status-panel');
@@ -1409,6 +1647,140 @@
             document.getElementById('close-btn').addEventListener('click', () => {
                 window.electronAPI.close();
             });
+
+            // Refresh Plan button
+            const refreshBtn = document.getElementById('refresh-plan-btn');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', async () => {
+                    // Add loading animation to Refresh Plan button
+                    const originalHtml = refreshBtn.innerHTML;
+                    refreshBtn.disabled = true;
+                    refreshBtn.innerHTML = '<span class="spinner" style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;margin-right:8px;"></span>Refreshing...';
+                    try {
+                        // On refresh, require login first (token)
+                        const token = localStorage.getItem('auth_token');
+                        if (!token) {
+                            showErrorToast('Please log in first to refresh your plan.');
+                            return;
+                        }
+                        const base = (window.electronAPI && window.electronAPI.backendUrl) ? window.electronAPI.backendUrl : 'https://synk-backend.onrender.com';
+                        const resp = await fetch(base + '/me', { headers: { 'Authorization': 'Bearer ' + token } });
+                        const data = await resp.json();
+                        if (data && data.success) {
+                            updatePlanDisplay({
+                                type: data.plan?.type || 'none',
+                                billingCycle: data.plan?.billingCycle || data.billing_period || null,
+                                description: data.plan?.description || undefined,
+                                is_trial: !!data.is_trial,
+                                trial_end: data.trial_end || null
+                            });
+                            showSuccessToast('Plan refreshed');
+                            return;
+                        }
+                        showErrorToast('Failed to refresh plan: ' + (data && data.error ? data.error : 'unknown error'));
+                    } catch (err) {
+                        showErrorToast('Refresh failed: ' + err.message);
+                    } finally {
+                        // Restore button state
+                        refreshBtn.disabled = false;
+                        refreshBtn.innerHTML = originalHtml;
+                    }
+                });
+            }
+
+            // Auth handlers
+            const signupBtn = document.getElementById('signup-btn');
+            const loginBtn = document.getElementById('login-btn');
+            const authStatus = document.getElementById('auth-status');
+            function setAuthStatus(msg, ok = true) {
+                if (authStatus) {
+                    // Dragon's breath orange for any status unless it is an error
+                    authStatus.style.color = ok ? '#ff4500' : '#ef5350';
+                    authStatus.textContent = msg;
+                }
+            }
+
+            async function doAuth(path) {
+                const email = (document.getElementById('auth-email')||{}).value;
+                const password = (document.getElementById('auth-password')||{}).value;
+                if (!email || !password) { setAuthStatus('Email and password required', false); return; }
+                const base = (window.electronAPI && window.electronAPI.backendUrl) ? window.electronAPI.backendUrl : 'https://synk-backend.onrender.com';
+                try {
+                    // Dragons breath orange
+                    setAuthStatus('Working...', true);
+                    if (authStatus) authStatus.style.color = '#ff4500';
+                    const resp = await fetch(base + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
+                    const data = await resp.json().catch(() => ({ success: false, error: 'invalid_response' }));
+                    if (data && data.success && data.token) {
+                        localStorage.setItem('auth_token', data.token);
+                        setAuthStatus(path === '/signup' ? 'Signed up successfully' : 'Logged in successfully', true);
+                        // Immediately fetch plan via /me
+                        const meResp = await fetch(base + '/me', { headers: { 'Authorization': 'Bearer ' + data.token } });
+                        const me = await meResp.json().catch(() => ({ success: false }));
+                        if (me && me.success) {
+                            updatePlanDisplay({
+                                type: me.plan?.type || 'none',
+                                billingCycle: me.plan?.billingCycle || me.billing_period || null,
+                                description: me.plan?.description || undefined,
+                                is_trial: !!me.is_trial,
+                                trial_end: me.trial_end || null
+                            });
+                        }
+                    } else {
+                        setAuthStatus((data && data.error) ? data.error : 'Auth failed', false);
+                    }
+                } catch (e) {
+                    setAuthStatus('Network error. Check BACKEND_URL and try again.', false);
+                }
+            }
+
+            if (signupBtn) signupBtn.addEventListener('click', async () => {
+                await doAuth('/signup');
+                // Swap UI to logged in
+                const base = (window.electronAPI && window.electronAPI.backendUrl) ? window.electronAPI.backendUrl : 'https://synk-backend.onrender.com';
+                try {
+                    const resp = await fetch(base + '/me', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('auth_token') } });
+                    const me = await resp.json().catch(() => ({}));
+                    if (me && me.success) {
+                        const authOverlay = document.getElementById('auth-overlay');
+                        if (authOverlay) authOverlay.style.display = 'none';
+                        document.getElementById('logged-in-container').style.display = 'flex';
+                        if (me.email) document.getElementById('logged-in-email').textContent = me.email;
+                    }
+                } catch (_) {}
+                startPlanPolling();
+            });
+            if (loginBtn) loginBtn.addEventListener('click', async () => {
+                await doAuth('/login');
+                const base = (window.electronAPI && window.electronAPI.backendUrl) ? window.electronAPI.backendUrl : 'https://synk-backend.onrender.com';
+                try {
+                    const resp = await fetch(base + '/me', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('auth_token') } });
+                    const me = await resp.json().catch(() => ({}));
+                    if (me && me.success) {
+                        const authOverlay = document.getElementById('auth-overlay');
+                        if (authOverlay) authOverlay.style.display = 'none';
+                        document.getElementById('logged-in-container').style.display = 'flex';
+                        if (me.email) document.getElementById('logged-in-email').textContent = me.email;
+                    }
+                } catch (_) {}
+                startPlanPolling();
+            });
+
+            // Logout
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', async () => {
+                    // Clear token and stop polling
+                    localStorage.removeItem('auth_token');
+                    if (typeof __planPoller !== 'undefined' && __planPoller) { clearInterval(__planPoller); __planPoller = null; }
+                    // UI swap back
+                    document.getElementById('logged-in-container').style.display = 'none';
+                    const authOverlay = document.getElementById('auth-overlay'); if (authOverlay) authOverlay.style.display = 'flex';
+                    // Reset plan to no current plan (gray)
+                    updatePlanDisplay({ type: 'none' });
+                    showSuccessToast('Logged out');
+                });
+            }
 
             // About page link handlers
             document.getElementById('homepage-link').addEventListener('click', (e) => {
@@ -1471,14 +1843,13 @@
         document.getElementById('google-connect').addEventListener('click', handleGoogleConnect);
         document.getElementById('notion-connect').addEventListener('click', handleNotionConnect);
         
-        // Manual Refresh Handler
-        document.getElementById('manual-refresh-btn').addEventListener('click', async () => {
-            const btn = document.getElementById('manual-refresh-btn');
-            const originalText = btn.innerHTML;
+        // New Refresh Button Handler
+        document.getElementById('refresh-sync-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('refresh-sync-btn');
             
             try {
-                btn.innerHTML = '<span>Refreshing...</span>';
                 btn.disabled = true;
+                btn.classList.add('spinning');
                 
                 // Refresh Google calendars if connected
                 if (isGoogleConnected) {
@@ -1501,23 +1872,30 @@
                 // Force immediate sync if both are connected and selections made
                 if (isGoogleConnected && isNotionConnected && selected.google && selected.notion) {
                     console.log('Forcing immediate sync...');
-                    await window.electronAPI.forceSync();
-                    updateSyncStatus('syncing', 'Manual sync in progress...');
+                    updateSyncStatus('Syncing...');
+                    
+                    const result = await window.electronAPI.forceSync();
+                    if (result.success) {
+                        updateSyncStatus('Sync completed successfully');
+                        // Start automatic sync for real-time updates
+                        await window.electronAPI.startSync([{ notion: selected.notion, google: selected.google }]);
+                    } else {
+                        updateSyncStatus('Sync failed: ' + (result.error || 'Unknown error'));
+                    }
+                } else {
+                    updateSyncStatus('Please select both a calendar and database first');
                 }
                 
-                btn.innerHTML = '<span>✅ Refreshed!</span>';
                 setTimeout(() => {
-                    btn.innerHTML = originalText;
                     btn.disabled = false;
-                }, 2000);
+                    btn.classList.remove('spinning');
+                }, 1000);
                 
             } catch (error) {
-                console.error('Manual refresh failed:', error);
-                btn.innerHTML = '<span>❌ Failed</span>';
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                }, 2000);
+                console.error('Refresh failed:', error);
+                updateSyncStatus('Refresh failed: ' + error.message);
+                btn.disabled = false;
+                btn.classList.remove('spinning');
             }
         });
 
@@ -1561,90 +1939,42 @@
         // Display Functions
         function displayCalendars(calendarData) {
             console.log('[Frontend] Received calendars:', calendarData);
-            console.log('[Frontend] Calendar data type:', typeof calendarData);
-            console.log('[Frontend] Is array:', Array.isArray(calendarData));
-            if (calendarData && !Array.isArray(calendarData)) {
-                console.log('[Frontend] myCalendars count:', calendarData.myCalendars?.length || 0);
-                console.log('[Frontend] otherCalendars count:', calendarData.otherCalendars?.length || 0);
-            }
             const container = document.getElementById('calendars-content');
             
-            // Handle both old format (array) and new format (object with sections)
+            // Flatten all calendars into a single list (like Notion databases)
+            let allCalendars = [];
+            
             if (Array.isArray(calendarData)) {
-                // Old format - just display as before
-                if (calendarData.length === 0) {
-                    container.innerHTML = '<div class="empty-state"><h3>No calendars found</h3><p>No calendars available in your account</p></div>';
-                    return;
-                }
-                container.innerHTML = calendarData.map(cal => `
-                    <button class="sync-item calendar-item ${cal.primary ? 'primary' : ''}" data-id="${cal.id}" onclick="toggleSelect('${cal.id}', 'google')" aria-label="Select ${cal.name} calendar">
-                        <div class="item-title">${cal.name}</div>
-                        <div class="item-meta">${cal.primary ? 'Primary Calendar • ' : ''}${cal.accessRole} • ${cal.timeZone || 'No timezone'}</div>
-                    </button>
-                `).join('');
-                return;
+                // Old format - already an array
+                allCalendars = calendarData;
+            } else if (calendarData) {
+                // New format - combine myCalendars and otherCalendars
+                const myCalendars = calendarData.myCalendars || [];
+                const otherCalendars = calendarData.otherCalendars || [];
+                allCalendars = [...myCalendars, ...otherCalendars];
             }
             
-            // New format with sections
-            if (!calendarData || (!calendarData.myCalendars && !calendarData.otherCalendars)) {
+            if (!allCalendars || allCalendars.length === 0) {
                 container.innerHTML = '<div class="empty-state"><h3>No calendars found</h3><p>No calendars available in your account</p></div>';
                 return;
             }
 
-            let html = '';
-            
-            // My Calendars section (ALWAYS PRESENT)
-            const myCalendars = calendarData.myCalendars || [];
-            html += `
-                <div class="calendar-section">
-                    <div class="section-header" onclick="toggleSection('my-calendars')">
-                        <span class="section-arrow" id="my-calendars-arrow">▼</span>
-                        <span class="section-title">My calendars</span>
-                    </div>
-                    <div class="section-content" id="my-calendars-content">
-                        ${myCalendars.length > 0 ? myCalendars.map(cal => `
-                            <button class="sync-item calendar-item ${cal.primary ? 'primary' : ''}" data-id="${cal.id}" onclick="toggleSelect('${cal.id}', 'google')" aria-label="Select ${cal.name} calendar">
-                                <div class="item-title">${cal.name}</div>
-                                <div class="item-meta">${cal.primary ? 'Primary Calendar • ' : ''}${cal.accessRole} • ${cal.timeZone || 'No timezone'}</div>
-                            </button>
-                        `).join('') : '<div class="empty-state">No calendars</div>'}
-                    </div>
-                </div>
-            `;
-            
-            // Other Calendars section (ALWAYS PRESENT)
-            const otherCalendars = calendarData.otherCalendars || [];
-            html += `
-                <div class="calendar-section">
-                    <div class="section-header" onclick="toggleSection('other-calendars')">
-                        <span class="section-arrow" id="other-calendars-arrow">▼</span>
-                        <span class="section-title">Other calendars</span>
-                    </div>
-                    <div class="section-content" id="other-calendars-content">
-                        ${otherCalendars.length > 0 ? otherCalendars.map(cal => `
-                            <button class="sync-item calendar-item" data-id="${cal.id}" onclick="toggleSelect('${cal.id}', 'google')" aria-label="Select ${cal.name} calendar">
-                                <div class="item-title">${cal.name}</div>
-                                <div class="item-meta">${cal.accessRole} • ${cal.timeZone || 'No timezone'}</div>
-                            </button>
-                        `).join('') : '<div class="empty-state">No other calendars</div>'}
-                    </div>
-                </div>
-            `;
-            
-            container.innerHTML = html;
+            // Simple list format like Notion databases
+            container.innerHTML = allCalendars.map(cal => `
+                <button class="sync-item calendar-item ${cal.primary ? 'primary' : ''}" data-id="${cal.id}" onclick="toggleSelect('${cal.id}', 'google')" aria-label="Select ${cal.name} calendar">
+                    <div class="item-title">${cal.name}</div>
+                    <div class="item-meta">${cal.primary ? 'Primary Calendar • ' : ''}${cal.accessRole} • ${cal.timeZone || 'No timezone'}</div>
+                </button>
+            `).join('');
         }
-        
-        function toggleSection(sectionId) {
-            const content = document.getElementById(`${sectionId}-content`);
-            const arrow = document.getElementById(`${sectionId}-arrow`);
-            
-            if (content.style.display === 'none') {
-                content.style.display = 'block';
-                arrow.textContent = '▼';
-            } else {
-                content.style.display = 'none';
-                arrow.textContent = '▶';
-            }
+
+        // Alias for backward compatibility
+        function renderGoogleCalendars(calendars) {
+            displayCalendars(calendars);
+        }
+
+        function renderNotionDatabases(databases) {
+            displayDatabases(databases);
         }
 
         function displayDatabases(databases) {
@@ -2156,6 +2486,15 @@
                     hideNotionOAuthStatus();
                     updateNotionStatus('error', 'Connection failed');
                     showErrorToast(`Notion OAuth failed: ${error || 'Unknown error'}`);
+                });
+
+                // Plan auto-update event from main process
+                window.electronAPI.on('plan-updated', (event, plan) => {
+                    try {
+                        if (plan) updatePlanDisplay(plan);
+                    } catch (e) {
+                        console.warn('[Renderer] failed to update plan from event:', e.message);
+                    }
                 });
             }
 
