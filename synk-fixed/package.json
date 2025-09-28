@@ -1,10 +1,10 @@
 {
-  "name": "synk",
+  "name": "synk-pro",
   "version": "1.0.0",
   "description": "Notion & Google Calendar Sync",
-  "main": "main-clean.js",
+  "main": "main-production.js",
   "scripts": {
-    "start": "electron main-clean.js",
+    "start": "electron main-production.js",
     "test": "electron main-test.js",
     "dev": "electron main-clean.js --dev",
     "prod": "electron main-clean.js",
@@ -12,23 +12,54 @@
     "validate-prod": "cross-env NODE_ENV=production node startup-validator.js",
     "test-config": "node test-config.js",
     "test-config-prod": "cross-env NODE_ENV=production node test-config.js",
-    "test-oauth": "node test-oauth-flow.js"
+    "test-oauth": "node test-oauth-flow.js",
+    "build": "electron-builder",
+    "build:pro": "electron-builder",
+    "publish": "electron-builder --publish always",
+    "publish:pro": "electron-builder --publish always",
+    "build:ultimate": "electron-builder --config electron-builder.ultimate.json",
+    "publish:ultimate": "electron-builder --config electron-builder.ultimate.json --publish always"
   },
   "author": "Synk Team",
   "license": "MIT",
   "dependencies": {
+    "@supabase/supabase-js": "^2.45.3",
     "axios": "^1.11.0",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "electron-log": "^4.4.8",
     "electron-store": "^8.2.0",
+    "electron-updater": "^6.6.2",
     "express": "^4.21.2",
     "googleapis": "^159.0.0",
+    "jsonwebtoken": "^9.0.2",
     "keytar": "^7.9.0",
-    "node-fetch": "^2.7.0"
+    "node-fetch": "^2.7.0",
+    "stripe": "^14.21.0"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
-    "electron": "^22.3.27"
+    "electron": "^38.1.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.synk.pro",
+    "productName": "Synk PRO",
+    "publish": {
+      "provider": "github",
+      "owner": "fusion20k",
+      "repo": "synk-pro"
+    },
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "node_modules/**/*",
+      "package.json",
+      "main-production.js"
+    ]
   }
 }

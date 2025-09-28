@@ -1,0 +1,19 @@
+{
+  "appId": "com.synk.ultimate",
+  "productName": "Synk ULTIMATE",
+  "publish": {
+    "provider": "github",
+    "owner": "fusion20k",
+    "repo": "synk-ultimate"
+  },
+  "directories": {
+    "output": "dist-ultimate"
+  },
+  "files": [
+    "src/**/*",
+    "assets/**/*",
+    "node_modules/**/*",
+    "package.json",
+    "main-production.js"
+  ]
+}
