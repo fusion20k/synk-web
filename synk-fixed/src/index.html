@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Synk - Notion & Google Calendar Sync</title>
+    <title>Synk BETA - Notion & Google Calendar Sync</title>
     <link rel="icon" type="image/x-icon" href="../assets/icon.ico">
     <style>
         * {
@@ -34,7 +34,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 0 16px;
-            z-index: 1000;
+            z-index: 3000; /* Above overlays (auth/plan), but below toasts (10000) */
             -webkit-app-region: drag;
         }
 
@@ -63,6 +63,8 @@
             color: #fff;
             font-size: 12px;
             font-family: 'Segoe UI', sans-serif;
+            -webkit-app-region: no-drag; /* Ensure clicks are not intercepted by draggable titlebar */
+            pointer-events: auto; /* Explicitly allow pointer events on buttons */
         }
 
         .titlebar-button:hover {
@@ -88,6 +90,10 @@
             font-weight: bold;
             font-size: 14px;
         }
+
+        /* Dragon's Breath accent for update preference radios */
+        input[type="radio"] { accent-color: #ff4500; }
+        input[type="radio"]:checked + span { color: #ff7043; }
 
         /* App Shell Layout */
         .app-container {
@@ -564,8 +570,10 @@
             box-shadow: 0 0 10px rgba(255, 69, 0, 0.3);
         }
 
+        /* Remove strong orange sidebar for primary calendar */
         .calendar-item.primary {
-            border-left: 4px solid #ff4500;
+            border-left: none !important; /* fully remove sidebar */
+            background: #0f0f0f; /* keep consistent background */
         }
 
         .item-title {
@@ -1063,12 +1071,55 @@
             text-shadow: 0 0 6px rgba(255, 69, 0, 0.5);
             font-size: 10px;
         }
+
+        /* Toggle Switch (UI-only) */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 46px;
+            height: 26px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #2a2a2a;
+            border: 1px solid #3a3a3a;
+            transition: 0.2s ease;
+            border-radius: 20px;
+            box-shadow: inset 0 0 6px rgba(0,0,0,0.4);
+        }
+        .slider:before {
+            content: "";
+            position: absolute;
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #bbb;
+            border-radius: 50%;
+            transition: 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+        }
+        .switch input:checked + .slider {
+            background: linear-gradient(135deg, #ff4500, #dc143c);
+            border-color: #ff4500;
+        }
+        .switch input:checked + .slider:before {
+            transform: translateX(20px);
+            background: #fff;
+        }
     </style>
 </head>
 <body>
     <!-- Custom Titlebar -->
     <div class="titlebar">
-        <div class="titlebar-title">Synk - Notion & Google Calendar Sync</div>
+        <div class="titlebar-title">Synk BETA - Notion & Google Calendar Sync</div>
         <div class="titlebar-controls">
             <button class="titlebar-button minimize" id="minimize-btn"></button>
             <button class="titlebar-button maximize" id="maximize-btn"></button>
@@ -1080,26 +1131,19 @@
         <!-- Left Sidebar -->
         <div class="sidebar">
             <div class="sidebar-header">
-                <div class="app-logo">Synk</div>
+                <div class="app-logo">Synk BETA</div>
             </div>
             <nav class="sidebar-nav">
-                <div class="nav-item active" data-tab="dashboard">
-                    <span class="nav-icon">■</span>
-                    <span>Dashboard</span>
-                </div>
-                <div class="nav-item" data-tab="sync">
+                <div class="nav-item" data-tab="sync" id="sync-nav-item">
                     <span class="nav-icon">↔</span>
                     <span>Sync</span>
                 </div>
-                <div class="nav-item" data-tab="settings">
+                <div class="nav-item" data-tab="settings" id="settings-nav-item">
                     <span class="nav-icon">⚙</span>
                     <span>Settings</span>
                 </div>
-                <div class="nav-item" data-tab="logs">
-                    <span class="nav-icon">□</span>
-                    <span>Logs</span>
-                </div>
-                <div class="nav-item" data-tab="about">
+
+                <div class="nav-item active" data-tab="about" id="about-nav-item">
                     <span class="nav-icon">i</span>
                     <span>About</span>
                 </div>
@@ -1110,7 +1154,7 @@
         <div class="main-content">
             <!-- Header Bar -->
             <div class="header-bar">
-                <div class="header-title" id="header-title">Dashboard</div>
+                <div class="header-title" id="header-title">About</div>
                 <div class="status-pills">
                     <div class="status-pill disconnected" id="google-pill">Google</div>
                     <div class="status-pill disconnected" id="notion-pill">Notion</div>
@@ -1119,32 +1163,6 @@
 
             <!-- Content Area -->
             <div class="content-area">
-                <!-- Dashboard Tab -->
-                <div class="tab-content active" id="dashboard-tab">
-                    <div class="dashboard-grid">
-                        <div class="connection-card">
-                            <h3 class="card-title">Google Calendar</h3>
-                            <div class="connection-status">
-                                <div class="status-dot disconnected" id="google-status-dot"></div>
-                                <span id="google-status-text">Not connected</span>
-                            </div>
-                            <p id="google-user-info" style="color: #ccc; font-size: 0.9rem;">Connect to see your calendars</p>
-                        </div>
-                        <div class="connection-card">
-                            <h3 class="card-title">Notion</h3>
-                            <div class="connection-status">
-                                <div class="status-dot disconnected" id="notion-status-dot"></div>
-                                <span id="notion-status-text">Not connected</span>
-                            </div>
-                            <p id="notion-user-info" style="color: #ccc; font-size: 0.9rem;">Connect to see your databases</p>
-                        </div>
-                    </div>
-                    <div class="content-card">
-                        <h3 class="card-title">Last Sync</h3>
-                        <p id="last-sync-info" style="color: #ccc;">No syncs performed yet</p>
-                    </div>
-                </div>
-
                 <!-- Sync Tab -->
                 <div class="tab-content" id="sync-tab">
                     <div class="sync-container">
@@ -1236,15 +1254,9 @@
                     <div class="content-card">
                         <h3 class="card-title">Application Settings</h3>
 
-                        <div class="setting-item">
-                            <div class="setting-info">
-                                <h3>Auto Sync</h3>
-                                <p>Automatically syncs changes every 1 minute (always enabled)</p>
-                            </div>
-                            <div class="status-indicator" style="color: #4CAF50; font-weight: bold;">
-                                ✓ Always Active
-                            </div>
-                        </div>
+                        <!-- Updates disabled in BETA -->
+                        <!-- Update UI removed for beta build -->
+
                         <div class="setting-item">
                             <div class="setting-info">
                                 <h3>Clear Data</h3>
@@ -1253,6 +1265,7 @@
                             <button class="action-btn" id="clear-data-btn">Clear All Data</button>
                         </div>
                     </div>
+                    <!-- What's New section moved to About tab -->
                 </div>
 
                 <!-- Logs Tab -->
@@ -1266,7 +1279,7 @@
                 </div>
 
                 <!-- About Tab -->
-                <div class="tab-content" id="about-tab">
+                <div class="tab-content active" id="about-tab">
                     <div class="content-card about-card">
                         <h2>About Synk</h2>
                         <p style="color: #ccc; margin-bottom: 20px;">Synk syncs Notion and Google Calendar events seamlessly in real-time.</p>
@@ -1304,6 +1317,11 @@
                             <p style="color: #ccc; margin-top: 16px;">Website: <a id="homepage-link" href="#" style="color: #ff4500; text-decoration: none;">synk-official.com</a></p>
                             <p style="color: #ccc; margin-bottom: 10px;">Support: <a id="support-mail" href="mailto:support@synk-official.com" style="color: #ff4500; text-decoration: none;">support@synk-official.com</a></p>
                             <p style="color: #ccc;">Version: <span id="app-version">1.0.0</span></p>
+                        </div>
+
+                        <div style="border-top: 1px solid #333; padding-top: 20px; margin-top: 20px;">
+                            <h3 style="color: #ff4500; margin-bottom: 12px;">What's New</h3>
+                            <div id="update-entries"></div>
                         </div>
                     </div>
                 </div>
@@ -1368,7 +1386,7 @@
         async function loadUserPlan() {
             try {
                 console.log('🔍 Loading user plan...');
-                const base = (window.electronAPI && window.electronAPI.backendUrl) ? window.electronAPI.backendUrl : 'https://synk-backend.onrender.com';
+                const base = (window.electronAPI && window.electronAPI.backendUrl) ? window.electronAPI.backendUrl : 'https://synk-web.onrender.com';
                 const token = localStorage.getItem('auth_token');
 
                 if (token) {
@@ -1416,7 +1434,7 @@
             __planPoller = setInterval(() => {
                 const token = localStorage.getItem('auth_token');
                 if (!token) return; // only poll when logged in
-                const base = (window.electronAPI && window.electronAPI.backendUrl) ? window.electronAPI.backendUrl : 'https://synk-backend.onrender.com';
+                const base = (window.electronAPI && window.electronAPI.backendUrl) ? window.electronAPI.backendUrl : 'https://synk-web.onrender.com';
                 fetch(base + '/me', { headers: { 'Authorization': 'Bearer ' + token } })
                     .then(r => r.json())
                     .then(me => {
@@ -1512,14 +1530,24 @@
                     planTitle.style.color = '#ff4500';
                     planTitle.style.textShadow = '0 0 8px rgba(255,69,0,0.7), 0 0 16px rgba(255,69,0,0.4)';
                 } else if (planData.type === 'pro') {
-                    const cycleText = planData.billingCycle && planData.billingCycle.toLowerCase().includes('year') ? 'Yearly billing' : 'Monthly billing';
-                    planDescriptionElement.textContent = `Pro plan active — ${cycleText}.`;
+                    // Only show billing cycle if it exists
+                    if (planData.billingCycle) {
+                        const cycleText = planData.billingCycle.toLowerCase().includes('year') ? 'Yearly billing' : 'Monthly billing';
+                        planDescriptionElement.textContent = `Pro plan active — ${cycleText}.`;
+                    } else {
+                        planDescriptionElement.textContent = 'Pro plan active.';
+                    }
                     // Dragon breath orange for plan title
                     planTitle.style.color = '#ff4500';
                     planTitle.style.textShadow = '0 0 8px rgba(255,69,0,0.7), 0 0 16px rgba(255,69,0,0.4)';
                 } else if (planData.type === 'ultimate') {
-                    const cycleText = planData.billingCycle && planData.billingCycle.toLowerCase().includes('year') ? 'Yearly billing' : 'Monthly billing';
-                    planDescriptionElement.textContent = `Ultimate plan active — ${cycleText}.`;
+                    // Only show billing cycle if it exists
+                    if (planData.billingCycle) {
+                        const cycleText = planData.billingCycle.toLowerCase().includes('year') ? 'Yearly billing' : 'Monthly billing';
+                        planDescriptionElement.textContent = `Ultimate plan active — ${cycleText}.`;
+                    } else {
+                        planDescriptionElement.textContent = 'Ultimate plan active.';
+                    }
                     // Dragon breath orange for plan title
                     planTitle.style.color = '#ff4500';
                     planTitle.style.textShadow = '0 0 8px rgba(255,69,0,0.7), 0 0 16px rgba(255,69,0,0.4)';
@@ -1534,6 +1562,42 @@
                 }
 
                 console.log('✅ Plan display updated:', titleText, { isTrial });
+            }
+            
+            // Update tab visibility based on plan
+            updateTabVisibility(planData);
+        }
+        
+        // Control which tabs are visible based on plan status
+        function updateTabVisibility(planData) {
+            const syncNavItem = document.getElementById('sync-nav-item');
+            const settingsNavItem = document.getElementById('settings-nav-item');
+            const aboutNavItem = document.getElementById('about-nav-item');
+            
+            // Determine if user has a plan (Pro, Ultimate, or Trial)
+            const hasPlan = planData && 
+                           (planData.type === 'pro' || 
+                            planData.type === 'ultimate' || 
+                            planData.type === 'trial' ||
+                            planData.is_trial === true);
+            
+            if (hasPlan) {
+                // User has a plan - show all tabs
+                if (syncNavItem) syncNavItem.style.display = 'flex';
+                if (settingsNavItem) settingsNavItem.style.display = 'flex';
+                console.log('✅ All tabs visible - user has plan:', planData.type);
+            } else {
+                // No plan - hide Sync and Settings, only show About
+                if (syncNavItem) syncNavItem.style.display = 'none';
+                if (settingsNavItem) settingsNavItem.style.display = 'none';
+                
+                // Force switch to About tab if user is on a restricted tab
+                const currentTab = document.querySelector('.tab-content.active')?.id;
+                if (currentTab !== 'about-tab') {
+                    switchTab('about');
+                }
+                
+                console.log('⚠️ Only About tab visible - no plan detected');
             }
         }
         
@@ -1613,10 +1677,10 @@
             if (tokenPresent) {
                 // Fetch email from /me for display
                 try {
-                    const base = (window.electronAPI && window.electronAPI.backendUrl) ? window.electronAPI.backendUrl : 'https://synk-backend.onrender.com';
+                    const base = (window.electronAPI && window.electronAPI.backendUrl) ? window.electronAPI.backendUrl : 'https://synk-web.onrender.com';
                     const resp = await fetch(base + '/me', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('auth_token') } });
                     const me = await resp.json().catch(() => ({}));
-                    if (me && me.success && me.email) {
+                    if (me && me.success && me.email && loggedInEmail) {
                         loggedInEmail.textContent = me.email;
                     }
                 } catch (_) {}
@@ -1635,17 +1699,22 @@
                 syncStatusPanel.style.display = 'none';
             }
             
-            // Titlebar button handlers
-            document.getElementById('minimize-btn').addEventListener('click', () => {
-                window.electronAPI.minimize();
-            });
 
-            document.getElementById('maximize-btn').addEventListener('click', () => {
-                window.electronAPI.maximize();
-            });
+            const minimizeBtn = document.getElementById('minimize-btn');
+            const maximizeBtn = document.getElementById('maximize-btn');
+            const closeBtn = document.getElementById('close-btn');
 
-            document.getElementById('close-btn').addEventListener('click', () => {
-                window.electronAPI.close();
+            if (minimizeBtn) minimizeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (window.electronAPI && window.electronAPI.minimize) window.electronAPI.minimize();
+            });
+            if (maximizeBtn) maximizeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (window.electronAPI && window.electronAPI.maximize) window.electronAPI.maximize();
+            });
+            if (closeBtn) closeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (window.electronAPI && window.electronAPI.close) window.electronAPI.close();
             });
 
             // Refresh Plan button
@@ -1663,7 +1732,7 @@
                             showErrorToast('Please log in first to refresh your plan.');
                             return;
                         }
-                        const base = (window.electronAPI && window.electronAPI.backendUrl) ? window.electronAPI.backendUrl : 'https://synk-backend.onrender.com';
+                        const base = (window.electronAPI && window.electronAPI.backendUrl) ? window.electronAPI.backendUrl : 'https://synk-web.onrender.com';
                         const resp = await fetch(base + '/me', { headers: { 'Authorization': 'Bearer ' + token } });
                         const data = await resp.json();
                         if (data && data.success) {
@@ -1704,7 +1773,7 @@
                 const email = (document.getElementById('auth-email')||{}).value;
                 const password = (document.getElementById('auth-password')||{}).value;
                 if (!email || !password) { setAuthStatus('Email and password required', false); return; }
-                const base = (window.electronAPI && window.electronAPI.backendUrl) ? window.electronAPI.backendUrl : 'https://synk-backend.onrender.com';
+                const base = (window.electronAPI && window.electronAPI.backendUrl) ? window.electronAPI.backendUrl : 'https://synk-web.onrender.com';
                 try {
                     // Dragons breath orange
                     setAuthStatus('Working...', true);
@@ -1737,7 +1806,7 @@
             if (signupBtn) signupBtn.addEventListener('click', async () => {
                 await doAuth('/signup');
                 // Swap UI to logged in
-                const base = (window.electronAPI && window.electronAPI.backendUrl) ? window.electronAPI.backendUrl : 'https://synk-backend.onrender.com';
+                const base = (window.electronAPI && window.electronAPI.backendUrl) ? window.electronAPI.backendUrl : 'https://synk-web.onrender.com';
                 try {
                     const resp = await fetch(base + '/me', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('auth_token') } });
                     const me = await resp.json().catch(() => ({}));
@@ -1752,7 +1821,7 @@
             });
             if (loginBtn) loginBtn.addEventListener('click', async () => {
                 await doAuth('/login');
-                const base = (window.electronAPI && window.electronAPI.backendUrl) ? window.electronAPI.backendUrl : 'https://synk-backend.onrender.com';
+                const base = (window.electronAPI && window.electronAPI.backendUrl) ? window.electronAPI.backendUrl : 'https://synk-web.onrender.com';
                 try {
                     const resp = await fetch(base + '/me', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('auth_token') } });
                     const me = await resp.json().catch(() => ({}));
@@ -1796,7 +1865,7 @@
         let isNotionConnecting = false;
         let isGoogleConnected = false;
         let isNotionConnected = false;
-        let currentTab = 'dashboard';
+        let currentTab = 'about';
         
         // Production mode only - no demo mode detection needed
 
@@ -1842,6 +1911,86 @@
         // OAuth Connection Handlers
         document.getElementById('google-connect').addEventListener('click', handleGoogleConnect);
         document.getElementById('notion-connect').addEventListener('click', handleNotionConnect);
+
+        // Update UI Management
+        (function initUpdateUI(){
+            const checkBtn = document.getElementById('check-updates');
+            const status = document.getElementById('update-status');
+            const msg = document.getElementById('update-message');
+            const prompt = document.getElementById('pref-prompt');
+            const auto = document.getElementById('pref-auto');
+            const manual = document.getElementById('pref-manual');
+
+            function showMessage(html, type){
+                if (!status || !msg) return;
+                msg.innerHTML = html;
+                status.style.display = 'block';
+                status.className = `update-${type}`;
+            }
+
+            if (checkBtn) {
+                checkBtn.addEventListener('click', () => {
+                    window.electronAPI.checkForUpdates();
+                    showMessage('Checking for updates...', 'info');
+                });
+            }
+
+            // set initial preference
+            if (window.electronAPI.getUpdatePreference) {
+                window.electronAPI.getUpdatePreference().then(pref => {
+                    if (pref === 'auto' && auto) auto.checked = true;
+                    else if (pref === 'manual' && manual) manual.checked = true;
+                    else if (prompt) prompt.checked = true;
+                });
+            }
+
+            // handle preference changes
+            [prompt, auto, manual].forEach(input => {
+                if (!input) return;
+                input.addEventListener('change', () => {
+                    if (input.checked) window.electronAPI.setUpdatePreference(input.value);
+                });
+            });
+
+            // listeners from main
+            if (window.electronAPI.onUpdateAvailable) {
+                window.electronAPI.onUpdateAvailable((_e, info) => {
+                    showMessage(`Version ${info.version} available!\n\nDownloading update automatically...`, 'info');
+                });
+            }
+            if (window.electronAPI.onDownloadProgress) {
+                window.electronAPI.onDownloadProgress((_e, p) => {
+                    const pct = (p && p.percent) ? p.percent.toFixed(0) : '';
+                    showMessage(`Downloading update... ${pct}%`, 'info');
+                });
+            }
+            if (window.electronAPI.onUpdateDownloaded) {
+                window.electronAPI.onUpdateDownloaded((_e, info) => {
+                    showMessage(`Update ready to install!\n\nRestart Synk to apply version ${info.version}`, 'success');
+                });
+            }
+
+            // what's new
+            (async function loadLog(){
+                try {
+                    const resp = await fetch('update-log.json');
+                    const data = await resp.json();
+                    const container = document.getElementById('update-entries');
+                    if (!container || !Array.isArray(data.updates)) return;
+                    container.innerHTML = data.updates.map(u => `
+                        <div style="background:#0f0f0f; border:1px solid #333; border-radius:10px; padding:12px;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                                <strong>v${u.version}</strong>
+                                <span style="color:#888;">${u.date || ''}</span>
+                            </div>
+                            ${u.features && u.features.length ? `<div style='margin-top:6px;'><em>New Features:</em><br>${u.features.map(f=>`• ${f}`).join('<br>')}</div>`: ''}
+                            ${u.improvements && u.improvements.length ? `<div style='margin-top:6px;'><em>Improvements:</em><br>${u.improvements.map(f=>`• ${f}`).join('<br>')}</div>`: ''}
+                            ${u.fixes && u.fixes.length ? `<div style='margin-top:6px;'><em>Fixes:</em><br>${u.fixes.map(f=>`• ${f}`).join('<br>')}</div>`: ''}
+                        </div>
+                    `).join('');
+                } catch {}
+            })();
+        })();
         
         // New Refresh Button Handler
         document.getElementById('refresh-sync-btn').addEventListener('click', async () => {
@@ -1854,8 +2003,9 @@
                 // Refresh Google calendars if connected
                 if (isGoogleConnected) {
                     console.log('Refreshing Google calendars...');
-                    const calendars = await window.electronAPI.listGoogleCalendars();
-                    if (calendars && calendars.length > 0) {
+                    const gcRes = await window.electronAPI.listGoogleCalendars();
+                    const calendars = (gcRes && (gcRes.calendars ?? gcRes)) || [];
+                    if ((Array.isArray(calendars) && calendars.length > 0) || calendars?.allCalendars?.length > 0 || calendars?.items?.length > 0 || calendars?.myCalendars?.length > 0) {
                         renderGoogleCalendars(calendars);
                     }
                 }
@@ -1863,8 +2013,9 @@
                 // Refresh Notion databases if connected
                 if (isNotionConnected) {
                     console.log('Refreshing Notion databases...');
-                    const databases = await window.electronAPI.listDatabases();
-                    if (databases && databases.length > 0) {
+                    const dbRes = await window.electronAPI.listDatabases();
+                    const databases = (dbRes && (dbRes.databases ?? dbRes)) || [];
+                    if (Array.isArray(databases) && databases.length > 0) {
                         renderNotionDatabases(databases);
                     }
                 }
@@ -1921,18 +2072,32 @@
             const dot = document.getElementById(`${service}-status-dot`);
             const text = document.getElementById(`${service}-status-text`);
             
+            // Apply pill classes even if dot/text elements are missing
+            if (!pill) {
+                console.warn(`[UI] Connection pill element missing for ${service}`);
+                return;
+            }
+            
             if (connected) {
                 pill.classList.remove('disconnected');
                 pill.classList.add('connected');
-                dot.classList.remove('disconnected');
-                dot.classList.add('connected');
-                text.textContent = 'Connected';
+                if (dot) {
+                    dot.classList.remove('disconnected');
+                    dot.classList.add('connected');
+                }
+                if (text) {
+                    text.textContent = 'Connected';
+                }
             } else {
                 pill.classList.remove('connected');
                 pill.classList.add('disconnected');
-                dot.classList.remove('connected');
-                dot.classList.add('disconnected');
-                text.textContent = 'Not connected';
+                if (dot) {
+                    dot.classList.remove('connected');
+                    dot.classList.add('disconnected');
+                }
+                if (text) {
+                    text.textContent = 'Not connected';
+                }
             }
         }
 
@@ -2001,7 +2166,6 @@
         }
 
         // Settings Handlers
-        // Auto-sync is always enabled - no toggle needed
 
         document.getElementById('clear-data-btn').addEventListener('click', async () => {
             if (confirm('Are you sure you want to clear all data? This will disconnect all services.')) {
@@ -2010,8 +2174,11 @@
                     // Reset UI
                     updateConnectionPill('google', false);
                     updateConnectionPill('notion', false);
-                    document.getElementById('google-status').textContent = '';
-                    document.getElementById('notion-status').textContent = '';
+                    // Guard legacy status elements (they may not exist)
+                    const googleStatusEl = document.getElementById('google-status');
+                    if (googleStatusEl) googleStatusEl.textContent = '';
+                    const notionStatusEl = document.getElementById('notion-status');
+                    if (notionStatusEl) notionStatusEl.textContent = '';
                     document.getElementById('calendars-content').innerHTML = '<div class="empty-state"><h3>Connect Google to get started</h3><p>Your calendars will appear here</p></div>';
                     document.getElementById('notion-content').innerHTML = '<div class="empty-state"><h3>Connect Notion to get started</h3><p>Your databases and pages will appear here</p></div>';
                 } catch (error) {
@@ -2056,8 +2223,8 @@
 
         function checkAndTriggerAutoSync() {
             if (selected.notion && selected.google) {
-                // Start trial if both services are connected for the first time
-                startTrialIfEligible();
+                // Start trial only when user purchases a plan with a trial (not on first sync)
+                // startTrialIfEligible();
                 
                 clearTimeout(autoSyncTimer);
                 autoSyncTimer = setTimeout(async () => {
@@ -2140,13 +2307,14 @@
 
         async function updateSyncStats() {
             try {
-                const stats = await window.electronAPI.getSyncStats();
+                const res = await window.electronAPI.getSyncStats();
+                const stats = res && (res.stats || res);
                 const lastSync = document.getElementById('last-sync');
                 const syncCount = document.getElementById('sync-count');
                 
                 if (lastSync && syncCount) {
                     // Update last sync time
-                    if (stats.lastSyncTimes && Object.keys(stats.lastSyncTimes).length > 0) {
+                    if (stats && stats.lastSyncTimes && Object.keys(stats.lastSyncTimes).length > 0) {
                         const lastSyncTime = Object.values(stats.lastSyncTimes)[0];
                         const date = new Date(lastSyncTime);
                         const timeStr = date.toLocaleTimeString('en-US', { hour12: true, hour: 'numeric', minute: '2-digit' });
@@ -2156,7 +2324,8 @@
                     }
                     
                     // Update sync count
-                    syncCount.textContent = `${stats.successfulSyncs || 0} syncs`;
+                    const count = (stats && (stats.successfulSyncs || stats.syncStats?.successfulSyncs)) || 0;
+                    syncCount.textContent = `${count} syncs`;
                 }
             } catch (error) {
                 console.error('Error fetching sync stats:', error);
@@ -2223,6 +2392,11 @@
         if (window.electronAPI) {
             // OAuth success handler - hide connect button
             window.electronAPI.onOAuthSuccess((event, payload) => {
+                // Ignore invalid/empty payloads to prevent crashes
+                if (!payload || typeof payload !== 'object') {
+                    console.warn('OAuth success received with invalid payload, ignoring:', payload);
+                    return;
+                }
                 console.log('OAuth success received:', payload);
                 console.log('Payload details:', {
                     provider: payload.provider,
@@ -2240,30 +2414,24 @@
                         btn.style.display = 'none'; // Hide button
                         console.log('✅ Notion connect button hidden');
                     }
-                    // updateNotionStatus('success', `Connected to ${payload.account}`); // Removed status div
                     updateConnectionPill('notion', true);
                     if (payload.databases) {
                         displayDatabases(payload.databases);
                     }
-    
                 } else if (payload.provider === 'google') {
                     isGoogleConnected = true;
                     isGoogleConnecting = false;
                     const btn = document.getElementById('google-connect');
                     if (btn) {
-                        btn.style.display = 'none'; // Hide button
-                        console.log('✅ Google connect button hidden');
+                        btn.style.display = 'none';
                     }
-                    // updateGoogleStatus('success', `Connected to ${payload.account}`); // Removed status div
                     updateConnectionPill('google', true);
                     if (payload.calendars && (payload.calendars.allCalendars?.length > 0 || payload.calendars.length > 0)) {
                         console.log('Displaying calendars:', payload.calendars);
                         displayCalendars(payload.calendars);
                     } else {
                         console.log('Warning: No calendars received in payload');
-                        // updateGoogleStatus('warning', 'Connected but no calendars found'); // Removed status div
                     }
-    
                 }
             });
 
@@ -2286,11 +2454,9 @@
                 const btn = document.getElementById('google-connect');
                 if (btn) {
                     btn.style.display = 'none';
-                    console.log('✅ Google connect button hidden');
                 }
                 
                 // Update status and display calendars
-                updateGoogleStatus('success', 'Connected to Google Calendar');
                 
                 if (calendars && (calendars.allCalendars?.length > 0 || calendars.items?.length > 0)) {
                     console.log('Displaying calendars:', calendars);
@@ -2311,26 +2477,28 @@
             if (window.electronAPI.onOAuthSuccess) {
                 window.electronAPI.onOAuthSuccess((event, data) => {
                     console.log('✅ OAuth success received:', data);
-                    
-                    // Stop infinite loading immediately
+
+                    // Ignore null/invalid payloads and non-Google providers
+                    if (!data || (data.provider && data.provider !== 'google')) {
+                        return;
+                    }
+
+                    // Stop infinite loading immediately (Google only)
                     isGoogleConnected = true;
                     isGoogleConnecting = false;
-                    
-                    // Hide connect button
+
+                    // Hide connect button (Google only)
                     const btn = document.getElementById('google-connect');
                     if (btn) {
                         btn.style.display = 'none';
-                        btn.disabled = false;
-                        btn.textContent = 'Connect Google';
                     }
-                    
+
                     // Update status and display calendars
-                    // updateGoogleStatus('success', 'Connected to Google Calendar'); // Removed status div
                     updateConnectionPill('google', true);
-                    
+
                     // Handle calendar data (could be in data.calendars or directly in data)
                     const calendars = data.calendars || data;
-                    
+
                     if (calendars && (calendars.allCalendars?.length > 0 || calendars.items?.length > 0)) {
                         displayCalendars(calendars);
                         window.googleCalendars = calendars.allCalendars || calendars.items || calendars;
@@ -2338,8 +2506,7 @@
                     } else {
                         // updateGoogleStatus('warning', 'Connected but no calendars found'); // Removed status div
                     }
-                    
-    
+
                     const totalCount = calendars.allCalendars?.length || calendars.items?.length || 0;
                     showSuccessToast(`Connected to Google! Found ${totalCount} calendars.`);
                 });
@@ -2432,12 +2599,18 @@
                     // Fetch and display databases
                     try {
                         console.log('[Renderer] Fetching Notion databases...');
-                        const databases = await window.electronAPI.getDatabases();
+                        const listFn = window.electronAPI.listNotionDatabases || window.electronAPI.listDatabases;
+                        const resp = await listFn();
+                        const databases = resp?.databases ?? resp ?? [];
                         console.log('[Renderer] Notion databases received:', databases);
                         displayDatabases(databases);
                         
-                        // Show workspace name in success message
-                        const workspaceName = result.workspace || 'your workspace';
+                        // Show workspace name in success message (robust to string or object payloads)
+                        const workspaceName = (typeof result === 'string' && result)
+                            || result?.workspace
+                            || result?.data?.workspace
+                            || result?.data?.workspaceName
+                            || 'your workspace';
                         showSuccessToast(`Connected to Notion workspace: ${workspaceName}!`);
                     } catch (error) {
                         console.error('[Renderer] Error fetching Notion databases:', error);
@@ -2763,10 +2936,19 @@
         
         function updateGoogleButton(state) {
             const btn = document.getElementById('google-connect');
-            const text = document.getElementById('google-text');
+            let text = document.getElementById('google-text');
+            
+            // Auto-create missing text span to avoid warnings
+            if (btn && !text) {
+                text = document.createElement('span');
+                text.id = 'google-text';
+                text.style.display = 'none';
+                text.textContent = 'Connect Google';
+                btn.appendChild(text);
+            }
             
             if (!btn || !text) {
-                console.warn('[updateGoogleButton] Button or text element not found');
+                // DOM not ready yet; skip silently
                 return;
             }
             
@@ -2777,6 +2959,7 @@
                     console.log('[updateGoogleButton] Hidden button for loading');
                     break;
                 case 'connected':
+                    // Hide button after successful connection (match Notion behavior)
                     btn.style.display = 'none';
                     console.log('[updateGoogleButton] Hidden button for connected');
                     break;
@@ -2889,8 +3072,7 @@
             }
         });
 
-        // Initialize the app
-        console.log('Synk app initialized with enhanced OAuth UI');
+    
     </script>
 </body>
 </html>
