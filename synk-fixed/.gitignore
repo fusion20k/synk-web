@@ -1,9 +1,17 @@
 # Environment variables (but keep example files)
 .env
+.env.*
+*.env
 .env.local
 .env.development
 .env.production
 !.env.example
+
+# Secret files and credentials
+config/secret*
+keys/
+credentials/
+backend.env
 
 # Node modules
 node_modules/
