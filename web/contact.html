@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Us - Synk</title>
     <meta name="description" content="Get in touch with the Synk team. We're here to help with setup, support, and any questions about connecting Notion and Google Calendar.">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?v=2.0">
     <link rel="icon" href="assets/icons/favicon.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,6 +17,8 @@
             <nav>
                 <a href="index.html">Home</a>
                 <a href="about.html">How It Works</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="download.html">Download</a>
                 <a href="contact.html">Contact</a>
                 <a href="privacy.html">Privacy</a>
                 <a href="terms.html">Terms</a>
@@ -76,36 +78,72 @@
         </section>
 
         <!-- FAQ Section -->
-        <section class="features" style="background: var(--bg-secondary);">
+        <section class="faq-section">
             <div class="container">
                 <div class="section-header">
                     <h2>Frequently Asked Questions</h2>
                     <p>Quick answers to common questions about Synk</p>
                 </div>
-                <div class="faq-grid">
+                
+                <div class="faq-container">
                     <div class="faq-item">
-                        <h3>How secure is my data?</h3>
-                        <p>Synk uses OAuth 2.0 authentication and never stores your passwords. We only access the minimum data necessary for synchronization and use industry-standard encryption.</p>
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            How secure is my data?
+                            <span class="faq-toggle">↓</span>
+                        </div>
+                        <div class="faq-answer">
+                            Synk uses OAuth 2.0 authentication and never stores your passwords. We only access the minimum data necessary for synchronization and use industry-standard encryption.
+                        </div>
                     </div>
+                    
                     <div class="faq-item">
-                        <h3>Which Notion properties can be synced?</h3>
-                        <p>You can sync titles, dates, descriptions, status properties, and custom fields. Synk intelligently maps these to appropriate calendar event fields.</p>
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            Which Notion properties can be synced?
+                            <span class="faq-toggle">↓</span>
+                        </div>
+                        <div class="faq-answer">
+                            You can sync titles, dates, descriptions, status properties, and custom fields. Synk intelligently maps these to appropriate calendar event fields.
+                        </div>
                     </div>
+                    
                     <div class="faq-item">
-                        <h3>Can I sync multiple calendars?</h3>
-                        <p>Yes! You can connect multiple Google Calendars and map different Notion databases to different calendars based on your workflow needs.</p>
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            Can I sync multiple calendars?
+                            <span class="faq-toggle">↓</span>
+                        </div>
+                        <div class="faq-answer">
+                            Yes! You can connect multiple Google Calendars and map different Notion databases to different calendars based on your workflow needs.
+                        </div>
                     </div>
+                    
                     <div class="faq-item">
-                        <h3>What happens if I make changes in both places?</h3>
-                        <p>Synk has intelligent conflict resolution that handles simultaneous changes. You can configure how conflicts should be resolved in your settings.</p>
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            What happens if I make changes in both places?
+                            <span class="faq-toggle">↓</span>
+                        </div>
+                        <div class="faq-answer">
+                            Synk has intelligent conflict resolution that handles simultaneous changes. You can configure how conflicts should be resolved in your settings.
+                        </div>
                     </div>
+                    
                     <div class="faq-item">
-                        <h3>Is there a free trial?</h3>
-                        <p>Yes! Synk offers a free trial so you can test the synchronization with your actual Notion and Google Calendar data before committing.</p>
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            Is there a free trial?
+                            <span class="faq-toggle">↓</span>
+                        </div>
+                        <div class="faq-answer">
+                            Yes! Synk offers a 14-day free trial for the Pro plan so you can test the synchronization with your actual Notion and Google Calendar data before committing.
+                        </div>
                     </div>
+                    
                     <div class="faq-item">
-                        <h3>How often does sync happen?</h3>
-                        <p>Synk provides real-time synchronization for most changes, with background sync every few minutes to ensure everything stays perfectly aligned.</p>
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            How often does sync happen?
+                            <span class="faq-toggle">↓</span>
+                        </div>
+                        <div class="faq-answer">
+                            Synk provides real-time synchronization for most changes, with background sync every few minutes to ensure everything stays perfectly aligned.
+                        </div>
                     </div>
                 </div>
             </div>
@@ -120,19 +158,19 @@
                 </div>
                 <div class="support-options">
                     <div class="support-option">
-                        <div class="support-icon">📧</div>
+                        <div class="support-icon">E</div>
                         <h3>Email Support</h3>
                         <p>Send us an email and we'll get back to you within 24 hours during business days.</p>
                         <a href="mailto:support@synk.app" class="btn-secondary">support@synk.app</a>
                     </div>
                     <div class="support-option">
-                        <div class="support-icon">📚</div>
+                        <div class="support-icon">D</div>
                         <h3>Documentation</h3>
                         <p>Comprehensive guides and tutorials to help you get the most out of Synk.</p>
                         <a href="about.html" class="btn-secondary">View Docs</a>
                     </div>
                     <div class="support-option">
-                        <div class="support-icon">💬</div>
+                        <div class="support-icon">C</div>
                         <h3>Community</h3>
                         <p>Join our community of users sharing tips, tricks, and best practices.</p>
                         <a href="#" class="btn-secondary">Join Community</a>
@@ -168,6 +206,22 @@
         </div>
     </footer>
 
+    <script>
+        function toggleFAQ(element) {
+            const faqItem = element.parentElement;
+            const isActive = faqItem.classList.contains('active');
+            
+            // Close all FAQ items
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Open clicked item if it wasn't active
+            if (!isActive) {
+                faqItem.classList.add('active');
+            }
+        }
+    </script>
     <script src="js/scripts.js"></script>
 </body>
 </html>
