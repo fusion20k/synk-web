@@ -313,6 +313,81 @@ main {
   line-height: 1.6;
 }
 
+/* Plans Grid */
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.plan-card {
+  background: var(--bg-card);
+  padding: 0;
+  border-radius: var(--border-radius);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.plan-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-primary);
+  transition: var(--transition);
+}
+
+.plan-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-medium);
+  border-color: rgba(255, 69, 0, 0.3);
+}
+
+.plan-card:hover::before {
+  height: 6px;
+}
+
+.plan-card h3 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  padding: 2rem 2.5rem 1.5rem;
+  color: var(--text-primary);
+  background: linear-gradient(180deg, rgba(255, 69, 0, 0.05) 0%, transparent 100%);
+}
+
+.plan-features {
+  list-style: none;
+  padding: 0 2.5rem 2.5rem;
+  margin: 0;
+}
+
+.plan-features li {
+  color: var(--text-secondary);
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  position: relative;
+  padding-left: 1.5rem;
+  line-height: 1.6;
+}
+
+.plan-features li:last-child {
+  border-bottom: none;
+}
+
+.plan-features li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--accent-orange);
+  font-weight: 700;
+}
+
 /* How It Works Section */
 .how-it-works {
   padding: 6rem 0;
