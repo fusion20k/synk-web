@@ -850,7 +850,75 @@ footer {
   font-weight: bold;
 }
 
-/* Use Cases */
+/* Info Cards - Sleek Design with Gradient Bars */
+.info-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.info-card {
+  position: relative;
+  background: var(--bg-card);
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: var(--transition);
+  overflow: hidden;
+}
+
+/* Gradient bar at top */
+.info-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--gradient-primary);
+  transition: var(--transition);
+}
+
+.info-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-medium);
+  border-color: var(--accent-orange);
+}
+
+.info-card:hover::before {
+  height: 6px;
+}
+
+.info-card h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  margin-top: 0.5rem;
+  color: var(--text-primary);
+  position: relative;
+  padding-bottom: 0.75rem;
+}
+
+/* Subtle gradient background behind title */
+.info-card h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-orange) 0%, transparent 100%);
+  opacity: 0.3;
+}
+
+.info-card p {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-size: 1rem;
+}
+
+/* Use Cases - Keep for backwards compatibility */
 .use-cases {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
