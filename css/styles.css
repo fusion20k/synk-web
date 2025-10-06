@@ -149,12 +149,14 @@ main {
   text-align: center;
   position: relative;
   overflow: hidden;
+  background-color: var(--bg-primary);
   background-image: url('../assets/images/HeroImage.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
+/* Vignette effect - darkens edges */
 .hero::before {
   content: '';
   position: absolute;
@@ -162,14 +164,32 @@ main {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(255, 69, 0, 0.3) 100%);
+  background: 
+    radial-gradient(ellipse at center, transparent 0%, rgba(10, 10, 10, 0.4) 60%, rgba(10, 10, 10, 0.8) 100%);
   z-index: 1;
+  pointer-events: none;
+}
+
+/* Dragon's Breath glow effect */
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(ellipse at 30% 50%, rgba(255, 69, 0, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 50%, rgba(220, 20, 60, 0.12) 0%, transparent 50%);
+  z-index: 1;
+  pointer-events: none;
+  mix-blend-mode: screen;
 }
 
 .hero-content {
   max-width: 800px;
   position: relative;
-  z-index: 2;
+  z-index: 10;
 }
 
 .hero h1 {
@@ -181,15 +201,17 @@ main {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   line-height: 1.2;
+  text-shadow: 0 0 40px rgba(255, 69, 0, 0.3);
 }
 
 .hero p {
   font-size: 1.25rem;
-  color: var(--text-secondary);
+  color: #ffffff;
   margin-bottom: 2.5rem;
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.8);
 }
 
 .cta-button {
