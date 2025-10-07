@@ -10,48 +10,31 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <style>
-        /* Pricing section with dragon background */
-        .pricing-with-background {
-            position: relative;
-            background: #0a0a0a url('assets/images/HeroImage.png?v=2') no-repeat center center;
+        /* Dragon background on body - at the very back */
+        body.pricing-page {
+            background: #0a0a0a url('assets/images/HeroImage.png?v=2') no-repeat center top;
             background-size: cover;
             background-attachment: fixed;
-            overflow: hidden;
-        }
-        
-        /* Much darker vignette overlay for pricing page */
-        .pricing-with-background::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(ellipse at center, rgba(10, 10, 10, 0.75) 0%, rgba(10, 10, 10, 0.9) 50%, rgba(10, 10, 10, 0.95) 100%);
-            z-index: 1;
-            pointer-events: none;
-        }
-        
-        /* Subtle Dragon's Breath glow - very subdued */
-        .pricing-with-background::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(ellipse at 30% 50%, rgba(255, 69, 0, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 70% 50%, rgba(220, 20, 60, 0.06) 0%, transparent 50%);
-            z-index: 1;
-            pointer-events: none;
-            mix-blend-mode: screen;
-        }
-        
-        /* Ensure content is above overlays */
-        .pricing-with-background .container {
             position: relative;
-            z-index: 10;
+        }
+        
+        /* Much darker overlay to prevent overpowering */
+        body.pricing-page::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, rgba(10, 10, 10, 0.85) 0%, rgba(10, 10, 10, 0.92) 50%, rgba(10, 10, 10, 0.97) 100%);
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        /* Ensure all content is above the background */
+        header, main, footer {
+            position: relative;
+            z-index: 1;
         }
         
         .pricing-section {
@@ -62,6 +45,19 @@
         .section-header {
             text-align: center;
             margin-bottom: 2rem;
+        }
+        
+        .section-header h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .section-header p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2rem;
         }
         
         .pricing-grid {
@@ -334,7 +330,7 @@
         }
     </style>
 </head>
-<body>
+<body class="pricing-page">
     <header>
         <div class="header-content">
             <a href="index.html" class="logo">Synk</a>
@@ -356,13 +352,13 @@
     </header>
 
     <main>
-        <!-- Pricing Section with Dragon Background -->
-        <section class="pricing-section pricing-with-background">
+        <!-- Pricing Section -->
+        <section class="pricing-section">
             <div class="container">
                 <div class="section-header">
-                    <h1 style="font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 700; margin-bottom: 1rem; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 4px 12px rgba(0, 0, 0, 0.9);">Simple, Transparent Pricing</h1>
-                    <p style="font-size: 1.2rem; color: #ffffff; margin-bottom: 2rem; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9), 0 4px 16px rgba(0, 0, 0, 0.8);">Choose the plan that fits your workflow. Start with a free trial and experience seamless sync.</p>
-                    
+                    <h1>Simple, Transparent Pricing</h1>
+                    <p>Choose the plan that fits your workflow. Start with a free trial and experience seamless sync.</p>
+
                     <!-- Billing Toggle -->
                     <div class="billing-toggle" style="margin: 2rem 0;">
                         <span class="billing-option" id="monthly-label">Monthly</span>
