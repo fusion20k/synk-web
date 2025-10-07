@@ -161,7 +161,7 @@ main {
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(ellipse at center, transparent 0%, rgba(10, 10, 10, 0.3) 70%, rgba(10, 10, 10, 0.7) 100%);
+  background: radial-gradient(ellipse at center, transparent 0%, rgba(10, 10, 10, 0.5) 60%, rgba(10, 10, 10, 0.85) 100%);
   z-index: 1;
   pointer-events: none;
 }
