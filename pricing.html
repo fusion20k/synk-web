@@ -1,18 +1,63 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pricing - Synk</title>
     <meta name="description" content="Choose the perfect plan for your productivity needs. Synk offers flexible pricing for individuals and teams.">
-    <link rel="stylesheet" href="css/styles.css?v=2.0">
+    <link rel="stylesheet" href="css/styles.css?v=7.0">
     <link rel="icon" href="assets/icons/favicon.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <style>
+        /* Dragon background on body - at the very back */
+        body.pricing-page {
+            background: #0a0a0a url('assets/images/HeroImage.png?v=2') no-repeat center top;
+            background-size: cover;
+            background-attachment: fixed;
+            position: relative;
+        }
+        
+        /* Much darker overlay to prevent overpowering */
+        body.pricing-page::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, rgba(10, 10, 10, 0.85) 0%, rgba(10, 10, 10, 0.92) 50%, rgba(10, 10, 10, 0.97) 100%);
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        /* Ensure all content is above the background */
+        header, main, footer {
+            position: relative;
+            z-index: 1;
+        }
+        
         .pricing-section {
             padding: 6rem 0;
             min-height: calc(100vh - 80px);
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .section-header h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .section-header p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2rem;
         }
         
         .pricing-grid {
@@ -108,7 +153,7 @@
         }
         
         .plan-features li::before {
-            content: '✓';
+            content: 'Γ£ô';
             position: absolute;
             left: 0;
             color: var(--accent-orange);
@@ -120,7 +165,7 @@
         }
         
         .plan-features li.unavailable::before {
-            content: '✗';
+            content: 'Γ£ù';
             color: var(--text-muted);
         }
         
@@ -285,7 +330,7 @@
         }
     </style>
 </head>
-<body>
+<body class="pricing-page">
     <header>
         <div class="header-content">
             <a href="index.html" class="logo">Synk</a>
@@ -313,7 +358,7 @@
                 <div class="section-header">
                     <h1>Simple, Transparent Pricing</h1>
                     <p>Choose the plan that fits your workflow. Start with a free trial and experience seamless sync.</p>
-                    
+
                     <!-- Billing Toggle -->
                     <div class="billing-toggle" style="margin: 2rem 0;">
                         <span class="billing-option" id="monthly-label">Monthly</span>
@@ -389,7 +434,7 @@
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             How does the free trial work?
-                            <span class="faq-toggle">↓</span>
+                            <span class="faq-toggle">Γåô</span>
                         </div>
                         <div class="faq-answer">
                             Your 14-day free trial begins automatically when you connect both Notion and Google Calendar. No credit card required to start. You'll have full access to all features during the trial.
@@ -399,7 +444,7 @@
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             What happens after my trial ends?
-                            <span class="faq-toggle">↓</span>
+                            <span class="faq-toggle">Γåô</span>
                         </div>
                         <div class="faq-answer">
                             After your trial ends, you'll need to subscribe to continue using Synk. Your sync configurations will be saved, and you can resume immediately upon subscription.
@@ -409,7 +454,7 @@
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             What's the difference between Pro and Ultimate?
-                            <span class="faq-toggle">↓</span>
+                            <span class="faq-toggle">Γåô</span>
                         </div>
                         <div class="faq-answer">
                             Pro includes all core sync features perfect for individuals and small teams. Ultimate adds advanced features like custom field mapping, advanced filtering conditions, bulk operations, detailed analytics, and configuration export/import for power users.
@@ -419,7 +464,7 @@
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             Can I cancel anytime?
-                            <span class="faq-toggle">↓</span>
+                            <span class="faq-toggle">Γåô</span>
                         </div>
                         <div class="faq-answer">
                             Yes, you can cancel your subscription at any time. Your service will continue until the end of your current billing period.
@@ -429,7 +474,7 @@
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             What happens to my data if I cancel?
-                            <span class="faq-toggle">↓</span>
+                            <span class="faq-toggle">Γåô</span>
                         </div>
                         <div class="faq-answer">
                             Your data remains in your Notion and Google Calendar accounts. Synk only facilitates synchronization and doesn't store your content permanently.
@@ -439,7 +484,7 @@
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             Do you offer refunds?
-                            <span class="faq-toggle">↓</span>
+                            <span class="faq-toggle">Γåô</span>
                         </div>
                         <div class="faq-answer">
                             Yes, we offer a 30-day money-back guarantee. Contact support for assistance with refunds.
@@ -449,7 +494,7 @@
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             Is my data secure?
-                            <span class="faq-toggle">↓</span>
+                            <span class="faq-toggle">Γåô</span>
                         </div>
                         <div class="faq-answer">
                             Absolutely. We use OAuth authentication, encrypt all data in transit, and follow industry best practices for security. We never store your passwords.
