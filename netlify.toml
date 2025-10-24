@@ -2,10 +2,12 @@
   publish = "."
   command = ""
 
+# Catch-all redirect for SPA - but exclude static assets
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+  force = false
 
 [[headers]]
   for = "/*"
