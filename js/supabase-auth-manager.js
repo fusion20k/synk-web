@@ -170,8 +170,8 @@ class SupabaseAuthManager {
     renderLoggedOutUI(container) {
         container.innerHTML = `
             <div class="auth-section logged-out">
-                <a href="login.html" class="auth-btn login-btn">Log In</a>
-                <a href="signup.html" class="auth-btn signup-btn">Sign Up</a>
+                <a href="/login.html" class="btn-login">Log In</a>
+                <a href="/signup.html" class="btn-signup">Sign Up</a>
             </div>
         `;
     }
