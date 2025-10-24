@@ -7,6 +7,8 @@
     <meta name="description" content="Download the Synk desktop app installer for seamless Notion ↔ Google Calendar syncing.">
     <link rel="stylesheet" href="css/styles.css?v=7.0">
     <link rel="icon" href="assets/icons/favicon.ico">
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <header>
@@ -22,24 +24,8 @@
                 <a href="terms.html">Terms</a>
             </nav>
             
-            <!-- Auth Buttons (shown when logged out) -->
-            <div class="auth-buttons" id="auth-buttons">
-                <a href="login.html" class="auth-btn login">Log In</a>
-                <a href="signup.html" class="auth-btn signup">Sign Up</a>
-            </div>
-            
-            <!-- User Dropdown (shown when logged in) -->
-            <div class="user-dropdown" id="user-dropdown">
-                <div class="user-avatar" id="user-avatar">U</div>
-                <div class="dropdown-menu">
-                    <div class="dropdown-header">
-                        <div class="dropdown-email" id="user-email">user@example.com</div>
-                    </div>
-                    <a href="https://billing.stripe.com/p/login/7sYaEQaRD57SghT5hSbMQ00" class="dropdown-item" target="_blank">Manage Account</a>
-                    <div class="dropdown-divider"></div>
-                    <button class="dropdown-item" id="logout-btn">Log Out</button>
-                </div>
-            </div>
+            <!-- Dynamic Auth Container -->
+            <div id="auth-section-container"></div>
             
             <div class="mobile-menu-toggle">
                 <span></span>
@@ -97,8 +83,14 @@
         </div>
     </footer>
 
+    <!-- Supabase Client Configuration -->
+    <script src="js/supabase-client.js"></script>
+    <!-- Auth State Manager - Handles auth state changes -->
+    <script src="js/auth-state-manager.js"></script>
     <!-- Dynamic Auth State Management -->
     <script src="js/auth-state.js"></script>
+    <!-- Dynamic Auth UI Renderer -->
+    <script src="js/auth-ui-renderer.js"></script>
     <!-- Main Website Scripts -->
     <script src="js/scripts.js"></script>
 </body>

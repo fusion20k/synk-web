@@ -3,12 +3,18 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize dynamic auth state management
     initializeDynamicAuthState();
     
+    // Initialize dynamic auth UI renderer
+    if (typeof initializeAuthUIRenderer === 'function') {
+        initializeAuthUIRenderer();
+    }
+    
     // Listen for auth state changes
     window.addEventListener('auth-state-changed', (e) => {
         console.log('Auth state changed:', e.detail);
     });
     
     console.log('✓ Dynamic Auth State Manager Initialized');
+    console.log('✓ Dynamic Auth UI Renderer Initialized');
     console.log('Tip: Use window.toggleAuthDemo() to test logged-in/logged-out states (no reload needed)');
     
     // Header scroll effect

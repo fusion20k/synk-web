@@ -159,6 +159,8 @@
             border-color: rgba(255, 255, 255, 0.3);
         }
     </style>
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <header>
@@ -262,8 +264,14 @@
             }
         }
     </script>
+    <!-- Supabase Client Configuration -->
+    <script src="js/supabase-client.js"></script>
+    <!-- Auth State Manager - Handles auth state changes -->
+    <script src="js/auth-state-manager.js"></script>
     <!-- Dynamic Auth State Management -->
     <script src="js/auth-state.js"></script>
+    <!-- Dynamic Auth UI Renderer -->
+    <script src="js/auth-ui-renderer.js"></script>
     <!-- Main Website Scripts -->
     <script src="js/scripts.js"></script>
 </body>
