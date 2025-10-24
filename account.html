@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Account - Synk</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/auth.css?v=1.5">
+    <!-- Supabase Client Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="auth-body">
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">Synk</a>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="about.html">How It Works</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="download.html">Download</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+            
+            <!-- Dynamic Auth Container -->
+            <div id="auth-section-container"></div>
+            
+            <div class="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <main class="auth-page">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h1>Manage Your Account</h1>
+                    <p>Update your account information and preferences</p>
+                </div>
+
+                <div id="account-content" class="account-content">
+                    <!-- Populated by JavaScript -->
+                </div>
+
+                <div id="error-message" class="error-message" style="display: none;"></div>
+                <div id="success-message" class="success-message" style="display: none;"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Supabase Client Configuration -->
+    <script src="js/supabase-client.js"></script>
+    
+    <!-- Auth State Manager -->
+    <script src="js/auth-state-manager.js"></script>
+    
+    <!-- Account Management Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const authManager = window.getAuthManager();
+            
+            // Wait for auth manager to be initialized
+            if (!authManager || !authManager.isInitialized) {
+                await new Promise(resolve => {
+                    const checkAuth = () => {
+                        const mgr = window.getAuthManager();
+                        if (mgr && mgr.isInitialized) {
+                            resolve();
+                        } else {
+                            setTimeout(checkAuth, 100);
+                        }
+                    };
+                    checkAuth();
+                });
+            }
+
+            // Check if user is logged in
+            const currentUser = window.authStateManager.getCurrentUser();
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Display account information
+            const accountContent = document.getElementById('account-content');
+            accountContent.innerHTML = `
+                <div class="account-info">
+                    <div class="account-section">
+                        <h3>Account Information</h3>
+                        <p><strong>Email:</strong> ${currentUser.email}</p>
+                        <p><strong>Status:</strong> Active</p>
+                    </div>
+
+                    <div class="account-section">
+                        <h3>Account Settings</h3>
+                        <p>More account settings coming soon.</p>
+                    </div>
+
+                    <div class="account-actions">
+                        <button id="logout-account-btn" class="auth-btn logout-btn">
+                            <span class="btn-text">Log Out</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            // Add logout handler
+            const logoutBtn = document.getElementById('logout-account-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', async () => {
+                    await window.authStateManager.handleLogout();
+                });
+            }
+        });
+    </script>
+</body>
+</html>
