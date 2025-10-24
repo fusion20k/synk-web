@@ -50,16 +50,13 @@
         </div>
     </main>
 
-    <!-- Supabase Client Configuration -->
-    <script src="js/supabase-client.js"></script>
-    
-    <!-- Auth State Manager -->
-    <script src="js/auth-state-manager.js"></script>
+    <!-- Dynamic Auth State Management (must come first) -->
+    <script src="js/auth-state.js"></script>
     
     <!-- Account Management Script -->
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            const authManager = window.getAuthManager();
+            const authManager = window.authManager;
             
             // Wait for auth manager to be initialized
             if (!authManager || !authManager.isInitialized) {
@@ -110,7 +107,11 @@
             const logoutBtn = document.getElementById('logout-account-btn');
             if (logoutBtn) {
                 logoutBtn.addEventListener('click', async () => {
-                    await window.authStateManager.handleLogout();
+                    window.authManager.logout();
+                    // Redirect to home after logout
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 300);
                 });
             }
         });
