@@ -138,6 +138,7 @@ nav a:hover::after {
 .auth-buttons.fade-out {
   opacity: 0;
   visibility: hidden;
+  display: none !important;
 }
 
 .auth-btn {
@@ -199,7 +200,7 @@ nav a:hover::after {
 /* User Dropdown */
 .user-dropdown {
   position: relative;
-  display: flex;
+  display: none;
   align-items: center;
   margin-left: auto;
   z-index: 1001;
@@ -211,6 +212,7 @@ nav a:hover::after {
 .user-dropdown.active {
   opacity: 1;
   visibility: visible;
+  display: flex !important;
 }
 
 .user-avatar {

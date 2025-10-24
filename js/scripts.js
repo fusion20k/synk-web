@@ -454,17 +454,17 @@ function showLoggedInState(email) {
     const userAvatar = document.getElementById('user-avatar');
     const userEmailEl = document.getElementById('user-email');
     
-    // Fade out auth buttons with animation
+    // HIDE auth buttons completely
     if (authButtons) {
         authButtons.classList.add('fade-out');
-        setTimeout(() => {
-            authButtons.style.pointerEvents = 'none';
-        }, 300);
+        authButtons.style.display = 'none';
+        authButtons.style.pointerEvents = 'none';
     }
     
-    // Fade in user dropdown with smooth transition
+    // SHOW user dropdown
     if (userDropdown) {
         userDropdown.classList.add('active');
+        userDropdown.style.display = 'flex';
     }
     
     // Update email display
@@ -480,16 +480,18 @@ function showLoggedOutState() {
     const authButtons = document.getElementById('auth-buttons');
     const userDropdown = document.getElementById('user-dropdown');
     
-    // Fade in auth buttons
+    // SHOW auth buttons
     if (authButtons) {
         authButtons.classList.remove('fade-out');
+        authButtons.style.display = 'flex';
         authButtons.style.pointerEvents = 'auto';
     }
     
-    // Hide user dropdown with smooth animation
+    // HIDE user dropdown
     if (userDropdown) {
         userDropdown.classList.remove('active');
         userDropdown.classList.remove('open');
+        userDropdown.style.display = 'none';
     }
 }
 
