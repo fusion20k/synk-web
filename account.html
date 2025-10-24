@@ -21,11 +21,8 @@
                 <a href="contact.html">Contact</a>
             </nav>
             
-            <!-- Auth Buttons -->
-            <div class="auth-buttons">
-                <a href="/login.html" class="btn-login">Log In</a>
-                <a href="/signup.html" class="btn-signup">Sign Up</a>
-            </div>
+            <!-- Auth Container - Populated Dynamically -->
+            <div id="auth-container"></div>
             
             <div class="mobile-menu-toggle">
                 <span></span>
@@ -59,30 +56,23 @@
     <!-- Auth State Manager -->
     <script src="js/auth-state-manager.js"></script>
     
+    <!-- Main Website Scripts -->
+    <script src="js/scripts.js"></script>
+    
     <!-- Account Management Script -->
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            const authManager = window.getAuthManager();
-            
-            // Wait for auth manager to be initialized
-            if (!authManager || !authManager.isInitialized) {
-                await new Promise(resolve => {
-                    const checkAuth = () => {
-                        const mgr = window.getAuthManager();
-                        if (mgr && mgr.isInitialized) {
-                            resolve();
-                        } else {
-                            setTimeout(checkAuth, 100);
-                        }
-                    };
-                    checkAuth();
-                });
+            // Wait for auth to be ready (up to 5 seconds)
+            let currentUser = null;
+            for (let i = 0; i < 50; i++) {
+                currentUser = window.currentUser;
+                if (currentUser) break;
+                await new Promise(r => setTimeout(r, 100));
             }
 
-            // Check if user is logged in
-            const currentUser = window.authStateManager.getCurrentUser();
+            // If no user, redirect to login
             if (!currentUser) {
-                window.location.href = 'login.html';
+                window.location.href = '/login.html';
                 return;
             }
 
@@ -112,8 +102,8 @@
             // Add logout handler
             const logoutBtn = document.getElementById('logout-account-btn');
             if (logoutBtn) {
-                logoutBtn.addEventListener('click', async () => {
-                    await window.authStateManager.handleLogout();
+                logoutBtn.addEventListener('click', () => {
+                    handleLogout();
                 });
             }
         });
