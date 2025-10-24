@@ -598,3 +598,10 @@ function showNotification(message, type = 'info') {
         }
     }, 5000);
 }
+
+// ============================================
+// INITIALIZE AUTH STATE ON PAGE LOAD
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+    initAuthState();
+});
