@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How It Works - Synk</title>
+    <meta name="description" content="Learn how Synk seamlessly connects Notion and Google Calendar with real-time synchronization. Step-by-step guide to setting up your productivity workflow.">
+    <link rel="stylesheet" href="css/styles.css?v=7.0">
+    <link rel="icon" href="assets/icons/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">Synk</a>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="about.html">How It Works</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="download.html">Download</a>
+                <a href="contact.html">Contact</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="terms.html">Terms</a>
+            </nav>
+            
+            <!-- Auth Buttons (shown when logged out) -->
+            <div class="auth-buttons" id="auth-buttons">
+                <a href="login.html" class="auth-btn login">Log In</a>
+                <a href="signup.html" class="auth-btn signup">Sign Up</a>
+            </div>
+            
+            <!-- User Dropdown (shown when logged in) -->
+            <div class="user-dropdown" id="user-dropdown">
+                <div class="user-avatar" id="user-avatar">U</div>
+                <div class="dropdown-menu">
+                    <div class="dropdown-header">
+                        <div class="dropdown-email" id="user-email">user@example.com</div>
+                    </div>
+                    <a href="https://billing.stripe.com/p/login/7sYaEQaRD57SghT5hSbMQ00" class="dropdown-item" target="_blank">Manage Account</a>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item" id="logout-btn">Log Out</button>
+                </div>
+            </div>
+            
+            <div class="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero" style="min-height: 60vh;">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>How Synk Works</h1>
+                    <p>Discover how easy it is to connect your Notion workspace with Google Calendar for seamless productivity.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detailed Steps Section -->
+        <section class="how-it-works" style="padding: 6rem 0;">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Simple Setup, Powerful Results</h2>
+                    <p>Get your productivity tools working together in minutes</p>
+                </div>
+                
+                <div class="detailed-steps">
+                    <div class="detailed-step">
+                        <div class="step-visual">
+                            <div class="step-number">1</div>
+                        </div>
+                        <div class="step-content">
+                            <h3>Connect Your Notion Account</h3>
+                            <p>Start by securely connecting your Notion workspace using OAuth 2.0 authentication. This ensures your credentials remain safe while giving Synk the necessary permissions to read your selected pages and databases.</p>
+                            <ul>
+                                <li>Click "Connect Notion" in the Synk app</li>
+                                <li>Authorize Synk in your browser</li>
+                                <li>Select which workspaces to include</li>
+                                <li>Your connection is established securely</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="detailed-step">
+                        <div class="step-visual">
+                            <div class="step-number">2</div>
+                        </div>
+                        <div class="step-content">
+                            <h3>Link Google Calendar</h3>
+                            <p>Connect your Google Calendar using Google's secure OAuth system. Synk will only access the calendars you specify, ensuring your privacy while enabling seamless synchronization.</p>
+                            <ul>
+                                <li>Click "Connect Google Calendar"</li>
+                                <li>Sign in with your Google account</li>
+                                <li>Choose which calendars to sync</li>
+                                <li>Grant necessary permissions</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="detailed-step">
+                        <div class="step-visual">
+                            <div class="step-number">3</div>
+                        </div>
+                        <div class="step-content">
+                            <h3>Configure Your Sync Settings</h3>
+                            <p>Take full control over what gets synchronized. Choose specific Notion databases, pages, or properties that should appear in your calendar. Set up custom mapping rules and sync preferences.</p>
+                            <ul>
+                                <li>Select Notion databases to sync</li>
+                                <li>Choose which properties map to calendar events</li>
+                                <li>Set sync frequency and direction</li>
+                                <li>Configure notification preferences</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="detailed-step">
+                        <div class="step-visual">
+                            <div class="step-number">4</div>
+                        </div>
+                        <div class="step-content">
+                            <h3>Enjoy Automatic Synchronization</h3>
+                            <p>Once configured, Synk works in the background to keep your tools perfectly aligned. Changes in Notion appear in Google Calendar instantly, and calendar updates can flow back to Notion based on your settings.</p>
+                            <ul>
+                                <li>Real-time bidirectional sync</li>
+                                <li>Automatic conflict resolution</li>
+                                <li>Background processing</li>
+                                <li>Detailed sync logs and status</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features" style="background: var(--bg-secondary);">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Powerful Features</h2>
+                    <p>Everything you need for seamless synchronization</p>
+                </div>
+                <div class="info-cards">
+                    <div class="info-card">
+                        <h3>Unlimited Syncing</h3>
+                        <p>Connect unlimited Google Calendars and Notion Databases without restrictions. Scale your workflow as your needs grow.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Automatic Live Sync</h3>
+                        <p>Changes sync instantly between platforms. Never worry about manual updates or outdated information again.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Multi-Platform Support</h3>
+                        <p>Sync across multiple platforms and calendars simultaneously. Perfect for complex workflows and team coordination.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>AI Powered Automation</h3>
+                        <p>Intelligent automation learns your patterns and optimizes sync behavior. Save time with smart scheduling and conflict resolution.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Flexible Sync Options</h3>
+                        <p>Choose between manual, incremental, or automatic sync modes. Full control over when and how your data synchronizes.</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Priority Support</h3>
+                        <p>Get early access to new features and dedicated support. Your feedback shapes the future of Synk.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="hero" style="min-height: 40vh; background: var(--bg-primary);">
+            <div class="container">
+                <div class="hero-content">
+                    <h2>Ready to Get Started?</h2>
+                    <p>Set up your synchronized workflow in just a few minutes</p>
+                    <a href="contact.html" class="cta-button">
+                        Start Syncing Now
+                        <span>→</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Synk</h3>
+                    <p>Seamlessly connecting your productivity tools for a more organized workflow.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Product</h3>
+                    <a href="about.html">How It Works</a><br>
+                    <a href="contact.html">Support</a><br>
+                    <a href="index.html#features">Features</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <a href="privacy.html">Privacy Policy</a><br>
+                    <a href="terms.html">Terms of Service</a><br>
+                    <a href="contact.html">Contact Us</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Synk. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/scripts.js"></script>
+</body>
+</html>

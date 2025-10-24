@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Synk</title>
+    <meta name="description" content="Get in touch with the Synk team. We're here to help with setup, support, and any questions about connecting Notion and Google Calendar.">
+    <link rel="stylesheet" href="css/styles.css?v=7.0">
+    <link rel="icon" href="assets/icons/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">Synk</a>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="about.html">How It Works</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="download.html">Download</a>
+                <a href="contact.html">Contact</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="terms.html">Terms</a>
+            </nav>
+            
+            <!-- Auth Buttons (shown when logged out) -->
+            <div class="auth-buttons" id="auth-buttons">
+                <a href="login.html" class="auth-btn login">Log In</a>
+                <a href="signup.html" class="auth-btn signup">Sign Up</a>
+            </div>
+            
+            <!-- User Dropdown (shown when logged in) -->
+            <div class="user-dropdown" id="user-dropdown">
+                <div class="user-avatar" id="user-avatar">U</div>
+                <div class="dropdown-menu">
+                    <div class="dropdown-header">
+                        <div class="dropdown-email" id="user-email">user@example.com</div>
+                    </div>
+                    <a href="https://billing.stripe.com/p/login/7sYaEQaRD57SghT5hSbMQ00" class="dropdown-item" target="_blank">Manage Account</a>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item" id="logout-btn">Log Out</button>
+                </div>
+            </div>
+            
+            <div class="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero" style="min-height: 50vh;">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Get in Touch</h1>
+                    <p>Have questions about Synk? Need help getting started? We're here to help you streamline your productivity workflow.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Form Section -->
+        <section class="contact">
+            <div class="container">
+                <div class="contact-form">
+                    <h2 style="text-align: center; margin-bottom: 2rem;">Send us a Message</h2>
+                    <form id="contact-form">
+                        <div class="form-group">
+                            <label for="name">Name *</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email *</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <select id="subject" name="subject">
+                                <option value="general">General Inquiry</option>
+                                <option value="support">Technical Support</option>
+                                <option value="setup">Setup Help</option>
+                                <option value="feature">Feature Request</option>
+                                <option value="bug">Bug Report</option>
+                                <option value="business">Business Inquiry</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message *</label>
+                            <textarea id="message" name="message" placeholder="Tell us how we can help you..." required></textarea>
+                        </div>
+                        <button type="submit" class="submit-button">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Frequently Asked Questions</h2>
+                    <p>Quick answers to common questions about Synk</p>
+                </div>
+                
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            How secure is my data?
+                            <span class="faq-toggle">↓</span>
+                        </div>
+                        <div class="faq-answer">
+                            Synk uses OAuth 2.0 authentication and never stores your passwords. We only access the minimum data necessary for synchronization and use industry-standard encryption.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            Which Notion properties can be synced?
+                            <span class="faq-toggle">↓</span>
+                        </div>
+                        <div class="faq-answer">
+                            You can sync titles, dates, descriptions, status properties, and custom fields. Synk intelligently maps these to appropriate calendar event fields.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            Can I sync multiple calendars?
+                            <span class="faq-toggle">↓</span>
+                        </div>
+                        <div class="faq-answer">
+                            Yes! You can connect multiple Google Calendars and map different Notion databases to different calendars based on your workflow needs.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            What happens if I make changes in both places?
+                            <span class="faq-toggle">↓</span>
+                        </div>
+                        <div class="faq-answer">
+                            Synk has intelligent conflict resolution that handles simultaneous changes. You can configure how conflicts should be resolved in your settings.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            Is there a free trial?
+                            <span class="faq-toggle">↓</span>
+                        </div>
+                        <div class="faq-answer">
+                            Yes! Synk offers a 14-day free trial for the Pro plan so you can test the synchronization with your actual Notion and Google Calendar data before committing.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            How often does sync happen?
+                            <span class="faq-toggle">↓</span>
+                        </div>
+                        <div class="faq-answer">
+                            Synk provides real-time synchronization for most changes, with background sync every few minutes to ensure everything stays perfectly aligned.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Support Options -->
+        <section class="about">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Other Ways to Get Help</h2>
+                    <p>Choose the support option that works best for you</p>
+                </div>
+                <div class="support-options">
+                    <div class="support-option">
+                        <div class="support-icon">E</div>
+                        <h3>Email Support</h3>
+                        <p>Send us an email and we'll get back to you within 24 hours during business days.</p>
+                        <a href="mailto:support@synk.app" class="btn-secondary">support@synk.app</a>
+                    </div>
+                    <div class="support-option">
+                        <div class="support-icon">D</div>
+                        <h3>Documentation</h3>
+                        <p>Comprehensive guides and tutorials to help you get the most out of Synk.</p>
+                        <a href="about.html" class="btn-secondary">View Docs</a>
+                    </div>
+                    <div class="support-option">
+                        <div class="support-icon">C</div>
+                        <h3>Community</h3>
+                        <p>Join our community of users sharing tips, tricks, and best practices.</p>
+                        <a href="#" class="btn-secondary">Join Community</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Synk</h3>
+                    <p>Seamlessly connecting your productivity tools for a more organized workflow.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Product</h3>
+                    <a href="about.html">How It Works</a><br>
+                    <a href="contact.html">Support</a><br>
+                    <a href="index.html#features">Features</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <a href="privacy.html">Privacy Policy</a><br>
+                    <a href="terms.html">Terms of Service</a><br>
+                    <a href="contact.html">Contact Us</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Synk. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleFAQ(element) {
+            const faqItem = element.parentElement;
+            const isActive = faqItem.classList.contains('active');
+            
+            // Close all FAQ items
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Open clicked item if it wasn't active
+            if (!isActive) {
+                faqItem.classList.add('active');
+            }
+        }
+    </script>
+    <script src="js/scripts.js"></script>
+</body>
+</html>

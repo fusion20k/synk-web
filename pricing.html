@@ -1,0 +1,674 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - Synk</title>
+    <meta name="description" content="Choose the perfect plan for your productivity needs. Synk offers flexible pricing for individuals and teams.">
+    <link rel="stylesheet" href="css/styles.css?v=7.0">
+    <link rel="icon" href="assets/icons/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <style>
+        /* Dragon background on body - at the very back */
+        body.pricing-page {
+            background: #0a0a0a url('assets/images/HeroImage.png?v=2') no-repeat center top;
+            background-size: cover;
+            background-attachment: fixed;
+            position: relative;
+        }
+        
+        /* Much darker overlay to prevent overpowering */
+        body.pricing-page::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, rgba(10, 10, 10, 0.85) 0%, rgba(10, 10, 10, 0.92) 50%, rgba(10, 10, 10, 0.97) 100%);
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        /* Ensure all content is above the background */
+        header, main, footer {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .pricing-section {
+            padding: 6rem 0;
+            min-height: calc(100vh - 80px);
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .section-header h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .section-header p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+            margin-top: 4rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .pricing-card {
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: 3rem 2.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pricing-card.featured {
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 30px rgba(255, 69, 0, 0.2);
+        }
+        
+        .pricing-card.featured::before {
+            content: 'Most Popular';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+            border-color: rgba(255, 69, 0, 0.3);
+        }
+        
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        
+        .plan-price {
+            font-size: 3rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+        
+        .plan-period {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        .plan-description {
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+        
+        .plan-features {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 3rem;
+            text-align: left;
+        }
+        
+        .plan-features li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            position: relative;
+            padding-left: 2rem;
+        }
+        
+        .plan-features li:last-child {
+            border-bottom: none;
+        }
+        
+        .plan-features li::before {
+            content: '›';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-orange);
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        
+        .plan-features li.unavailable {
+            opacity: 0.5;
+        }
+        
+        .plan-features li.unavailable::before {
+            content: '✕';
+            color: var(--text-muted);
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .plan-button {
+            width: 100%;
+            background: var(--gradient-primary);
+            color: var(--text-primary);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 16px rgba(255, 69, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .plan-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform: translateX(-100%) translateY(-100%) rotate(45deg);
+            transition: transform 0.6s ease;
+        }
+        
+        .plan-button:hover::before {
+            transform: translateX(100%) translateY(100%) rotate(45deg);
+        }
+        
+        .plan-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 69, 0, 0.4);
+            background: var(--gradient-secondary);
+        }
+        
+        .plan-button.secondary {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-secondary);
+            box-shadow: none;
+        }
+        
+        .plan-button.secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            color: var(--text-primary);
+            box-shadow: none;
+        }
+        
+        .faq-section {
+            padding: 4rem 0;
+            background: var(--bg-secondary);
+        }
+        
+        .faq-item {
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .faq-question {
+            padding: 1.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .faq-answer {
+            padding: 0 1.5rem 1.5rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            display: none;
+        }
+        
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+        
+        .faq-toggle {
+            color: var(--accent-orange);
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+        
+        .faq-item.active .faq-toggle {
+            transform: rotate(90deg);
+        }
+        
+        /* Billing Toggle Styles */
+        .billing-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .billing-option {
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
+        }
+        
+        .billing-option.active {
+            color: var(--text-primary);
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: 0.4s;
+            border-radius: 30px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: var(--accent-orange);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+    </style>
+</head>
+<body class="pricing-page">
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">Synk</a>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="about.html">How It Works</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="download.html">Download</a>
+                <a href="contact.html">Contact</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="terms.html">Terms</a>
+            </nav>
+            
+            <!-- Auth Buttons (shown when logged out) -->
+            <div class="auth-buttons" id="auth-buttons">
+                <a href="login.html" class="auth-btn login">Log In</a>
+                <a href="signup.html" class="auth-btn signup">Sign Up</a>
+            </div>
+            
+            <!-- User Dropdown (shown when logged in) -->
+            <div class="user-dropdown" id="user-dropdown">
+                <div class="user-avatar" id="user-avatar">U</div>
+                <div class="dropdown-menu">
+                    <div class="dropdown-header">
+                        <div class="dropdown-email" id="user-email">user@example.com</div>
+                    </div>
+                    <a href="https://billing.stripe.com/p/login/7sYaEQaRD57SghT5hSbMQ00" class="dropdown-item" target="_blank">Manage Account</a>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item" id="logout-btn">Log Out</button>
+                </div>
+            </div>
+            
+            <div class="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Pricing Section -->
+        <section class="pricing-section">
+            <div class="container">
+                <div class="section-header">
+                    <h1>Simple, Transparent Pricing</h1>
+                    <p>Choose the plan that fits your workflow. Start with a free trial and experience seamless sync.</p>
+
+                    <!-- Billing Toggle -->
+                    <div class="billing-toggle" style="margin: 2rem 0;">
+                        <span class="billing-option" id="monthly-label">Monthly</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="billing-toggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="billing-option" id="yearly-label">Yearly <span style="color: #ff4500; font-size: 0.8rem;">(Save 20%)</span></span>
+                    </div>
+                </div>
+                
+                <div class="pricing-grid">
+                    <!-- Pro Plan -->
+                    <div class="pricing-card featured">
+                        <h3 class="plan-name">Pro</h3>
+                        <div class="plan-price" id="pro-price">$12.99</div>
+                        <div class="plan-period" id="pro-period">per month</div>
+                        <div class="yearly-savings" id="pro-savings" style="display: none; color: #ff4500; font-size: 0.9rem; margin-top: 5px;">Save $30.89 per year</div>
+                        <p class="plan-description">Perfect for individuals and small teams who need reliable sync.</p>
+                        
+                        <div style="background: rgba(255, 69, 0, 0.1); border: 1px solid rgba(255, 69, 0, 0.3); border-radius: 8px; padding: 12px; margin: 20px 0; text-align: center;">
+                            <strong style="color: #ff4500;">14-Day Free Trial</strong>
+                            <p style="margin: 5px 0 0; font-size: 0.9rem; color: #ccc;">No credit card required</p>
+                        </div>
+                        
+                        <ul class="plan-features">
+                            <li>Unlimited Google Calendars</li>
+                            <li>Unlimited Notion Databases</li>
+                            <li>Automatic Live Sync</li>
+                            <li>Manual and Incremental Sync</li>
+                            <li>2 Platform Syncing</li>
+                            <li>2 Calendar Syncing</li>
+                        </ul>
+                        
+                        <button class="plan-button" onclick="handlePurchase('pro')">Start Free Trial</button>
+                        <p style="margin-top: 15px; font-size: 0.85rem; color: #888; text-align: center;">
+                            14-day free trial begins after payment method entered
+                        </p>
+                    </div>
+
+                    <!-- Ultimate Plan -->
+                    <div class="pricing-card">
+                        <h3 class="plan-name">Ultimate</h3>
+                        <div class="plan-price" id="ultimate-price">$24.99</div>
+                        <div class="plan-period" id="ultimate-period">per month</div>
+                        <div class="yearly-savings" id="ultimate-savings" style="display: none; color: #ff4500; font-size: 0.9rem; margin-top: 5px;">Save $59.89 per year</div>
+                        <p class="plan-description">Advanced features for power users who need more control.</p>
+                        
+                        <ul class="plan-features">
+                            <li><strong>Everything in Pro</strong></li>
+                            <li>Multi-Platform Syncing</li>
+                            <li>Multi-Calendar Syncing</li>
+                            <li>AI Powered Automation</li>
+                            <li>Early Access to New Features</li>
+                            <li>Priority Support</li>
+                        </ul>
+                        
+                        <button class="plan-button secondary" onclick="handlePurchase('ultimate')">Get Ultimate</button>
+                        <p style="margin-top: 15px; font-size: 0.85rem; color: #888; text-align: center; line-height: 1.5;">
+                            <strong style="color: #ff4500;">Early Access Plan</strong><br>
+                            Ultimate plan features are currently in development. By subscribing, you acknowledge this is for early access to new features and priority support.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- FAQ Section -->
+        <section class="faq-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Frequently Asked Questions</h2>
+                    <p>Everything you need to know about Synk pricing and features</p>
+                </div>
+                
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            How does the free trial work?
+                            <span class="faq-toggle">›</span>
+                        </div>
+                        <div class="faq-answer">
+                            Your 14-day free trial begins automatically when you connect both Notion and Google Calendar. No credit card required to start. You'll have full access to all features during the trial.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            What happens after my trial ends?
+                            <span class="faq-toggle">›</span>
+                        </div>
+                        <div class="faq-answer">
+                            After your trial ends, you'll need to subscribe to continue using Synk. Your sync configurations will be saved, and you can resume immediately upon subscription.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            What's the difference between Pro and Ultimate?
+                            <span class="faq-toggle">›</span>
+                        </div>
+                        <div class="faq-answer">
+                            Pro includes all core sync features perfect for individuals and small teams. Ultimate adds advanced features like custom field mapping, advanced filtering conditions, bulk operations, detailed analytics, and configuration export/import for power users.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            Can I cancel anytime?
+                            <span class="faq-toggle">›</span>
+                        </div>
+                        <div class="faq-answer">
+                            Yes, you can cancel your subscription at any time. Your service will continue until the end of your current billing period.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            What happens to my data if I cancel?
+                            <span class="faq-toggle">›</span>
+                        </div>
+                        <div class="faq-answer">
+                            Your data remains in your Notion and Google Calendar accounts. Synk only facilitates synchronization and doesn't store your content permanently.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            Do you offer refunds?
+                            <span class="faq-toggle">›</span>
+                        </div>
+                        <div class="faq-answer">
+                            Yes, we offer a 30-day money-back guarantee. Contact support for assistance with refunds.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            Is my data secure?
+                            <span class="faq-toggle">›</span>
+                        </div>
+                        <div class="faq-answer">
+                            Absolutely. We use OAuth authentication, encrypt all data in transit, and follow industry best practices for security. We never store your passwords.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Synk</h3>
+                    <p>Seamlessly connecting your productivity tools for a more organized workflow.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Product</h3>
+                    <a href="about.html">How It Works</a><br>
+                    <a href="pricing.html">Pricing</a><br>
+                    <a href="contact.html">Support</a><br>
+                    <a href="#features">Features</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <a href="privacy.html">Privacy Policy</a><br>
+                    <a href="terms.html">Terms of Service</a><br>
+                    <a href="contact.html">Contact Us</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Synk. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleFAQ(element) {
+            const faqItem = element.parentElement;
+            const isActive = faqItem.classList.contains('active');
+            
+            // Close all FAQ items
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Open clicked item if it wasn't active
+            if (!isActive) {
+                faqItem.classList.add('active');
+            }
+        }
+        
+        // Pricing data
+        const pricing = {
+            pro: {
+                monthly: 12.99,
+                yearly: 124.99 // ~20% discount
+            },
+            ultimate: {
+                monthly: 24.99,
+                yearly: 239.99 // ~20% discount
+            }
+        };
+        
+        // Payment links
+        const paymentLinks = {
+            pro: {
+                monthly: 'https://buy.stripe.com/5kQ5kw0cZ8k46Hjh0AbMQ03',
+                yearly: 'https://buy.stripe.com/fZufZae3P43O5DfbGgbMQ05'
+            },
+            ultimate: {
+                monthly: 'https://buy.stripe.com/aFa3co4tfeIsaXz5hSbMQ04',
+                yearly: 'https://buy.stripe.com/fZu14g1h39o8fdPh0AbMQ06'
+            }
+        };
+        
+        // Initialize billing toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const billingToggle = document.getElementById('billing-toggle');
+            const monthlyLabel = document.getElementById('monthly-label');
+            const yearlyLabel = document.getElementById('yearly-label');
+            
+            // Set initial state
+            monthlyLabel.classList.add('active');
+            
+            billingToggle.addEventListener('change', function() {
+                const isYearly = this.checked;
+                
+                // Update label states
+                monthlyLabel.classList.toggle('active', !isYearly);
+                yearlyLabel.classList.toggle('active', isYearly);
+                
+                // Update prices
+                updatePricing(isYearly);
+            });
+        });
+        
+        function updatePricing(isYearly) {
+            // Pro plan
+            const proPrice = document.getElementById('pro-price');
+            const proPeriod = document.getElementById('pro-period');
+            const proSavings = document.getElementById('pro-savings');
+            
+            // Ultimate plan
+            const ultimatePrice = document.getElementById('ultimate-price');
+            const ultimatePeriod = document.getElementById('ultimate-period');
+            const ultimateSavings = document.getElementById('ultimate-savings');
+            
+            if (isYearly) {
+                proPrice.textContent = `$${pricing.pro.yearly}`;
+                proPeriod.textContent = 'per year';
+                proSavings.style.display = 'block';
+                
+                ultimatePrice.textContent = `$${pricing.ultimate.yearly}`;
+                ultimatePeriod.textContent = 'per year';
+                ultimateSavings.style.display = 'block';
+            } else {
+                proPrice.textContent = `$${pricing.pro.monthly}`;
+                proPeriod.textContent = 'per month';
+                proSavings.style.display = 'none';
+                
+                ultimatePrice.textContent = `$${pricing.ultimate.monthly}`;
+                ultimatePeriod.textContent = 'per month';
+                ultimateSavings.style.display = 'none';
+            }
+        }
+        
+        function handlePurchase(plan) {
+            const isYearly = document.getElementById('billing-toggle').checked;
+            const billingType = isYearly ? 'yearly' : 'monthly';
+            
+            // Get the payment link for the selected plan and billing type
+            const paymentUrl = paymentLinks[plan][billingType];
+            
+            if (paymentUrl) {
+                // Redirect to Stripe payment page
+                window.open(paymentUrl, '_blank');
+            } else {
+                console.error('Payment link not found for:', plan, billingType);
+                alert('Payment link not available. Please contact support.');
+            }
+        }
+    </script>
+    <script src="js/scripts.js"></script>
+</body>
+</html>

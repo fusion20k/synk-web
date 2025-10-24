@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth UI Test - Dragon's Breath Theme</title>
+    <link rel="stylesheet" href="css/styles.css?v=7.0">
+    <style>
+        body {
+            padding-top: 100px;
+        }
+        .test-section {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .test-section h2 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .test-section p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+        .demo-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .state-toggle {
+            padding: 0.75rem 1.5rem;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .state-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 69, 0, 0.4);
+        }
+        .notification-demo {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .code-block {
+            background: #0a0a0a;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 69, 0, 0.2);
+            margin-top: 1rem;
+            overflow-x: auto;
+        }
+        .code-block code {
+            color: #ff6500;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with Auth UI -->
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">Synk</a>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="about.html">How It Works</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="download.html">Download</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+            
+            <!-- Auth Buttons (shown when logged out) -->
+            <div class="auth-buttons" id="auth-buttons">
+                <a href="#" class="auth-btn login">Log In</a>
+                <a href="#" class="auth-btn signup">Sign Up</a>
+            </div>
+            
+            <!-- User Dropdown (shown when logged in) -->
+            <div class="user-dropdown" id="user-dropdown">
+                <div class="user-avatar" id="user-avatar">D</div>
+                <div class="dropdown-menu">
+                    <div class="dropdown-header">
+                        <div class="dropdown-email" id="user-email">david@synk.app</div>
+                    </div>
+                    <a href="#" class="dropdown-item">Manage Account</a>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item" id="logout-btn">Log Out</button>
+                </div>
+            </div>
+            
+            <div class="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Test Section 1: State Toggle -->
+        <div class="test-section">
+            <h2>🔥 Auth State Testing</h2>
+            <p>Click the buttons below to toggle between logged in and logged out states:</p>
+            <div class="demo-buttons">
+                <button class="state-toggle" onclick="showLoggedOut()">Show Logged Out State</button>
+                <button class="state-toggle" onclick="showLoggedIn()">Show Logged In State</button>
+            </div>
+            <div class="code-block">
+                <code>
+                    Current State: <span id="current-state">Logged Out</span><br>
+                    Auth Buttons Display: <span id="auth-display">flex</span><br>
+                    User Dropdown Display: <span id="dropdown-display">none</span>
+                </code>
+            </div>
+        </div>
+
+        <!-- Test Section 2: Notification Demo -->
+        <div class="test-section">
+            <h2>🔔 Notification Testing</h2>
+            <p>Test the Dragon's Breath themed notifications:</p>
+            <div class="notification-demo">
+                <button class="state-toggle" onclick="showSuccessNotification()">Success Notification</button>
+                <button class="state-toggle" onclick="showErrorNotification()">Error Notification</button>
+                <button class="state-toggle" onclick="showInfoNotification()">Info Notification</button>
+            </div>
+        </div>
+
+        <!-- Test Section 3: Button Hover Effects -->
+        <div class="test-section">
+            <h2>✨ Hover Effects Demo</h2>
+            <p>Hover over the buttons to see the Dragon's Breath theme effects:</p>
+            <div class="demo-buttons">
+                <a href="#" class="auth-btn login">Login Button (Hover Me)</a>
+                <a href="#" class="auth-btn signup">Sign Up Button (Hover Me)</a>
+            </div>
+            <p style="margin-top: 1rem;">
+                <strong>Login Button:</strong> Orange glow effect on hover<br>
+                <strong>Sign Up Button:</strong> Shimmer effect + gradient transition
+            </p>
+        </div>
+
+        <!-- Test Section 4: Avatar Glow -->
+        <div class="test-section">
+            <h2>👤 Avatar Glow Effect</h2>
+            <p>When logged in, hover over the avatar in the top right to see the glow effect.</p>
+            <div style="display: flex; gap: 2rem; align-items: center;">
+                <div class="user-avatar" style="position: static;">D</div>
+                <div>
+                    <strong>Features:</strong><br>
+                    • Orange gradient background<br>
+                    • 2px orange border<br>
+                    • Glow effect on hover (blur 8px)<br>
+                    • Scale transform (1.08x)<br>
+                    • Enhanced box-shadow
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Section 5: Color Palette -->
+        <div class="test-section">
+            <h2>🎨 Dragon's Breath Color Palette</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                <div style="padding: 1rem; background: linear-gradient(135deg, #ff4500, #dc143c); border-radius: 8px; text-align: center;">
+                    <strong>Primary Gradient</strong><br>
+                    <small>#ff4500 → #dc143c</small>
+                </div>
+                <div style="padding: 1rem; background: linear-gradient(135deg, #ff6500, #ff1744); border-radius: 8px; text-align: center;">
+                    <strong>Secondary Gradient</strong><br>
+                    <small>#ff6500 → #ff1744</small>
+                </div>
+                <div style="padding: 1rem; background: #ff4500; border-radius: 8px; text-align: center;">
+                    <strong>Accent Orange</strong><br>
+                    <small>#ff4500</small>
+                </div>
+                <div style="padding: 1rem; background: #dc143c; border-radius: 8px; text-align: center;">
+                    <strong>Accent Crimson</strong><br>
+                    <small>#dc143c</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Section 6: Responsive Preview -->
+        <div class="test-section">
+            <h2>📱 Responsive Design</h2>
+            <p>Resize your browser window to see how the auth UI adapts:</p>
+            <ul style="color: var(--text-secondary); line-height: 1.8;">
+                <li><strong>Desktop (1200px+):</strong> Full navigation + auth buttons</li>
+                <li><strong>Tablet (768px - 1199px):</strong> Condensed navigation + auth buttons</li>
+                <li><strong>Mobile (&lt; 768px):</strong> Hamburger menu + smaller auth buttons</li>
+            </ul>
+        </div>
+    </main>
+
+    <script>
+        // State management functions
+        function showLoggedOut() {
+            const authButtons = document.getElementById('auth-buttons');
+            const userDropdown = document.getElementById('user-dropdown');
+            
+            authButtons.style.display = 'flex';
+            userDropdown.classList.remove('active');
+            userDropdown.classList.remove('open');
+            
+            updateStateDisplay('Logged Out', 'flex', 'none');
+        }
+
+        function showLoggedIn() {
+            const authButtons = document.getElementById('auth-buttons');
+            const userDropdown = document.getElementById('user-dropdown');
+            
+            authButtons.style.display = 'none';
+            userDropdown.classList.add('active');
+            
+            updateStateDisplay('Logged In', 'none', 'block');
+        }
+
+        function updateStateDisplay(state, authDisplay, dropdownDisplay) {
+            document.getElementById('current-state').textContent = state;
+            document.getElementById('auth-display').textContent = authDisplay;
+            document.getElementById('dropdown-display').textContent = dropdownDisplay;
+        }
+
+        // Notification functions
+        function showNotification(message, type = 'info') {
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <span class="notification-message">${message}</span>
+                    <button class="notification-close">&times;</button>
+                </div>
+            `;
+
+            const bgColor = type === 'success' 
+                ? 'linear-gradient(135deg, rgba(255, 69, 0, 0.95), rgba(220, 20, 60, 0.95))' 
+                : type === 'error' 
+                ? 'linear-gradient(135deg, rgba(220, 20, 60, 0.95), rgba(139, 0, 0, 0.95))' 
+                : 'linear-gradient(135deg, rgba(255, 101, 0, 0.95), rgba(255, 69, 0, 0.95))';
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                background: ${bgColor};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 12px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 69, 0, 0.2);
+                z-index: 10000;
+                transform: translateX(400px);
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                max-width: 400px;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            const closeButton = notification.querySelector('.notification-close');
+            closeButton.addEventListener('click', () => {
+                notification.style.transform = 'translateX(400px)';
+                setTimeout(() => notification.remove(), 300);
+            });
+
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.style.transform = 'translateX(400px)';
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, 5000);
+        }
+
+        function showSuccessNotification() {
+            showNotification('✓ Successfully logged in! Welcome to Synk.', 'success');
+        }
+
+        function showErrorNotification() {
+            showNotification('✗ Login failed. Please check your credentials.', 'error');
+        }
+
+        function showInfoNotification() {
+            showNotification('ℹ Your session will expire in 30 minutes.', 'info');
+        }
+
+        // Avatar dropdown toggle
+        const userAvatar = document.getElementById('user-avatar');
+        const userDropdown = document.getElementById('user-dropdown');
+
+        if (userAvatar) {
+            userAvatar.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userDropdown.classList.toggle('open');
+            });
+        }
+
+        document.addEventListener('click', (e) => {
+            if (userDropdown && !userDropdown.contains(e.target)) {
+                userDropdown.classList.remove('open');
+            }
+        });
+
+        // Logout button
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                showNotification('You have been logged out successfully', 'success');
+                setTimeout(showLoggedOut, 1000);
+            });
+        }
+
+        // Initialize in logged out state
+        showLoggedOut();
+    </script>
+</body>
+</html>
