@@ -84,8 +84,11 @@ header.scrolled {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-decoration: none;
-  margin-right: 6rem; /* Increased space between logo and nav */
+  margin-right: 4rem; /* Professional space between logo and nav */
   white-space: nowrap;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+  min-width: fit-content;
 }
 
 nav {
@@ -190,10 +193,13 @@ nav a:hover::after {
   position: relative;
   display: none;
   margin-left: auto;
+  z-index: 1001;
+  transition: var(--transition);
 }
 
 .user-dropdown.active {
-  display: block;
+  display: flex;
+  align-items: center;
 }
 
 .user-avatar {
@@ -920,6 +926,11 @@ footer {
   
   .header-content {
     padding: 1rem;
+  }
+  
+  .logo {
+    margin-right: auto;
+    font-size: 1.3rem;
   }
   
   nav {

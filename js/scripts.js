@@ -1,7 +1,24 @@
-// Synk Website JavaScript - Redeploy Trigger v1
+// Synk Website JavaScript - Auth UI Implementation Complete
 document.addEventListener('DOMContentLoaded', function() {
     // Auth State Management
     initAuthState();
+    
+    // Dev Mode: Toggle auth state for testing (remove in production)
+    window.toggleAuthDemo = function() {
+        const token = localStorage.getItem('synk_auth_token');
+        if (token) {
+            localStorage.removeItem('synk_auth_token');
+            localStorage.removeItem('synk_user_email');
+            console.log('Demo: Logged out');
+        } else {
+            localStorage.setItem('synk_auth_token', 'demo_token_12345');
+            localStorage.setItem('synk_user_email', 'demo@synk.app');
+            console.log('Demo: Logged in as demo@synk.app');
+        }
+        // Reload page to show changes
+        window.location.reload();
+    };
+    console.log('Tip: Use window.toggleAuthDemo() to test logged-in/logged-out states');
     
     // Header scroll effect
     const header = document.querySelector('header');
