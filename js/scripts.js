@@ -1,24 +1,15 @@
-// Synk Website JavaScript - Auth UI Implementation Complete
+// Synk Website JavaScript - Dynamic Auth State Management
 document.addEventListener('DOMContentLoaded', function() {
-    // Auth State Management
-    initAuthState();
+    // Initialize dynamic auth state management
+    initializeDynamicAuthState();
     
-    // Dev Mode: Toggle auth state for testing (remove in production)
-    window.toggleAuthDemo = function() {
-        const token = localStorage.getItem('synk_auth_token');
-        if (token) {
-            localStorage.removeItem('synk_auth_token');
-            localStorage.removeItem('synk_user_email');
-            console.log('Demo: Logged out');
-        } else {
-            localStorage.setItem('synk_auth_token', 'demo_token_12345');
-            localStorage.setItem('synk_user_email', 'demo@synk.app');
-            console.log('Demo: Logged in as demo@synk.app');
-        }
-        // Reload page to show changes
-        window.location.reload();
-    };
-    console.log('Tip: Use window.toggleAuthDemo() to test logged-in/logged-out states');
+    // Listen for auth state changes
+    window.addEventListener('auth-state-changed', (e) => {
+        console.log('Auth state changed:', e.detail);
+    });
+    
+    console.log('✓ Dynamic Auth State Manager Initialized');
+    console.log('Tip: Use window.toggleAuthDemo() to test logged-in/logged-out states (no reload needed)');
     
     // Header scroll effect
     const header = document.querySelector('header');
@@ -377,161 +368,13 @@ if (prefersReducedMotion()) {
 }
 
 // ============================================
-// AUTH STATE MANAGEMENT
+// NOTE: Auth state management moved to js/auth-state.js
+// The AuthStateManager handles all dynamic auth logic:
+// - Session detection
+// - UI updates without page reload
+// - Login/logout event handling
+// - Multi-tab session sync
 // ============================================
-
-const BACKEND_URL = 'https://synk-web.onrender.com';
-
-function initAuthState() {
-    const authButtons = document.getElementById('auth-buttons');
-    const userDropdown = document.getElementById('user-dropdown');
-    const userAvatar = document.getElementById('user-avatar');
-    const userEmailEl = document.getElementById('user-email');
-    const logoutBtn = document.getElementById('logout-btn');
-    
-    if (!authButtons || !userDropdown) return;
-    
-    // Check if user is logged in
-    const token = localStorage.getItem('synk_auth_token');
-    const userEmail = localStorage.getItem('synk_user_email');
-    
-    if (token && userEmail) {
-        // User is logged in - show logged in state immediately
-        showLoggedInState(userEmail);
-        
-        // Optionally verify token with backend
-        if (window.location.hostname !== 'localhost') {
-            fetchUserData(token).catch(() => {
-                // Token invalid - show logged out state
-                localStorage.removeItem('synk_auth_token');
-                localStorage.removeItem('synk_user_email');
-                showLoggedOutState();
-            });
-        }
-    } else {
-        // User is logged out
-        showLoggedOutState();
-    }
-    
-    // User avatar click handler - toggle dropdown
-    if (userAvatar) {
-        userAvatar.addEventListener('click', (e) => {
-            e.stopPropagation();
-            userDropdown.classList.toggle('open');
-        });
-        
-        // Mobile touch handler
-        userAvatar.addEventListener('touchstart', (e) => {
-            e.stopPropagation();
-        });
-    }
-    
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (e) => {
-        if (userDropdown && !userDropdown.contains(e.target) && userAvatar && e.target !== userAvatar) {
-            userDropdown.classList.remove('open');
-        }
-    });
-    
-    // Close dropdown when pressing Escape key
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && userDropdown) {
-            userDropdown.classList.remove('open');
-        }
-    });
-    
-    // Logout button handler
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            handleLogout();
-        });
-    }
-}
-
-function showLoggedInState(email) {
-    const authButtons = document.getElementById('auth-buttons');
-    const userDropdown = document.getElementById('user-dropdown');
-    const userAvatar = document.getElementById('user-avatar');
-    const userEmailEl = document.getElementById('user-email');
-    
-    // HIDE auth buttons completely
-    if (authButtons) {
-        authButtons.classList.add('fade-out');
-        authButtons.style.display = 'none';
-        authButtons.style.pointerEvents = 'none';
-    }
-    
-    // SHOW user dropdown
-    if (userDropdown) {
-        userDropdown.classList.add('active');
-        userDropdown.style.display = 'flex';
-    }
-    
-    // Update email display
-    if (userEmailEl) userEmailEl.textContent = email;
-    
-    // Set avatar initial (first letter of email)
-    if (userAvatar && email) {
-        userAvatar.textContent = email.charAt(0).toUpperCase();
-    }
-}
-
-function showLoggedOutState() {
-    const authButtons = document.getElementById('auth-buttons');
-    const userDropdown = document.getElementById('user-dropdown');
-    
-    // SHOW auth buttons
-    if (authButtons) {
-        authButtons.classList.remove('fade-out');
-        authButtons.style.display = 'flex';
-        authButtons.style.pointerEvents = 'auto';
-    }
-    
-    // HIDE user dropdown
-    if (userDropdown) {
-        userDropdown.classList.remove('active');
-        userDropdown.classList.remove('open');
-        userDropdown.style.display = 'none';
-    }
-}
-
-async function fetchUserData(token) {
-    try {
-        const response = await fetch(`${BACKEND_URL}/me`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        if (!response.ok) {
-            throw new Error('Failed to fetch user data');
-        }
-        
-        return await response.json();
-    } catch (error) {
-        console.error('Error fetching user data:', error);
-        return null;
-    }
-}
-
-function handleLogout() {
-    // Remove auth tokens and user data
-    localStorage.removeItem('synk_auth_token');
-    localStorage.removeItem('synk_user_email');
-    
-    // Show logged out state
-    showLoggedOutState();
-    
-    // Show notification
-    showNotification('You have been logged out successfully', 'success');
-    
-    // Redirect to home page after a short delay
-    setTimeout(() => {
-        window.location.href = 'index.html';
-    }, 1000);
-}
 
 // Helper function for notifications (if not already defined)
 function showNotification(message, type = 'info') {
@@ -598,10 +441,3 @@ function showNotification(message, type = 'info') {
         }
     }, 5000);
 }
-
-// ============================================
-// INITIALIZE AUTH STATE ON PAGE LOAD
-// ============================================
-document.addEventListener('DOMContentLoaded', () => {
-    initAuthState();
-});
