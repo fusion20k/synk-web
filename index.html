@@ -25,13 +25,15 @@
                 <a href="contact.html">Contact</a>
                 <a href="privacy.html">Privacy</a>
                 <a href="terms.html">Terms</a>
+                                <!-- REPLACE the broken auth section with this -->
+                <div style="margin-left: auto;">
+                    <a href="/login.html" style="margin-right: 15px;">Log In</a>
+                    <a href="/signup.html">Sign Up</a>
+                </div>
             </nav>
             
-                        <!-- MANUAL AUTH BUTTONS - ADD THESE -->
-            <div class="auth-buttons" style="margin-left: auto; display: flex; gap: 15px; align-items: center;">
-                <a href="/login.html" class="btn-login" style="padding: 10px 20px; background: transparent; border: 2px solid #FF6B35; color: #FF6B35; border-radius: 5px; text-decoration: none; font-weight: bold;">Log In</a>
-                <a href="/signup.html" class="btn-signup" style="padding: 10px 20px; background: linear-gradient(45deg, #FF6B35, #FF8E53); color: white; border-radius: 5px; text-decoration: none; font-weight: bold; box-shadow: 0 2px 10px rgba(255, 107, 53, 0.3);">Sign Up</a>
-            </div>
+            <!-- Dynamic Auth Container -->
+            <div id="auth-section-container"></div>
             
             <div class="mobile-menu-toggle">
                 <span></span>
@@ -188,6 +190,14 @@
         </div>
     </footer>
 
+    <!-- Supabase Client Configuration -->
+    <script src="js/supabase-client.js"></script>
+    <!-- Auth State Manager - Handles auth state changes -->
+    <script src="js/auth-state-manager.js"></script>
+    <!-- Dynamic Auth State Management -->
+    <script src="js/auth-state.js"></script>
+    <!-- Dynamic Auth UI Renderer -->
+    <script src="js/auth-ui-renderer.js"></script>
     <!-- Main Website Scripts -->
     <script src="js/scripts.js"></script>
 </body>
