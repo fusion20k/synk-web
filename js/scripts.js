@@ -454,9 +454,20 @@ function showLoggedInState(email) {
     const userAvatar = document.getElementById('user-avatar');
     const userEmailEl = document.getElementById('user-email');
     
-    if (authButtons) authButtons.style.display = 'none';
-    if (userDropdown) userDropdown.classList.add('active');
+    // Fade out auth buttons with animation
+    if (authButtons) {
+        authButtons.classList.add('fade-out');
+        setTimeout(() => {
+            authButtons.style.pointerEvents = 'none';
+        }, 300);
+    }
     
+    // Fade in user dropdown with smooth transition
+    if (userDropdown) {
+        userDropdown.classList.add('active');
+    }
+    
+    // Update email display
     if (userEmailEl) userEmailEl.textContent = email;
     
     // Set avatar initial (first letter of email)
@@ -469,7 +480,13 @@ function showLoggedOutState() {
     const authButtons = document.getElementById('auth-buttons');
     const userDropdown = document.getElementById('user-dropdown');
     
-    if (authButtons) authButtons.style.display = 'flex';
+    // Fade in auth buttons
+    if (authButtons) {
+        authButtons.classList.remove('fade-out');
+        authButtons.style.pointerEvents = 'auto';
+    }
+    
+    // Hide user dropdown with smooth animation
     if (userDropdown) {
         userDropdown.classList.remove('active');
         userDropdown.classList.remove('open');
