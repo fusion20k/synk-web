@@ -404,3 +404,13 @@ window.toggleAuthDemo = function() {
         console.log('Demo: Logged in as demo@synk.app');
     }
 };
+
+/**
+ * Initialize auth state when page loads
+ */
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeDynamicAuthState);
+} else {
+    // DOM is already loaded
+    initializeDynamicAuthState();
+}
