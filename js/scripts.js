@@ -1,21 +1,7 @@
-// Synk Website JavaScript - Dynamic Auth State Management
+// Synk Website JavaScript
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize dynamic auth state management
-    initializeDynamicAuthState();
-    
-    // Initialize dynamic auth UI renderer
-    if (typeof initializeAuthUIRenderer === 'function') {
-        initializeAuthUIRenderer();
-    }
-    
-    // Listen for auth state changes
-    window.addEventListener('auth-state-changed', (e) => {
-        console.log('Auth state changed:', e.detail);
-    });
-    
-    console.log('✓ Dynamic Auth State Manager Initialized');
-    console.log('✓ Dynamic Auth UI Renderer Initialized');
-    console.log('Tip: Use window.toggleAuthDemo() to test logged-in/logged-out states (no reload needed)');
+    // Auth State Management
+    initAuthState();
     
     // Header scroll effect
     const header = document.querySelector('header');
@@ -374,13 +360,142 @@ if (prefersReducedMotion()) {
 }
 
 // ============================================
-// NOTE: Auth state management moved to js/auth-state.js
-// The AuthStateManager handles all dynamic auth logic:
-// - Session detection
-// - UI updates without page reload
-// - Login/logout event handling
-// - Multi-tab session sync
+// AUTH STATE MANAGEMENT
 // ============================================
+
+const BACKEND_URL = 'https://synk-web.onrender.com';
+
+function initAuthState() {
+    const authButtons = document.getElementById('auth-buttons');
+    const userDropdown = document.getElementById('user-dropdown');
+    const userAvatar = document.getElementById('user-avatar');
+    const userEmailEl = document.getElementById('user-email');
+    const logoutBtn = document.getElementById('logout-btn');
+    
+    if (!authButtons || !userDropdown) return;
+    
+    // Check if user is logged in
+    const token = localStorage.getItem('synk_auth_token');
+    const userEmail = localStorage.getItem('synk_user_email');
+    
+    if (token && userEmail) {
+        // User is logged in - show logged in state immediately
+        showLoggedInState(userEmail);
+        
+        // Optionally verify token with backend
+        if (window.location.hostname !== 'localhost') {
+            fetchUserData(token).catch(() => {
+                // Token invalid - show logged out state
+                localStorage.removeItem('synk_auth_token');
+                localStorage.removeItem('synk_user_email');
+                showLoggedOutState();
+            });
+        }
+    } else {
+        // User is logged out
+        showLoggedOutState();
+    }
+    
+    // User avatar click handler - toggle dropdown
+    if (userAvatar) {
+        userAvatar.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.classList.toggle('open');
+        });
+        
+        // Mobile touch handler
+        userAvatar.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+        });
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (userDropdown && !userDropdown.contains(e.target) && userAvatar && e.target !== userAvatar) {
+            userDropdown.classList.remove('open');
+        }
+    });
+    
+    // Close dropdown when pressing Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && userDropdown) {
+            userDropdown.classList.remove('open');
+        }
+    });
+    
+    // Logout button handler
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            handleLogout();
+        });
+    }
+}
+
+function showLoggedInState(email) {
+    const authButtons = document.getElementById('auth-buttons');
+    const userDropdown = document.getElementById('user-dropdown');
+    const userAvatar = document.getElementById('user-avatar');
+    const userEmailEl = document.getElementById('user-email');
+    
+    if (authButtons) authButtons.style.display = 'none';
+    if (userDropdown) userDropdown.classList.add('active');
+    
+    if (userEmailEl) userEmailEl.textContent = email;
+    
+    // Set avatar initial (first letter of email)
+    if (userAvatar && email) {
+        userAvatar.textContent = email.charAt(0).toUpperCase();
+    }
+}
+
+function showLoggedOutState() {
+    const authButtons = document.getElementById('auth-buttons');
+    const userDropdown = document.getElementById('user-dropdown');
+    
+    if (authButtons) authButtons.style.display = 'flex';
+    if (userDropdown) {
+        userDropdown.classList.remove('active');
+        userDropdown.classList.remove('open');
+    }
+}
+
+async function fetchUserData(token) {
+    try {
+        const response = await fetch(`${BACKEND_URL}/me`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch user data');
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching user data:', error);
+        return null;
+    }
+}
+
+function handleLogout() {
+    // Remove auth tokens and user data
+    localStorage.removeItem('synk_auth_token');
+    localStorage.removeItem('synk_user_email');
+    
+    // Show logged out state
+    showLoggedOutState();
+    
+    // Show notification
+    showNotification('You have been logged out successfully', 'success');
+    
+    // Redirect to home page after a short delay
+    setTimeout(() => {
+        window.location.href = 'index.html';
+    }, 1000);
+}
 
 // Helper function for notifications (if not already defined)
 function showNotification(message, type = 'info') {
