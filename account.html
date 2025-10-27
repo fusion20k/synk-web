@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Account - Synk</title>
     <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/auth.css?v=1.5">
+    <link rel="stylesheet" href="css/auth.css">
     <!-- Supabase Client Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -19,10 +19,28 @@
                 <a href="pricing.html">Pricing</a>
                 <a href="download.html">Download</a>
                 <a href="contact.html">Contact</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="terms.html">Terms</a>
             </nav>
             
-            <!-- Dynamic Auth Container -->
-            <div id="auth-section-container"></div>
+            <!-- Auth Buttons (shown when logged out) -->
+            <div class="auth-buttons" id="auth-buttons">
+                <a href="login.html" class="auth-btn login">Log In</a>
+                <a href="signup.html" class="auth-btn signup">Sign Up</a>
+            </div>
+            
+            <!-- User Dropdown (shown when logged in) -->
+            <div class="user-dropdown" id="user-dropdown">
+                <div class="user-avatar" id="user-avatar">U</div>
+                <div class="dropdown-menu">
+                    <div class="dropdown-header">
+                        <div class="dropdown-email" id="user-email">user@example.com</div>
+                    </div>
+                    <a href="https://billing.stripe.com/p/login/7sYaEQaRD57SghT5hSbMQ00" class="dropdown-item" target="_blank">Manage Account</a>
+                    <div class="dropdown-divider"></div>
+                    <button class="dropdown-item" id="logout-btn">Log Out</button>
+                </div>
+            </div>
             
             <div class="mobile-menu-toggle">
                 <span></span>
@@ -50,13 +68,16 @@
         </div>
     </main>
 
-    <!-- Unified Supabase Auth Manager (must come first) -->
-    <script src="js/supabase-auth-manager.js"></script>
+    <!-- Supabase Client Configuration -->
+    <script src="js/supabase-client.js"></script>
+    
+    <!-- Auth State Manager -->
+    <script src="js/auth-state-manager.js"></script>
     
     <!-- Account Management Script -->
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            const authManager = window.authManager;
+            const authManager = window.getAuthManager();
             
             // Wait for auth manager to be initialized
             if (!authManager || !authManager.isInitialized) {
@@ -107,11 +128,7 @@
             const logoutBtn = document.getElementById('logout-account-btn');
             if (logoutBtn) {
                 logoutBtn.addEventListener('click', async () => {
-                    window.authManager.logout();
-                    // Redirect to home after logout
-                    setTimeout(() => {
-                        window.location.href = '/';
-                    }, 300);
+                    await window.authStateManager.handleLogout();
                 });
             }
         });
