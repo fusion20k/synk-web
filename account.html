@@ -68,35 +68,13 @@
         </div>
     </main>
 
-    <!-- Supabase Client Configuration -->
-    <script src="js/supabase-client.js"></script>
-    
-    <!-- Auth State Manager -->
-    <script src="js/auth-state-manager.js"></script>
-    
     <!-- Account Management Script -->
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            const authManager = window.getAuthManager();
-            
-            // Wait for auth manager to be initialized
-            if (!authManager || !authManager.isInitialized) {
-                await new Promise(resolve => {
-                    const checkAuth = () => {
-                        const mgr = window.getAuthManager();
-                        if (mgr && mgr.isInitialized) {
-                            resolve();
-                        } else {
-                            setTimeout(checkAuth, 100);
-                        }
-                    };
-                    checkAuth();
-                });
-            }
-
-            // Check if user is logged in
-            const currentUser = window.authStateManager.getCurrentUser();
-            if (!currentUser) {
+            // Check if user email is in localStorage (set by auth)
+            const userEmail = localStorage.getItem('synk_user_email');
+            if (!userEmail) {
+                // User not logged in, redirect to login
                 window.location.href = 'login.html';
                 return;
             }
@@ -107,7 +85,7 @@
                 <div class="account-info">
                     <div class="account-section">
                         <h3>Account Information</h3>
-                        <p><strong>Email:</strong> ${currentUser.email}</p>
+                        <p><strong>Email:</strong> ${userEmail}</p>
                         <p><strong>Status:</strong> Active</p>
                     </div>
 
@@ -127,13 +105,12 @@
             // Add logout handler
             const logoutBtn = document.getElementById('logout-account-btn');
             if (logoutBtn) {
-                logoutBtn.addEventListener('click', async () => {
-                    await window.authStateManager.handleLogout();
+                logoutBtn.addEventListener('click', () => {
+                    handleLogout();
                 });
             }
         });
     </script>
-    <script src="js/supabase-auth-manager.js"></script>
     <script src="js/scripts.js"></script>
 </body>
 </html>
