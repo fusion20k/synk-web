@@ -141,13 +141,13 @@
     border-radius: 20px;
     font-size: 12px;
     font-weight: 600;
-    background: #ff6b6b;
+    background: #dc143c;
     color: #FFFFFF;
     margin-left: 10px;
 }
 
 .info-badge.verified {
-    background: #51cf66;
+    background: #ff4500;
 }
 
 .profile-actions {
@@ -347,7 +347,7 @@
     background: #1a1a1a;
     border-radius: 8px;
     padding: 20px;
-    border: 1px solid #ff6b6b;
+    border: 1px solid #dc143c;
 }
 
 .cancellation-section p {
@@ -391,8 +391,8 @@
 }
 
 .option-card.danger {
-    border-color: #ff6b6b;
-    background: rgba(255, 107, 107, 0.05);
+    border-color: #dc143c;
+    background: rgba(220, 20, 60, 0.05);
 }
 
 /* Modals */
@@ -495,8 +495,8 @@
 .form-group input:focus,
 .form-input:focus {
     outline: none;
-    border-color: #5C6BC0;
-    box-shadow: 0 0 0 3px rgba(92, 107, 192, 0.1);
+    border-color: #ff4500;
+    box-shadow: 0 0 0 3px rgba(255, 69, 0, 0.1);
 }
 
 .modal-actions {
@@ -515,7 +515,7 @@
 /* Retention Offers */
 .retention-offer {
     background: #0f0f0f;
-    border: 1px solid #5C6BC0;
+    border: 1px solid #ff4500;
     border-radius: 8px;
     padding: 15px;
     margin-bottom: 15px;
@@ -532,8 +532,8 @@
 
 /* Delete Confirmation */
 .warning-box {
-    background: rgba(255, 107, 107, 0.1);
-    border: 1px solid #ff6b6b;
+    background: rgba(220, 20, 60, 0.1);
+    border: 1px solid #dc143c;
     border-radius: 8px;
     padding: 15px;
     margin-bottom: 20px;
@@ -541,7 +541,7 @@
 
 .warning-box p {
     margin: 5px 0;
-    color: #ff6b6b;
+    color: #dc143c;
     font-weight: 600;
 }
 
@@ -634,22 +634,22 @@
 }
 
 .auth-btn.danger {
-    background: #ff6b6b;
+    background: #dc143c;
     color: #FFFFFF;
 }
 
 .auth-btn.danger:hover {
-    background: #ff5252;
+    background: #b81030;
 }
 
 .logout-btn {
-    background: #ff6b6b;
+    background: #dc143c;
     color: #FFFFFF;
     width: 100%;
 }
 
 .logout-btn:hover {
-    background: #ff5252;
+    background: #b81030;
 }
 
 /* Messages */
@@ -663,15 +663,15 @@
 }
 
 .error-message {
-    background: rgba(255, 107, 107, 0.1);
-    color: #ff6b6b;
-    border: 1px solid #ff6b6b;
+    background: rgba(220, 20, 60, 0.1);
+    color: #dc143c;
+    border: 1px solid #dc143c;
 }
 
 .success-message {
-    background: rgba(81, 207, 102, 0.1);
-    color: #51cf66;
-    border: 1px solid #51cf66;
+    background: rgba(255, 69, 0, 0.1);
+    color: #ff4500;
+    border: 1px solid #ff4500;
 }
 
 /* Responsive */
