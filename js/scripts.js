@@ -374,9 +374,6 @@ function initAuthState() {
     
     if (!authButtons || !userDropdown) return;
     
-    // Start auth checking - hide both auth buttons and user dropdown
-    document.body.dataset.authChecking = "true";
-    
     // Listen for Supabase auth state changes
     window.addEventListener('auth-state-changed', (e) => {
         console.log('[Auth UI] Auth state changed:', e.detail);
@@ -465,8 +462,15 @@ function showLoggedInState(email) {
     const userAvatar = document.getElementById('user-avatar');
     const userEmailEl = document.getElementById('user-email');
     
-    if (authButtons) authButtons.style.display = 'none';
-    if (userDropdown) userDropdown.classList.add('active');
+    // Hide auth buttons and show user dropdown
+    if (authButtons) {
+        authButtons.classList.remove('ready');
+        authButtons.style.display = 'none';
+    }
+    if (userDropdown) {
+        userDropdown.classList.add('ready');
+        userDropdown.classList.add('active');
+    }
     
     if (userEmailEl) userEmailEl.textContent = email;
     
@@ -474,23 +478,21 @@ function showLoggedInState(email) {
     if (userAvatar && email) {
         userAvatar.textContent = email.charAt(0).toUpperCase();
     }
-    
-    // Auth check complete - remove the loading state
-    document.body.dataset.authChecking = "false";
 }
 
 function showLoggedOutState() {
     const authButtons = document.getElementById('auth-buttons');
     const userDropdown = document.getElementById('user-dropdown');
     
-    if (authButtons) authButtons.style.display = 'flex';
+    // Show auth buttons and hide user dropdown
+    if (authButtons) {
+        authButtons.classList.add('ready');
+    }
     if (userDropdown) {
+        userDropdown.classList.remove('ready');
         userDropdown.classList.remove('active');
         userDropdown.classList.remove('open');
     }
-    
-    // Auth check complete - remove the loading state
-    document.body.dataset.authChecking = "false";
 }
 
 async function fetchUserData(token) {
