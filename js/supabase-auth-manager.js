@@ -231,6 +231,15 @@ class SupabaseAuthManager {
                 throw error;
             }
 
+            console.log('[Supabase Auth] Signup data:', data);
+            
+            // Refresh session to ensure we have the latest auth state
+            const { data: sessionData } = await this.supabaseClient.auth.getSession();
+            console.log('[Supabase Auth] Refreshed session after signup:', sessionData);
+            
+            // Wait for session to be established (auth state listener will fire)
+            await this.waitForSessionEstablished(5000);
+
             return { data, success: true };
         } catch (error) {
             console.error('[Supabase Auth] Signup error:', error);
@@ -256,11 +265,45 @@ class SupabaseAuthManager {
                 throw error;
             }
 
+            console.log('[Supabase Auth] Login data:', data);
+            
+            // Wait for session to be established
+            await this.waitForSessionEstablished(5000);
+
             return { data, success: true };
         } catch (error) {
             console.error('[Supabase Auth] Login error:', error);
             throw error;
         }
+    }
+
+    /**
+     * Wait for session to be established
+     */
+    waitForSessionEstablished(maxWaitMs = 5000) {
+        return new Promise((resolve) => {
+            let waitTime = 0;
+            const checkInterval = 100;
+
+            const check = () => {
+                // Check if currentUser is set and session exists
+                if (this.currentUser && this.session) {
+                    console.log('[Supabase Auth] Session established:', {
+                        user: this.currentUser.email,
+                        hasSession: !!this.session
+                    });
+                    resolve();
+                } else if (waitTime < maxWaitMs) {
+                    waitTime += checkInterval;
+                    setTimeout(check, checkInterval);
+                } else {
+                    console.warn('[Supabase Auth] Session wait timeout, proceeding anyway');
+                    resolve();
+                }
+            };
+
+            check();
+        });
     }
 
     /**

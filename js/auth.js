@@ -110,9 +110,19 @@ if (loginForm) {
             const result = await manager.login(email, password);
 
             if (result.success) {
+                // Verify user is logged in
+                const user = manager.getUser();
+                const session = manager.getSession();
+                
+                console.log('[Auth] Login success:', {
+                    userEmail: user?.email,
+                    hasSession: !!session,
+                    isLoggedIn: manager.isLoggedIn()
+                });
+
                 showSuccess('Login successful! Redirecting...');
 
-                // Redirect to download page after 1 second
+                // Redirect to download page after 1 second (session should be established)
                 setTimeout(() => {
                     window.location.href = 'download.html';
                 }, 1000);
@@ -190,12 +200,22 @@ if (signupForm) {
             const result = await manager.signup(email, password);
 
             if (result.success) {
+                // Verify user is logged in
+                const user = manager.getUser();
+                const session = manager.getSession();
+                
+                console.log('[Auth] Signup success:', {
+                    userEmail: user?.email,
+                    hasSession: !!session,
+                    isLoggedIn: manager.isLoggedIn()
+                });
+
                 showSuccess('Account created successfully! Redirecting...');
 
-                // Redirect to download page after 1.5 seconds
+                // Redirect to download page after 1 second (session should be established)
                 setTimeout(() => {
                     window.location.href = 'download.html';
-                }, 1500);
+                }, 1000);
             }
         } catch (error) {
             console.error('Signup error:', error);

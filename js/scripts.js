@@ -374,27 +374,43 @@ function initAuthState() {
     
     if (!authButtons || !userDropdown) return;
     
-    // Check if user is logged in
-    const token = localStorage.getItem('synk_auth_token');
-    const userEmail = localStorage.getItem('synk_user_email');
-    
-    if (token && userEmail) {
-        // User is logged in - show logged in state immediately
-        showLoggedInState(userEmail);
+    // Listen for Supabase auth state changes
+    window.addEventListener('auth-state-changed', (e) => {
+        console.log('[Auth UI] Auth state changed:', e.detail);
         
-        // Optionally verify token with backend
-        if (window.location.hostname !== 'localhost') {
-            fetchUserData(token).catch(() => {
-                // Token invalid - show logged out state
-                localStorage.removeItem('synk_auth_token');
-                localStorage.removeItem('synk_user_email');
-                showLoggedOutState();
-            });
+        if (e.detail.user) {
+            // User is logged in
+            showLoggedInState(e.detail.user.email);
+        } else {
+            // User is logged out
+            showLoggedOutState();
         }
-    } else {
-        // User is logged out
-        showLoggedOutState();
+    });
+    
+    // Check if auth manager is ready and get current user
+    async function checkCurrentUser() {
+        // Wait for auth manager to initialize
+        let attempts = 0;
+        const maxAttempts = 30;
+        
+        while ((!window.authManager || !window.authManager.isInitialized) && attempts < maxAttempts) {
+            await new Promise(r => setTimeout(r, 100));
+            attempts++;
+        }
+        
+        if (window.authManager && window.authManager.isInitialized) {
+            const user = window.authManager.getUser();
+            if (user) {
+                console.log('[Auth UI] User found:', user.email);
+                showLoggedInState(user.email);
+            } else {
+                console.log('[Auth UI] No user logged in');
+                showLoggedOutState();
+            }
+        }
     }
+    
+    checkCurrentUser();
     
     // User avatar click handler - toggle dropdown
     if (userAvatar) {
@@ -425,8 +441,17 @@ function initAuthState() {
     
     // Logout button handler
     if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-            handleLogout();
+        logoutBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Use Supabase auth manager to logout
+            if (window.authManager && window.authManager.logout) {
+                await window.authManager.logout();
+            } else {
+                // Fallback to old method
+                handleLogout();
+            }
         });
     }
 }
