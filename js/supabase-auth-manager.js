@@ -214,11 +214,14 @@ class SupabaseAuthManager {
      * Sign up with Supabase
      */
     async signup(email, password) {
+        console.log('🔥🔥🔥 SIGNUP METHOD CALLED WITH EMAIL:', email);
+        
         if (!this.supabaseClient) {
             throw new Error('Supabase client not initialized');
         }
 
         try {
+            console.log('🔥 About to call signUp...');
             const { data, error } = await this.supabaseClient.auth.signUp({
                 email,
                 password,
@@ -233,14 +236,41 @@ class SupabaseAuthManager {
 
             console.log('[Supabase Auth] Signup data:', data);
             
-            // Refresh session to ensure we have the latest auth state
-            const { data: sessionData } = await this.supabaseClient.auth.getSession();
-            console.log('[Supabase Auth] Refreshed session after signup:', sessionData);
-            
-            // Wait for session to be established (auth state listener will fire)
-            await this.waitForSessionEstablished(5000);
+            // With email verification disabled, Supabase doesn't auto-login after signup
+            // We need to manually log in the user
+            console.log('[Supabase Auth] Auto-logging in user after signup...');
+            const { data: loginData, error: loginError } = await this.supabaseClient.auth.signInWithPassword({
+                email,
+                password
+            });
 
-            return { data, success: true };
+            if (loginError) {
+                console.error('[Supabase Auth] Auto-login failed:', loginError);
+                throw loginError;
+            }
+
+            console.log('[Supabase Auth] Auto-login successful:', loginData);
+            
+            // Get fresh session
+            const { data: { session } } = await this.supabaseClient.auth.getSession();
+            console.log('[Supabase Auth] Session after signup+login:', session);
+            
+            // Wait for auth listener to fire (this updates this.currentUser and this.session)
+            await this.waitForSessionEstablished(5000);
+            
+            // Update UI immediately
+            this.updateUI();
+            
+            // Dispatch auth state changed event
+            window.dispatchEvent(new CustomEvent('auth-state-changed', {
+                detail: {
+                    event: 'SIGNED_IN',
+                    user: this.currentUser,
+                    session: this.session
+                }
+            }));
+
+            return { data: loginData, success: true };
         } catch (error) {
             console.error('[Supabase Auth] Signup error:', error);
             throw error;
@@ -269,6 +299,18 @@ class SupabaseAuthManager {
             
             // Wait for session to be established
             await this.waitForSessionEstablished(5000);
+            
+            // Update UI immediately
+            this.updateUI();
+            
+            // Dispatch auth state changed event
+            window.dispatchEvent(new CustomEvent('auth-state-changed', {
+                detail: {
+                    event: 'SIGNED_IN',
+                    user: this.currentUser,
+                    session: this.session
+                }
+            }));
 
             return { data, success: true };
         } catch (error) {
@@ -278,17 +320,76 @@ class SupabaseAuthManager {
     }
 
     /**
+     * Create user profile in public.users table
+     */
+    async createPublicUserProfile(email) {
+        if (!this.supabaseClient) {
+            console.error('[Supabase Auth] Cannot create profile: Supabase client not initialized');
+            return;
+        }
+
+        try {
+            console.log('[Supabase Auth] Starting profile creation for:', email);
+            
+            // Check if user already exists in public.users
+            const { data: existingUser, error: checkError } = await this.supabaseClient
+                .from('users')
+                .select('id')
+                .eq('email', email)
+                .maybeSingle();
+
+            if (checkError) {
+                console.warn('[Supabase Auth] Error checking for existing user:', checkError);
+                // Continue anyway - might be a permissions issue but let's try to insert
+            }
+
+            if (existingUser) {
+                console.log('[Supabase Auth] User profile already exists for:', email);
+                return;
+            }
+
+            console.log('[Supabase Auth] Attempting to insert new user into public.users...');
+            
+            // Insert new user into public.users table
+            const { data, error } = await this.supabaseClient
+                .from('users')
+                .insert({
+                    email,
+                    sync_enabled: false,
+                    last_sync_time: null
+                    // google_refresh_token, google_token_expiry will be NULL initially
+                })
+                .select();
+
+            if (error) {
+                console.error('[Supabase Auth] Error creating user profile:', {
+                    message: error.message,
+                    code: error.code,
+                    status: error.status,
+                    details: error.details
+                });
+                return; // Don't throw - let signup complete
+            }
+
+            console.log('[Supabase Auth] ✅ User profile successfully created:', data);
+        } catch (error) {
+            console.error('[Supabase Auth] Unexpected error in createPublicUserProfile:', error);
+            // Don't re-throw - this shouldn't block the signup flow
+        }
+    }
+
+    /**
      * Wait for session to be established
      */
-    waitForSessionEstablished(maxWaitMs = 5000) {
+    waitForSessionEstablished(maxWaitMs = 10000) {
         return new Promise((resolve) => {
             let waitTime = 0;
-            const checkInterval = 100;
+            const checkInterval = 50;
 
             const check = () => {
                 // Check if currentUser is set and session exists
                 if (this.currentUser && this.session) {
-                    console.log('[Supabase Auth] Session established:', {
+                    console.log('[Supabase Auth] ✅ Session established:', {
                         user: this.currentUser.email,
                         hasSession: !!this.session
                     });
@@ -297,7 +398,7 @@ class SupabaseAuthManager {
                     waitTime += checkInterval;
                     setTimeout(check, checkInterval);
                 } else {
-                    console.warn('[Supabase Auth] Session wait timeout, proceeding anyway');
+                    console.warn('[Supabase Auth] ⚠️ Session wait timeout after', maxWaitMs, 'ms, proceeding anyway');
                     resolve();
                 }
             };

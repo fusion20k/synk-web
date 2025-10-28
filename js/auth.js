@@ -122,10 +122,10 @@ if (loginForm) {
 
                 showSuccess('Login successful! Redirecting...');
 
-                // Redirect to download page after 1 second (session should be established)
+                // Wait 1.5 seconds for UI to update before redirecting
                 setTimeout(() => {
                     window.location.href = 'download.html';
-                }, 1000);
+                }, 1500);
             }
         } catch (error) {
             console.error('Login error:', error);
@@ -212,10 +212,10 @@ if (signupForm) {
 
                 showSuccess('Account created successfully! Redirecting...');
 
-                // Redirect to download page after 1 second (session should be established)
+                // Wait 1.5 seconds for UI to update before redirecting
                 setTimeout(() => {
                     window.location.href = 'download.html';
-                }, 1000);
+                }, 1500);
             }
         } catch (error) {
             console.error('Signup error:', error);
