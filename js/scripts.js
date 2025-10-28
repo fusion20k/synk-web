@@ -374,6 +374,9 @@ function initAuthState() {
     
     if (!authButtons || !userDropdown) return;
     
+    // Start auth checking - hide both auth buttons and user dropdown
+    document.body.dataset.authChecking = "true";
+    
     // Listen for Supabase auth state changes
     window.addEventListener('auth-state-changed', (e) => {
         console.log('[Auth UI] Auth state changed:', e.detail);
@@ -471,6 +474,9 @@ function showLoggedInState(email) {
     if (userAvatar && email) {
         userAvatar.textContent = email.charAt(0).toUpperCase();
     }
+    
+    // Auth check complete - remove the loading state
+    document.body.dataset.authChecking = "false";
 }
 
 function showLoggedOutState() {
@@ -482,6 +488,9 @@ function showLoggedOutState() {
         userDropdown.classList.remove('active');
         userDropdown.classList.remove('open');
     }
+    
+    // Auth check complete - remove the loading state
+    document.body.dataset.authChecking = "false";
 }
 
 async function fetchUserData(token) {
