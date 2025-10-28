@@ -70,29 +70,15 @@ class AuthStateManager {
      * Update UI based on auth state
      */
     updateUI() {
-        // Support both old and new HTML structures
-        const authContainer = document.getElementById('auth-section-container');
         const authButtons = document.getElementById('auth-buttons');
         const userDropdown = document.getElementById('user-dropdown');
 
-        // Only update if we have a valid container
-        if (!authContainer && !authButtons && !userDropdown) {
-            console.log('[Auth State] No auth container found on this page');
-            return;
-        }
+        if (!authButtons || !userDropdown) return;
 
         if (this.currentUser) {
-            if (authContainer) {
-                this.showLoggedInStateNew(authContainer);
-            } else if (authButtons && userDropdown) {
-                this.showLoggedInState();
-            }
+            this.showLoggedInState();
         } else {
-            if (authContainer) {
-                this.showLoggedOutStateNew(authContainer);
-            } else if (authButtons && userDropdown) {
-                this.showLoggedOutState();
-            }
+            this.showLoggedOutState();
         }
 
         // Notify all listeners
@@ -146,102 +132,6 @@ class AuthStateManager {
             userDropdown.classList.remove('open');
             userDropdown.style.display = 'none';
         }
-    }
-
-    /**
-     * Show logged-in UI state (NEW structure with auth-section-container)
-     */
-    showLoggedInStateNew(container) {
-        if (!container || !this.currentUser) return;
-
-        const userEmail = this.currentUser.email || 'User';
-        const firstInitial = (userEmail.charAt(0) || 'U').toUpperCase();
-
-        container.innerHTML = `
-            <div class="auth-section logged-in">
-                <div class="user-profile">
-                    <button class="avatar-btn" id="avatar-btn" title="${userEmail}" aria-label="User menu">
-                        <div class="avatar-circle">
-                            ${firstInitial}
-                        </div>
-                    </button>
-                    
-                    <!-- Dropdown Menu -->
-                    <div class="profile-dropdown" id="profile-dropdown" role="menu" aria-hidden="true">
-                        <div class="dropdown-header">
-                            <div class="dropdown-avatar">
-                                ${firstInitial}
-                            </div>
-                            <div class="dropdown-user-info">
-                                <p class="dropdown-email" title="${userEmail}">${userEmail}</p>
-                            </div>
-                        </div>
-                        
-                        <div class="dropdown-divider"></div>
-                        
-                        <div class="dropdown-menu">
-                            <a href="account.html" class="dropdown-item" role="menuitem">
-                                <span class="dropdown-icon">⚙️</span>
-                                Manage Account
-                            </a>
-                            <button id="dropdown-logout-btn" class="dropdown-item logout-item" role="menuitem" type="button">
-                                <span class="dropdown-icon">🚪</span>
-                                Log Out
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        // Setup event handlers
-        const avatarBtn = container.querySelector('#avatar-btn');
-        const profileDropdown = container.querySelector('#profile-dropdown');
-        const dropdownLogoutBtn = container.querySelector('#dropdown-logout-btn');
-        
-        if (avatarBtn && profileDropdown) {
-            avatarBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const isVisible = profileDropdown.classList.contains('show');
-                profileDropdown.classList.toggle('show');
-                profileDropdown.setAttribute('aria-hidden', isVisible);
-            });
-            
-            // Click outside to close dropdown
-            document.addEventListener('click', (e) => {
-                if (!container.contains(e.target)) {
-                    profileDropdown.classList.remove('show');
-                    profileDropdown.setAttribute('aria-hidden', 'true');
-                }
-            });
-        }
-
-        // Logout button handler
-        if (dropdownLogoutBtn) {
-            dropdownLogoutBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                this.logout();
-            });
-        }
-
-        console.log('[Auth State] Rendered logged-in UI for:', userEmail);
-    }
-
-    /**
-     * Show logged-out UI state (NEW structure with auth-section-container)
-     */
-    showLoggedOutStateNew(container) {
-        if (!container) return;
-
-        container.innerHTML = `
-            <div class="auth-section logged-out">
-                <a href="login.html" class="auth-btn login-btn">Log In</a>
-                <a href="signup.html" class="auth-btn signup-btn">Sign Up</a>
-            </div>
-        `;
-
-        console.log('[Auth State] Rendered logged-out UI');
     }
 
     /**
@@ -404,13 +294,3 @@ window.toggleAuthDemo = function() {
         console.log('Demo: Logged in as demo@synk.app');
     }
 };
-
-/**
- * Initialize auth state when page loads
- */
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeDynamicAuthState);
-} else {
-    // DOM is already loaded
-    initializeDynamicAuthState();
-}
