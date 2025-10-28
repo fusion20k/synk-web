@@ -76,7 +76,7 @@
                 <!-- SECTION 5.1: USER PROFILE -->
                 <div class="tab-content active" id="profile-tab">
                     <div class="account-section">
-                        <h2>5.1 User Profile</h2>
+                        <h2>User Profile</h2>
                         
                         <div class="profile-info">
                             <div class="info-row">
@@ -138,7 +138,7 @@
                 <!-- SECTION 5.2: SUBSCRIPTION DASHBOARD -->
                 <div class="tab-content" id="subscription-tab">
                     <div class="account-section">
-                        <h2>5.2 Subscription Dashboard</h2>
+                        <h2>Subscription Dashboard</h2>
                         
                         <div class="subscription-status">
                             <div class="status-card">
@@ -163,7 +163,6 @@
                                 <thead>
                                     <tr>
                                         <th>Feature</th>
-                                        <th>Free</th>
                                         <th>Pro</th>
                                         <th>Ultimate</th>
                                     </tr>
@@ -173,41 +172,34 @@
                                         <td>Calendar Sync</td>
                                         <td>✓</td>
                                         <td>✓</td>
-                                        <td>✓</td>
                                     </tr>
                                     <tr>
                                         <td>Notion Sync</td>
                                         <td>✓</td>
                                         <td>✓</td>
-                                        <td>✓</td>
                                     </tr>
                                     <tr>
                                         <td>Sync Interval</td>
-                                        <td>60 seconds</td>
                                         <td>30 seconds</td>
                                         <td>10 seconds</td>
                                     </tr>
                                     <tr>
                                         <td>Custom Calendars</td>
-                                        <td>1</td>
                                         <td>Unlimited</td>
                                         <td>Unlimited</td>
                                     </tr>
                                     <tr>
                                         <td>Priority Support</td>
-                                        <td>✗</td>
                                         <td>✓</td>
                                         <td>✓</td>
                                     </tr>
                                     <tr>
                                         <td>Advanced Filters</td>
-                                        <td>✗</td>
                                         <td>✓</td>
                                         <td>✓</td>
                                     </tr>
                                     <tr>
                                         <td>API Access</td>
-                                        <td>✗</td>
                                         <td>✗</td>
                                         <td>✓</td>
                                     </tr>
@@ -232,7 +224,7 @@
                 <!-- SECTION 5.3: BILLING MANAGEMENT -->
                 <div class="tab-content" id="billing-tab">
                     <div class="account-section">
-                        <h2>5.3 Billing Management</h2>
+                        <h2>Billing Management</h2>
                         
                         <div class="billing-portal">
                             <div class="portal-info">
@@ -299,7 +291,7 @@
                 <!-- SECTION 5.4: ACCOUNT CONTROLS -->
                 <div class="tab-content" id="security-tab">
                     <div class="account-section">
-                        <h2>5.4 Account Controls</h2>
+                        <h2>Account Controls</h2>
 
                         <div class="security-options">
                             <div class="option-card">
@@ -457,7 +449,7 @@
                     .single();
 
                 if (data) {
-                    const plan = data.plan || 'Free';
+                    const plan = data.plan || 'Pro';
                     document.getElementById('plan-badge').textContent = plan;
                     document.getElementById('plan-status').textContent = data.status || 'Active';
 
@@ -472,7 +464,7 @@
                         document.getElementById('billing-amount').textContent = '$19.99/month';
                     }
 
-                    // Show trial countdown if applicable
+                    // Show trial countdown if applicable (Pro plan has free trial)
                     if (data.trial_ends_at) {
                         const trialEnd = new Date(data.trial_ends_at);
                         const today = new Date();
@@ -484,10 +476,11 @@
                     }
 
                     // Show upgrade/downgrade buttons based on plan
-                    if (plan === 'Free') {
+                    if (plan === 'Pro') {
                         document.getElementById('upgrade-btn').style.display = 'block';
-                    } else if (plan === 'Pro') {
-                        document.getElementById('upgrade-btn').style.display = 'block';
+                        document.getElementById('downgrade-btn').style.display = 'none';
+                    } else if (plan === 'Ultimate') {
+                        document.getElementById('upgrade-btn').style.display = 'none';
                         document.getElementById('downgrade-btn').style.display = 'block';
                     }
                 }
