@@ -141,5 +141,17 @@
     <script src="js/supabase-auth-manager.js"></script>
     <script src="js/scripts.js"></script>
     <script src="js/auth.js"></script>
+    
+    <!-- Forward redirect parameter to login link -->
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirect = urlParams.get('redirect');
+        if (redirect) {
+            const loginLink = document.getElementById('login-link');
+            if (loginLink) {
+                loginLink.href = `login.html?redirect=${encodeURIComponent(redirect)}`;
+            }
+        }
+    </script>
 </body>
 </html>
