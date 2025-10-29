@@ -122,9 +122,13 @@ if (loginForm) {
 
                 showSuccess('Login successful! Redirecting...');
 
+                // Check for redirect parameter (e.g., from pricing page)
+                const params = new URLSearchParams(window.location.search);
+                const redirectPage = params.get('redirect') || 'download.html';
+                
                 // Wait 1.5 seconds for UI to update before redirecting
                 setTimeout(() => {
-                    window.location.href = 'download.html';
+                    window.location.href = redirectPage;
                 }, 1500);
             }
         } catch (error) {
@@ -212,9 +216,13 @@ if (signupForm) {
 
                 showSuccess('Account created successfully! Redirecting...');
 
+                // Check for redirect parameter (e.g., from pricing page)
+                const params = new URLSearchParams(window.location.search);
+                const redirectPage = params.get('redirect') || 'download.html';
+                
                 // Wait 1.5 seconds for UI to update before redirecting
                 setTimeout(() => {
-                    window.location.href = 'download.html';
+                    window.location.href = redirectPage;
                 }, 1500);
             }
         } catch (error) {

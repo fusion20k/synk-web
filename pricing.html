@@ -656,6 +656,14 @@
         }
         
         function handlePurchase(plan) {
+            // ✅ REQUIRED: User must be logged in to purchase
+            if (!window.authManager || !window.authManager.currentUser) {
+                alert('You must be logged in to purchase a plan. You will be redirected to the login page.');
+                // Redirect to login page
+                window.location.href = 'login.html?redirect=pricing.html';
+                return;
+            }
+            
             const isYearly = document.getElementById('billing-toggle').checked;
             const billingType = isYearly ? 'yearly' : 'monthly';
             
@@ -663,7 +671,8 @@
             const paymentUrl = paymentLinks[plan][billingType];
             
             if (paymentUrl) {
-                // Redirect to Stripe payment page
+                // User is logged in - proceed to Stripe payment page
+                console.log(`✅ User ${window.authManager.currentUser.email} initiating ${plan} ${billingType} purchase`);
                 window.open(paymentUrl, '_blank');
             } else {
                 console.error('Payment link not found for:', plan, billingType);

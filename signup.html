@@ -116,7 +116,7 @@
                     </div>
 
                     <div class="auth-alternate">
-                        <p>Already have an account? <a href="login.html">Log in</a></p>
+                        <p>Already have an account? <a href="login.html" id="login-link">Log in</a></p>
                     </div>
                 </form>
 
@@ -126,6 +126,18 @@
         </div>
     </main>
 
+    <script>
+        // ✅ Pass redirect parameter to login page if user already has account
+        document.addEventListener('DOMContentLoaded', function() {
+            const params = new URLSearchParams(window.location.search);
+            const redirect = params.get('redirect');
+            const loginLink = document.getElementById('login-link');
+            
+            if (redirect && loginLink) {
+                loginLink.href = `login.html?redirect=${encodeURIComponent(redirect)}`;
+            }
+        });
+    </script>
     <script src="js/supabase-auth-manager.js"></script>
     <script src="js/scripts.js"></script>
     <script src="js/auth.js"></script>
