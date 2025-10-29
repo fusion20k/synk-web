@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAuth URL Test - Synk</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: #fff;
+            padding: 40px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .oauth-section {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .oauth-url {
+            background: #222;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            word-break: break-all;
+            margin: 10px 0;
+        }
+        .test-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 10px 10px 0;
+        }
+        .test-btn:hover {
+            opacity: 0.9;
+        }
+        .scope-list {
+            background: #222;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .scope-list li {
+            margin: 5px 0;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>OAuth URL Test - Synk</h1>
+        <p>This page tests the OAuth URLs to ensure proper consent screens are shown.</p>
+
+        <div class="oauth-section">
+            <h2>Google OAuth</h2>
+            <p><strong>Required Scopes:</strong></p>
+            <ul class="scope-list">
+                <li>openid - OpenID Connect authentication</li>
+                <li>email - User's email address</li>
+                <li>profile - User's basic profile information</li>
+                <li>https://www.googleapis.com/auth/calendar.readonly - Read-only access to calendars</li>
+            </ul>
+            <p><strong>OAuth URL:</strong></p>
+            <div class="oauth-url" id="google-url"></div>
+            <button class="test-btn" onclick="testGoogleOAuth()">Test Google OAuth</button>
+            <p><em>Should show: Account selection + Consent screen with all 4 scopes listed above</em></p>
+        </div>
+
+        <div class="oauth-section">
+            <h2>Notion OAuth</h2>
+            <p><strong>Required Parameters:</strong></p>
+            <ul class="scope-list">
+                <li>owner=user - Ensures user workspace selection</li>
+                <li>response_type=code - Authorization code flow</li>
+            </ul>
+            <p><strong>OAuth URL:</strong></p>
+            <div class="oauth-url" id="notion-url"></div>
+            <button class="test-btn" onclick="testNotionOAuth()">Test Notion OAuth</button>
+            <p><em>Should show: Workspace selection + Permission approval</em></p>
+        </div>
+
+        <div class="oauth-section">
+            <h2>Test Results</h2>
+            <div id="test-results" style="color: #ccc;">
+                Click the test buttons above to verify OAuth flows...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Generate OAuth URLs
+        function generateGoogleOAuthURL() {
+            const clientId = '544344031124-1m1d09ighljp5i94g3l1fns74ss3vadg.apps.googleusercontent.com';
+            const redirectUri = window.location.origin + '/oauth-google-callback.html';
+            const scope = 'openid email profile https://www.googleapis.com/auth/calendar.readonly';
+            
+            return `https://accounts.google.com/oauth/authorize?` +
+                `client_id=${clientId}&` +
+                `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+                `scope=${encodeURIComponent(scope)}&` +
+                `response_type=code&` +
+                `access_type=offline&` +
+                `prompt=consent select_account&` +
+                `include_granted_scopes=false`;
+        }
+
+        function generateNotionOAuthURL() {
+            const clientId = 'your_notion_client_id_here';
+            const redirectUri = window.location.origin + '/oauth-notion-callback.html';
+            
+            return `https://api.notion.com/v1/oauth/authorize?` +
+                `client_id=${clientId}&` +
+                `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+                `response_type=code&` +
+                `owner=user`;
+        }
+
+        function testGoogleOAuth() {
+            const url = generateGoogleOAuthURL();
+            const popup = window.open(url, 'google-oauth-test', 'width=500,height=600');
+            
+            document.getElementById('test-results').innerHTML += 
+                `<p><strong>Google OAuth Test:</strong> Popup opened. Check for account selection and consent screen with 4 scopes.</p>`;
+            
+            // Check if popup was closed
+            const checkClosed = setInterval(() => {
+                if (popup.closed) {
+                    clearInterval(checkClosed);
+                    document.getElementById('test-results').innerHTML += 
+                        `<p style="color: #667eea;">Google OAuth popup was closed.</p>`;
+                }
+            }, 1000);
+        }
+
+        function testNotionOAuth() {
+            const url = generateNotionOAuthURL();
+            const popup = window.open(url, 'notion-oauth-test', 'width=500,height=600');
+            
+            document.getElementById('test-results').innerHTML += 
+                `<p><strong>Notion OAuth Test:</strong> Popup opened. Check for workspace selection screen.</p>`;
+            
+            // Check if popup was closed
+            const checkClosed = setInterval(() => {
+                if (popup.closed) {
+                    clearInterval(checkClosed);
+                    document.getElementById('test-results').innerHTML += 
+                        `<p style="color: #667eea;">Notion OAuth popup was closed.</p>`;
+                }
+            }, 1000);
+        }
+
+        // Display URLs on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('google-url').textContent = generateGoogleOAuthURL();
+            document.getElementById('notion-url').textContent = generateNotionOAuthURL();
+        });
+    </script>
+</body>
+</html>

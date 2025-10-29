@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synk - Authorization Complete</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 50px 20px;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .logo {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #fff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .success {
+            color: #4CAF50;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+        
+        .error {
+            color: #f44336;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+        
+        .message {
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .countdown {
+            font-size: 0.9em;
+            opacity: 0.7;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">Synk</div>
+        <div id="status" class="success">Processing Authorization...</div>
+        <div id="message" class="message">Redirecting to OAuth server...</div>
+        <div class="spinner" id="spinner"></div>
+        <div id="countdown" class="countdown" style="display: none;">Closing in <span id="timer">3</span> seconds</div>
+    </div>
+
+    <script>
+        // Extract URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const state = urlParams.get('state');
+        const error = urlParams.get('error');
+        const errorDescription = urlParams.get('error_description');
+
+        console.log('📥 OAuth callback page loaded');
+        console.log('Code:', code ? 'Present' : 'Missing');
+        console.log('State:', state || 'None');
+        console.log('Error:', error || 'None');
+
+        // Handle OAuth result
+        if (error) {
+            console.log('❌ OAuth error:', error);
+            document.getElementById('status').className = 'error';
+            document.getElementById('status').textContent = 'Authorization Failed';
+            document.getElementById('message').textContent = errorDescription || error;
+            document.getElementById('spinner').style.display = 'none';
+            startCountdown();
+        } else if (code) {
+            console.log('✅ Authorization code received, redirecting to OAuth server...');
+            // Try multiple OAuth server ports (3000, 3001, 3002, 3003)
+            const tryPorts = [3000, 3001, 3002, 3003];
+            let portIndex = 0;
+            
+            document.getElementById('message').textContent = 'Completing OAuth flow on server...';
+            
+            function tryNextPort() {
+                if (portIndex >= tryPorts.length) {
+                    document.getElementById('status').className = 'error';
+                    document.getElementById('status').textContent = 'Server Connection Failed';
+                    document.getElementById('message').textContent = 'Could not connect to OAuth server';
+                    document.getElementById('spinner').style.display = 'none';
+                    startCountdown();
+                    return;
+                }
+                
+                const port = tryPorts[portIndex];
+                const serverUrl = `http://127.0.0.1:${port}/oauth2callback?code=${encodeURIComponent(code)}&state=${encodeURIComponent(state || '')}`;
+                
+                console.log(`Trying OAuth server on port ${port}...`);
+                
+                // Try to redirect to this port
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.onload = function() {
+                    // Success - redirect the main window
+                    window.location.href = serverUrl;
+                };
+                iframe.onerror = function() {
+                    // Failed - try next port
+                    portIndex++;
+                    setTimeout(tryNextPort, 500);
+                };
+                iframe.src = `http://127.0.0.1:${port}/status`;
+                document.body.appendChild(iframe);
+                
+                // Fallback timeout
+                setTimeout(() => {
+                    if (iframe.parentNode) {
+                        iframe.parentNode.removeChild(iframe);
+                        portIndex++;
+                        tryNextPort();
+                    }
+                }, 2000);
+            }
+            
+            tryNextPort();
+        } else {
+            console.log('❌ No authorization code received');
+            document.getElementById('status').className = 'error';
+            document.getElementById('status').textContent = 'Invalid Response';
+            document.getElementById('message').textContent = 'No authorization code received';
+            document.getElementById('spinner').style.display = 'none';
+            startCountdown();
+        }
+
+        // Countdown and auto-close
+        function startCountdown() {
+            document.getElementById('countdown').style.display = 'block';
+            let timeLeft = 3;
+            const timerElement = document.getElementById('timer');
+            
+            const countdown = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    window.close();
+                    
+                    // If window.close() doesn't work (some browsers block it), redirect
+                    setTimeout(() => {
+                        window.location.href = 'https://synk-official.com';
+                    }, 1000);
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synk - Notion & Google Calendar Sync</title>
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000 !important;
+            color: #fff !important;
+            line-height: 1.6;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Custom Titlebar */
+        .titlebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 32px;
+            background: #1f1f24;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 16px;
+            z-index: 1000;
+            -webkit-app-region: drag;
+        }
+
+        .titlebar-title {
+            font-size: 13px;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .titlebar-controls {
+            display: flex;
+            gap: 8px;
+            -webkit-app-region: no-drag;
+        }
+
+        .titlebar-button {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 12px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .titlebar-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .titlebar-button.close:hover {
+            background-color: #e81123;
+        }
+
+        .titlebar-button.minimize::before {
+            content: "−";
+            font-weight: bold;
+        }
+
+        .titlebar-button.maximize::before {
+            content: "□";
+            font-weight: bold;
+        }
+
+        .titlebar-button.close::before {
+            content: "×";
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* App Shell Layout */
+        .app-container {
+            display: flex;
+            height: 100vh;
+            background: #000;
+            border: 2px solid #333; /* Custom border as requested */
+            border-radius: 8px;
+            padding-top: 32px; /* Space for titlebar */
+        }
+
+        /* Left Sidebar */
+        .sidebar {
+            width: 240px;
+            background: #111;
+            border-right: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #333;
+            margin-bottom: 20px;
+        }
+
+        .app-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 0 10px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #ccc;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            color: #fff;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border-left: 3px solid #667eea;
+        }
+
+        .nav-icon {
+            margin-right: 12px;
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #000;
+        }
+
+        /* Top Header Bar */
+        .header-bar {
+            height: 60px;
+            background: #111;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .header-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .status-pills {
+            display: flex;
+            gap: 10px;
+        }
+
+        .status-pill {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-pill.connected {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            color: #667eea;
+            border: 1px solid #667eea;
+        }
+
+        .status-pill.disconnected {
+            background: #4d1a1a;
+            color: #f87171;
+            border: 1px solid #ef4444;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #000;
+        }
+
+        .tab-content {
+            display: none;
+            height: 100%;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Cards */
+        .content-card {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        /* Sync Tab Specific Styles */
+        .sync-container {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .service-section {
+            flex: 1;
+            max-width: 45%;
+            min-width: 400px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .sync-icon {
+            font-size: 32px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            align-self: center;
+            margin-top: 60px;
+        }
+
+        .service-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+
+        .service-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .connect-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .connect-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
+
+        .status.success {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2)) !important;
+            color: #a78bfa !important;
+            border: 1px solid #667eea;
+        }
+
+        .status.error {
+            background: #4d1a1a !important;
+            color: #f87171 !important;
+            border: 1px solid #ef4444;
+        }
+
+        .list-container {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            min-height: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .calendar-item, .database-item {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            outline: none;
+            position: relative;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+            color: inherit;
+        }
+
+        .calendar-item:hover, .database-item:hover,
+        .calendar-item:focus, .database-item:focus {
+            border-color: #667eea;
+            background: #222;
+            outline: 2px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .calendar-item.selected, .database-item.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .calendar-item.primary {
+            border-left: 4px solid #667eea;
+        }
+
+        .item-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .item-meta {
+            font-size: 0.85rem;
+            color: #ccc;
+        }
+
+        .demo-badge {
+            display: inline-block;
+            background: #333;
+            color: #667eea;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-left: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #ccc;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        /* Dashboard Styles */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .connection-card {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-dot.connected {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .status-dot.disconnected {
+            background: #f87171;
+        }
+
+        /* Settings Styles */
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info h3 {
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .setting-info p {
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        .status-indicator {
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: rgba(76, 175, 80, 0.1);
+            border: 1px solid #4CAF50;
+            font-size: 12px;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            border: 1px solid #667eea;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: linear-gradient(135deg, #5a67d8, #6b46c1);
+            border-color: #5a67d8;
+            transform: translateY(-1px);
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid #333;
+            border-top: 2px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Sync Status Panel */
+        .sync-status-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 320px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .sync-status-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 15px;
+        }
+
+        .sync-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px 0;
+        }
+
+        .sync-label {
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .sync-value {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .sync-value.selected {
+            color: #4CAF50;
+        }
+
+        .sync-value.error {
+            color: #f44336;
+        }
+
+        .sync-value.syncing {
+            color: #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Titlebar -->
+    <div class="titlebar">
+        <div class="titlebar-title">Synk - Notion & Google Calendar Sync</div>
+        <div class="titlebar-controls">
+            <button class="titlebar-button minimize" id="minimize-btn"></button>
+            <button class="titlebar-button maximize" id="maximize-btn"></button>
+            <button class="titlebar-button close" id="close-btn"></button>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Left Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="app-logo">Synk</div>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-item active" data-tab="dashboard">
+                    <span class="nav-icon">■</span>
+                    <span>Dashboard</span>
+                </div>
+                <div class="nav-item" data-tab="sync">
+                    <span class="nav-icon">↔</span>
+                    <span>Sync</span>
+                </div>
+                <div class="nav-item" data-tab="settings">
+                    <span class="nav-icon">⚙</span>
+                    <span>Settings</span>
+                </div>
+                <div class="nav-item" data-tab="logs">
+                    <span class="nav-icon">□</span>
+                    <span>Logs</span>
+                </div>
+                <div class="nav-item" data-tab="about">
+                    <span class="nav-icon">i</span>
+                    <span>About</span>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header Bar -->
+            <div class="header-bar">
+                <div class="header-title" id="header-title">Dashboard</div>
+                <div class="status-pills">
+                    <div class="status-pill disconnected" id="google-pill">Google</div>
+                    <div class="status-pill disconnected" id="notion-pill">Notion</div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <!-- Dashboard Tab -->
+                <div class="tab-content active" id="dashboard-tab">
+                    <div class="dashboard-grid">
+                        <div class="connection-card">
+                            <h3 class="card-title">Google Calendar</h3>
+                            <div class="connection-status">
+                                <div class="status-dot disconnected" id="google-status-dot"></div>
+                                <span id="google-status-text">Not connected</span>
+                            </div>
+                            <p id="google-user-info" style="color: #ccc; font-size: 0.9rem;">Connect to see your calendars</p>
+                        </div>
+                        <div class="connection-card">
+                            <h3 class="card-title">Notion</h3>
+                            <div class="connection-status">
+                                <div class="status-dot disconnected" id="notion-status-dot"></div>
+                                <span id="notion-status-text">Not connected</span>
+                            </div>
+                            <p id="notion-user-info" style="color: #ccc; font-size: 0.9rem;">Connect to see your databases</p>
+                        </div>
+                    </div>
+                    <div class="content-card">
+                        <h3 class="card-title">Last Sync</h3>
+                        <p id="last-sync-info" style="color: #ccc;">No syncs performed yet</p>
+                    </div>
+                </div>
+
+                <!-- Sync Tab -->
+                <div class="tab-content" id="sync-tab">
+                    <div class="sync-container">
+                        <div class="service-section">
+                            <div class="service-header">
+                                <h2 class="service-title">Notion</h2>
+                                <button class="connect-btn" id="notion-connect">
+                                    <span id="notion-text">Connect Notion</span>
+                                </button>
+                            </div>
+                            <div id="notion-status"></div>
+                            <div class="list-container" id="notion-content">
+                                <div class="empty-state">
+                                    <h3>Connect Notion to get started</h3>
+                                    <p>Your databases and pages will appear here</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sync-icon">↔</div>
+
+                        <div class="service-section">
+                            <div class="service-header">
+                                <h2 class="service-title">Google Calendar</h2>
+                                <button class="connect-btn" id="google-connect">
+                                    <span id="google-text">Connect Google</span>
+                                </button>
+                            </div>
+                            <div id="google-status"></div>
+                            <div class="list-container" id="calendars-content">
+                                <div class="empty-state">
+                                    <h3>Connect Google to get started</h3>
+                                    <p>Your calendars will appear here</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div class="tab-content" id="settings-tab">
+                    <div class="content-card">
+                        <h3 class="card-title">Application Settings</h3>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Auto Sync</h3>
+                                <p>Automatically syncs changes every 1 minute (always enabled)</p>
+                            </div>
+                            <div class="status-indicator" style="color: #4CAF50; font-weight: bold;">
+                                ✓ Always Active
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Clear Data</h3>
+                                <p>Remove all stored tokens and reset connections</p>
+                            </div>
+                            <button class="action-btn" id="clear-data-btn">Clear All Data</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Logs Tab -->
+                <div class="tab-content" id="logs-tab">
+                    <div class="content-card">
+                        <h3 class="card-title">Activity Logs</h3>
+                        <div id="logs-container">
+                            <p style="color: #ccc;">No activity logs yet</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About Tab -->
+                <div class="tab-content" id="about-tab">
+                    <div class="content-card about-card">
+                        <h2>About Synk</h2>
+                        <p style="color: #ccc; margin-bottom: 20px;">Synk syncs Notion and Google Calendar events.</p>
+                        <p style="color: #ccc; margin-bottom: 10px;">Website: <a id="homepage-link" href="#" style="color: #4a9eff; text-decoration: none;">https://synk-official.com</a></p>
+                        <p style="color: #ccc; margin-bottom: 10px;">Support: <a id="support-mail" href="mailto:support@synk-official.com" style="color: #4a9eff; text-decoration: none;">support@synk-official.com</a></p>
+                        <p style="color: #ccc;">Version: <span id="app-version">1.0.0</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simple inline sync status -->
+    <div class="inline-sync-status" id="inline-sync-status" style="text-align: center; padding: 10px; color: #888; font-size: 14px;">
+        <span id="sync-status-text">Select one Notion database and one Google calendar to sync</span>
+    </div>
+
+    <!-- Toast notification for errors -->
+    <div id="error-toast" style="position: fixed; top: 20px; right: 20px; background: #f44336; color: white; padding: 15px; border-radius: 5px; display: none; z-index: 1000; max-width: 300px;">
+        <span id="error-message"></span>
+        <button onclick="hideErrorToast()" style="background: none; border: none; color: white; float: right; cursor: pointer; font-size: 16px; margin-left: 10px;">&times;</button>
+    </div>
+
+    <script>
+        // Titlebar Controls
+        document.addEventListener('DOMContentLoaded', () => {
+            // Titlebar button handlers
+            document.getElementById('minimize-btn').addEventListener('click', () => {
+                window.electronAPI.minimize();
+            });
+
+            document.getElementById('maximize-btn').addEventListener('click', () => {
+                window.electronAPI.maximize();
+            });
+
+            document.getElementById('close-btn').addEventListener('click', () => {
+                window.electronAPI.close();
+            });
+
+            // About page link handlers
+            document.getElementById('homepage-link').addEventListener('click', (e) => {
+                e.preventDefault();
+                window.electronAPI.openExternal('https://synk-official.com');
+            });
+
+            // Support email is handled by default mailto: behavior
+        });
+
+        // UI State Management
+        let isGoogleConnecting = false;
+        let isNotionConnecting = false;
+        let isGoogleConnected = false;
+        let isNotionConnected = false;
+        let currentTab = 'dashboard';
+        
+        // Detect demo mode from environment (will be passed from main process)
+        let demoMode = true; // Default to demo mode for safety
+        
+        // Initialize demo mode detection
+        if (window.electronAPI && window.electronAPI.isDemoMode) {
+            window.electronAPI.isDemoMode().then(isDemo => {
+                demoMode = isDemo;
+                console.log(`🎭 Demo mode detected: ${demoMode}`);
+            }).catch(err => {
+                console.warn('Failed to detect demo mode, defaulting to true:', err);
+            });
+        }
+
+        // Tab Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const tabId = item.dataset.tab;
+                switchTab(tabId);
+            });
+        });
+
+        function switchTab(tabId) {
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`${tabId}-tab`).classList.add('active');
+
+            // Update header title
+            const titles = {
+                dashboard: 'Dashboard',
+                sync: 'Sync',
+                settings: 'Settings',
+                logs: 'Activity Logs',
+                about: 'About'
+            };
+            document.getElementById('header-title').textContent = titles[tabId];
+            currentTab = tabId;
+        }
+
+        // OAuth Connection Handlers
+        document.getElementById('google-connect').addEventListener('click', handleGoogleConnect);
+        document.getElementById('notion-connect').addEventListener('click', handleNotionConnect);
+
+        // Status Update Functions
+        function updateGoogleStatus(type, message) {
+            const status = document.getElementById('google-status');
+            status.className = `status ${type}`;
+            status.textContent = message;
+        }
+
+        function updateNotionStatus(type, message) {
+            const status = document.getElementById('notion-status');
+            status.className = `status ${type}`;
+            status.textContent = message;
+        }
+
+        function updateConnectionPill(service, connected) {
+            const pill = document.getElementById(`${service}-pill`);
+            const dot = document.getElementById(`${service}-status-dot`);
+            const text = document.getElementById(`${service}-status-text`);
+            
+            if (connected) {
+                pill.classList.remove('disconnected');
+                pill.classList.add('connected');
+                dot.classList.remove('disconnected');
+                dot.classList.add('connected');
+                text.textContent = 'Connected';
+            } else {
+                pill.classList.remove('connected');
+                pill.classList.add('disconnected');
+                dot.classList.remove('connected');
+                dot.classList.add('disconnected');
+                text.textContent = 'Not connected';
+            }
+        }
+
+        // Display Functions
+        function displayCalendars(calendars) {
+            const container = document.getElementById('calendars-content');
+            if (!calendars || calendars.length === 0) {
+                container.innerHTML = '<div class="empty-state"><h3>No calendars found</h3><p>No calendars available in your account</p></div>';
+                return;
+            }
+
+            container.innerHTML = calendars.map(cal => `
+                <button class="sync-item calendar-item ${cal.primary ? 'primary' : ''}" data-id="${cal.id}" onclick="toggleSelect('${cal.id}', 'google')" aria-label="Select ${cal.name} calendar">
+                    <div class="item-title">
+                        ${cal.name}
+                        ${cal._demo ? '<span class="demo-badge">DEMO</span>' : ''}
+                    </div>
+                    <div class="item-meta">
+                        ${cal.primary ? 'Primary Calendar • ' : ''}${cal.accessRole} • ${cal.timeZone || 'No timezone'}
+                    </div>
+                </button>
+            `).join('');
+        }
+
+        function displayDatabases(databases) {
+            const container = document.getElementById('notion-content');
+            if (!databases || databases.length === 0) {
+                container.innerHTML = '<div class="empty-state"><h3>No databases found</h3><p>No databases available in your workspace</p></div>';
+                return;
+            }
+
+            container.innerHTML = databases.map(db => `
+                <button class="sync-item database-item" data-id="${db.id}" onclick="toggleSelect('${db.id}', 'notion')" aria-label="Select ${db.title} database">
+                    <div class="item-title">
+                        ${db.title}
+                        ${db._demo ? '<span class="demo-badge">DEMO</span>' : ''}
+                    </div>
+                    <div class="item-meta">
+                        ${db.properties ? db.properties.join(', ') : 'No properties'} • 
+                        ${db.last_edited_time ? new Date(db.last_edited_time).toLocaleDateString() : 'Unknown date'}
+                    </div>
+                </button>
+            `).join('');
+        }
+
+        // Settings Handlers
+        // Auto-sync is always enabled - no toggle needed
+
+        document.getElementById('clear-data-btn').addEventListener('click', async () => {
+            if (confirm('Are you sure you want to clear all data? This will disconnect all services.')) {
+                try {
+                    await window.electronAPI.clearAllData();
+                    // Reset UI
+                    updateConnectionPill('google', false);
+                    updateConnectionPill('notion', false);
+                    document.getElementById('google-status').textContent = '';
+                    document.getElementById('notion-status').textContent = '';
+                    document.getElementById('calendars-content').innerHTML = '<div class="empty-state"><h3>Connect Google to get started</h3><p>Your calendars will appear here</p></div>';
+                    document.getElementById('notion-content').innerHTML = '<div class="empty-state"><h3>Connect Notion to get started</h3><p>Your databases and pages will appear here</p></div>';
+                } catch (error) {
+                    console.error('Failed to clear data:', error);
+                }
+            }
+        });
+
+        // Sync Selection State - Fix #4 implementation
+        const selected = { notion: null, google: null };
+        let autoSyncTimer = null;
+
+        function toggleSelect(id, type) {
+            // toggle selection; for this app we want exactly one selected per side:
+            selected[type] = selected[type] === id ? null : id;
+            renderSelectionUI();
+            checkAndTriggerAutoSync();
+        }
+
+        function renderSelectionUI() {
+            // Update Google calendar selection UI
+            document.querySelectorAll('.calendar-item').forEach(item => {
+                if (item.dataset.id === selected.google) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+
+            // Update Notion database selection UI
+            document.querySelectorAll('.database-item').forEach(item => {
+                if (item.dataset.id === selected.notion) {
+                    item.classList.add('selected');
+                } else {
+                    item.classList.remove('selected');
+                }
+            });
+
+            // Update inline sync status
+            updateSyncStatus();
+        }
+
+        function checkAndTriggerAutoSync() {
+            if (selected.notion && selected.google) {
+                clearTimeout(autoSyncTimer);
+                autoSyncTimer = setTimeout(async () => {
+                    try {
+                        // call IPC: sync now
+                        updateSyncStatus('Syncing...');
+                        const result = await window.electronAPI.startSync({ notionId: selected.notion, googleId: selected.google });
+                        
+                        if (result && result.success) {
+                            const now = new Date();
+                            const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+                            updateSyncStatus(`Last synced at ${timeStr}`);
+                        } else {
+                            updateSyncStatus('Sync failed - will retry automatically');
+                        }
+                    } catch (error) {
+                        console.error('Sync error:', error);
+                        updateSyncStatus('Sync failed - will retry automatically');
+                    }
+                }, 1200);
+            }
+        }
+
+        function updateSyncStatus(status) {
+            const syncStatusText = document.getElementById('sync-status-text');
+            if (syncStatusText) {
+                if (status) {
+                    syncStatusText.textContent = status;
+                    syncStatusText.style.color = status.includes('Syncing') ? '#4caf50' : '#888';
+                } else {
+                    // Show current selection status
+                    const hasNotionSelection = selected.notion !== null;
+                    const hasGoogleSelection = selected.google !== null;
+                    
+                    if (hasNotionSelection && hasGoogleSelection) {
+                        syncStatusText.textContent = 'Ready to sync - selections made';
+                        syncStatusText.style.color = '#4caf50';
+                    } else if (hasNotionSelection || hasGoogleSelection) {
+                        syncStatusText.textContent = 'Select one item from each side to sync';
+                        syncStatusText.style.color = '#ffa726';
+                    } else {
+                        syncStatusText.textContent = 'Select one Notion database and one Google calendar to sync';
+                        syncStatusText.style.color = '#888';
+                    }
+                }
+            }
+        }
+
+
+
+
+
+
+
+        // Hide properties panel by default as specified in Fix #4
+        const propertiesPanel = document.getElementById('properties-panel');
+        if (propertiesPanel) {
+            propertiesPanel.style.display = 'none';
+        }
+
+        // Error toast functions
+        function showErrorToast(message) {
+            const toast = document.getElementById('error-toast');
+            const messageSpan = document.getElementById('error-message');
+            if (toast && messageSpan) {
+                messageSpan.textContent = message;
+                toast.style.display = 'block';
+                // Auto-hide after 5 seconds
+                setTimeout(() => hideErrorToast(), 5000);
+            }
+        }
+
+        function hideErrorToast() {
+            const toast = document.getElementById('error-toast');
+            if (toast) {
+                toast.style.display = 'none';
+            }
+        }
+
+        // Demo sample data
+        const sampleData = {
+            notionDatabases: [
+                {
+                    id: 'db-demo-1',
+                    name: 'Demo Tasks',
+                    description: 'Sample task database for demo purposes',
+                    pages: [
+                        { id: 'page-1', title: 'Complete project proposal', status: 'In Progress' },
+                        { id: 'page-2', title: 'Review design mockups', status: 'To Do' },
+                        { id: 'page-3', title: 'Schedule team meeting', status: 'Done' }
+                    ]
+                },
+                {
+                    id: 'db-demo-2', 
+                    name: 'Demo Projects',
+                    description: 'Sample project tracking database',
+                    pages: [
+                        { id: 'proj-1', title: 'Website Redesign', status: 'Active' },
+                        { id: 'proj-2', title: 'Mobile App Development', status: 'Planning' }
+                    ]
+                }
+            ],
+            googleCalendars: [
+                {
+                    id: 'cal-demo-1',
+                    name: 'Demo Calendar',
+                    description: 'Primary demo calendar',
+                    primary: true,
+                    events: [
+                        { id: 'event-1', title: 'Team Standup', start: '2024-01-15T09:00:00Z', end: '2024-01-15T09:30:00Z' },
+                        { id: 'event-2', title: 'Client Meeting', start: '2024-01-15T14:00:00Z', end: '2024-01-15T15:00:00Z' }
+                    ]
+                },
+                {
+                    id: 'cal-demo-2',
+                    name: 'Demo Work Calendar',
+                    description: 'Work-related demo events',
+                    primary: false,
+                    events: [
+                        { id: 'work-1', title: 'Project Review', start: '2024-01-16T10:00:00Z', end: '2024-01-16T11:00:00Z' }
+                    ]
+                }
+            ]
+        };
+
+        // Event listeners for OAuth success and demo timeout
+        if (window.electronAPI) {
+            // OAuth success handler - hide connect button
+            window.electronAPI.onOAuthSuccess((event, payload) => {
+                console.log('🎉 OAuth success received:', payload);
+                console.log('📊 Payload details:', {
+                    provider: payload.provider,
+                    account: payload.account,
+                    calendars: payload.calendars?.length || 0,
+                    databases: payload.databases?.length || 0
+                });
+                
+                // Update connection state and hide button
+                if (payload.provider === 'notion') {
+                    isNotionConnected = true;
+                    isNotionConnecting = false;
+                    const btn = document.getElementById('notion-connect');
+                    if (btn) {
+                        btn.style.display = 'none'; // Hide button
+                        console.log('✅ Notion connect button hidden');
+                    }
+                    updateNotionStatus('success', `Connected to ${payload.account}`);
+                    if (payload.databases) {
+                        displayDatabases(payload.databases);
+                    }
+                    updateConnectionPill('notion', true);
+                } else if (payload.provider === 'google') {
+                    isGoogleConnected = true;
+                    isGoogleConnecting = false;
+                    const btn = document.getElementById('google-connect');
+                    if (btn) {
+                        btn.style.display = 'none'; // Hide button
+                        console.log('✅ Google connect button hidden');
+                    }
+                    updateGoogleStatus('success', `Connected to ${payload.account}`);
+                    if (payload.calendars && payload.calendars.length > 0) {
+                        console.log('📅 Displaying calendars:', payload.calendars);
+                        displayCalendars(payload.calendars);
+                    } else {
+                        console.log('⚠️ No calendars received in payload');
+                        updateGoogleStatus('warning', 'Connected but no calendars found');
+                    }
+                    updateConnectionPill('google', true);
+                }
+            });
+
+            // Google calendars handler - receives calendars directly from OAuth server
+            window.electronAPI.onGoogleCalendars((event, calendars) => {
+                console.log('📅 Google calendars received:', calendars);
+                console.log('📊 Calendar details:', {
+                    items: calendars.items?.length || 0,
+                    kind: calendars.kind
+                });
+                
+                // Update Google connection state
+                isGoogleConnected = true;
+                isGoogleConnecting = false;
+                
+                // Hide connect button
+                const btn = document.getElementById('google-connect');
+                if (btn) {
+                    btn.style.display = 'none';
+                    console.log('✅ Google connect button hidden');
+                }
+                
+                // Update status and display calendars
+                updateGoogleStatus('success', 'Connected to Google Calendar');
+                
+                if (calendars.items && calendars.items.length > 0) {
+                    console.log('📅 Displaying calendars:', calendars.items);
+                    displayCalendars(calendars.items);
+                } else {
+                    console.log('⚠️ No calendar items found');
+                    updateGoogleStatus('warning', 'Connected but no calendars found');
+                }
+                
+                updateConnectionPill('google', true);
+                
+                // Show success toast
+                showSuccessToast(`Connected to Google Calendar! Found ${calendars.items?.length || 0} calendars.`);
+            });
+
+            // FIXED OAuth success handler - stops spinner, shows calendars
+            if (window.electronAPI.onOAuthSuccess) {
+                window.electronAPI.onOAuthSuccess((event, data) => {
+                    console.log('✅ OAuth success received:', data);
+                    
+                    // Stop infinite loading immediately
+                    isGoogleConnected = true;
+                    isGoogleConnecting = false;
+                    
+                    // Hide connect button
+                    const btn = document.getElementById('google-connect');
+                    if (btn) {
+                        btn.style.display = 'none';
+                        btn.disabled = false;
+                        btn.textContent = 'Connect Google';
+                    }
+                    
+                    // Update status and display calendars
+                    updateGoogleStatus('success', 'Connected to Google Calendar');
+                    
+                    // Handle calendar data (could be in data.calendars or directly in data)
+                    const calendars = data.calendars || data;
+                    
+                    if (calendars.items && calendars.items.length > 0) {
+                        displayCalendars(calendars.items);
+                        window.googleCalendars = calendars.items;
+                        updateSyncSelectionUI();
+                    } else {
+                        updateGoogleStatus('warning', 'Connected but no calendars found');
+                    }
+                    
+                    updateConnectionPill('google', true);
+                    showSuccessToast(`Connected to Google! Found ${calendars.items?.length || 0} calendars.`);
+                });
+            }
+
+            // FIXED OAuth failure handler - stops spinner, resets button
+            if (window.electronAPI.onOAuthFailed) {
+                window.electronAPI.onOAuthFailed((event, error) => {
+                    console.error('❌ OAuth failed:', error);
+                    
+                    // Stop infinite loading immediately
+                    isGoogleConnecting = false;
+                    isGoogleConnected = false;
+                    
+                    // Show connect button again
+                    const btn = document.getElementById('google-connect');
+                    if (btn) {
+                        btn.style.display = 'block';
+                        btn.textContent = 'Connect Google';
+                        btn.disabled = false;
+                    }
+                    
+                    updateGoogleStatus('error', 'Connection failed');
+                    showErrorToast(`Google connection failed: ${error}`);
+                });
+            }
+
+            // Demo timeout handler - show sample data (DEMO MODE ONLY)
+            window.electronAPI.onDemoTimeout((event, payload) => {
+                console.log('Demo timeout received:', payload);
+                
+                if (payload.provider === 'notion') {
+                    isNotionConnected = true; // Mark as connected in demo mode
+                    isNotionConnecting = false;
+                    const btn = document.getElementById('notion-connect');
+                    if (btn) {
+                        btn.style.display = 'none'; // Hide button after demo connection
+                        console.log('✅ Notion connect button hidden (demo mode)');
+                    }
+                    updateNotionStatus('success', 'Demo Mode - Sample Data');
+                    displayDatabases(sampleData.notionDatabases);
+                    updateConnectionPill('notion', true);
+                } else if (payload.provider === 'google') {
+                    isGoogleConnected = true; // Mark as connected in demo mode
+                    isGoogleConnecting = false;
+                    const btn = document.getElementById('google-connect');
+                    if (btn) {
+                        btn.style.display = 'none'; // Hide button after demo connection
+                        console.log('✅ Google connect button hidden (demo mode)');
+                    }
+                    updateGoogleStatus('success', 'Demo Mode - Sample Data');
+                    displayCalendars(sampleData.googleCalendars);
+                    updateConnectionPill('google', true);
+                }
+            });
+
+            // Connections cleared handler - reset UI
+            window.electronAPI.onConnectionsCleared(() => {
+                console.log('Connections cleared - resetting UI');
+                resetUiToDisconnectedState();
+            });
+
+            // Connection error handler (for real mode)
+            window.electronAPI.onConnectionError((event, payload) => {
+                console.log('Connection error received:', payload);
+                showErrorToast(`${payload.provider} connection failed: ${payload.error}`);
+                
+                // Re-enable the connect button
+                if (payload.provider === 'google') {
+                    isGoogleConnecting = false;
+                    const btn = document.getElementById('google-connect');
+                    const text = document.getElementById('google-text');
+                    if (btn && text) {
+                        btn.disabled = false;
+                        text.textContent = 'Connect Google';
+                    }
+                    updateGoogleStatus('error', `Connection failed: ${payload.error}`);
+                } else if (payload.provider === 'notion') {
+                    isNotionConnecting = false;
+                    const btn = document.getElementById('notion-connect');
+                    const text = document.getElementById('notion-text');
+                    if (btn && text) {
+                        btn.disabled = false;
+                        text.textContent = 'Connect Notion';
+                    }
+                    updateNotionStatus('error', `Connection failed: ${payload.error}`);
+                }
+            });
+        }
+
+        // Reset UI to disconnected state
+        function resetUiToDisconnectedState() {
+            // Reset connection states
+            isGoogleConnected = false;
+            isNotionConnected = false;
+            isGoogleConnecting = false;
+            isNotionConnecting = false;
+            
+            // Show connect buttons again
+            const notionBtn = document.getElementById('notion-connect');
+            const googleBtn = document.getElementById('google-connect');
+            
+            if (notionBtn) {
+                notionBtn.style.display = 'block';
+                notionBtn.disabled = false;
+                const text = document.getElementById('notion-text');
+                if (text) text.textContent = 'Connect Notion';
+            }
+            
+            if (googleBtn) {
+                googleBtn.style.display = 'block';
+                googleBtn.disabled = false;
+                const text = document.getElementById('google-text');
+                if (text) text.textContent = 'Connect Google';
+            }
+            
+            // Clear status messages
+            updateNotionStatus('', '');
+            updateGoogleStatus('', '');
+            
+            // Reset connection pills
+            updateConnectionPill('notion', false);
+            updateConnectionPill('google', false);
+            
+            // Clear displayed data
+            document.getElementById('notion-content').innerHTML = '<div class="empty-state"><h3>Connect Notion to get started</h3><p>Your databases and pages will appear here</p></div>';
+            document.getElementById('calendars-content').innerHTML = '<div class="empty-state"><h3>Connect Google to get started</h3><p>Your calendars will appear here</p></div>';
+        }
+
+        // Clear data button handler
+        document.getElementById('clear-data-btn').addEventListener('click', async () => {
+            try {
+                console.log('Clearing all data...');
+                await window.electronAPI.clearAllData();
+                console.log('✅ Data cleared successfully');
+            } catch (error) {
+                console.error('❌ Failed to clear data:', error);
+                showErrorToast('Reset failed: ' + error.message);
+            }
+        });
+
+        // Connect handlers with connection state checking
+        async function handleGoogleConnect() {
+            if (isGoogleConnecting || isGoogleConnected) return;
+            
+            isGoogleConnecting = true;
+            const btn = document.getElementById('google-connect');
+            const text = document.getElementById('google-text');
+            
+            btn.disabled = true;
+            text.innerHTML = '<span class="spinner"></span> Connecting...';
+            
+            try {
+                const result = await window.electronAPI.startGoogleOAuth({ demoMode });
+                
+                if (result.error) {
+                    updateGoogleStatus('error', result.error);
+                    if (result.error.includes('redirect_uri') || result.error.includes('client_id') || result.error.includes('403')) {
+                        showErrorToast('OAuth misconfigured: check redirect URIs and client IDs');
+                    }
+                    // Re-enable button on error
+                    isGoogleConnecting = false;
+                    btn.disabled = false;
+                    text.textContent = 'Connect Google';
+                } else if (result.inProgress) {
+                    updateGoogleStatus('success', result.message);
+                    // Keep button disabled while OAuth is in progress
+                } else {
+                    // Success will be handled by oauth-success event
+                    updateGoogleStatus('success', 'Connection in progress...');
+                }
+            } catch (error) {
+                updateGoogleStatus('error', `Connection failed: ${error.message}`);
+                showErrorToast(`Google connection failed: ${error.message}`);
+                // Re-enable button on error
+                isGoogleConnecting = false;
+                btn.disabled = false;
+                text.textContent = 'Connect Google';
+            }
+        }
+
+        async function handleNotionConnect() {
+            if (isNotionConnecting || isNotionConnected) return;
+            
+            isNotionConnecting = true;
+            const btn = document.getElementById('notion-connect');
+            const text = document.getElementById('notion-text');
+            
+            btn.disabled = true;
+            text.innerHTML = '<span class="spinner"></span> Connecting...';
+            
+            try {
+                const result = await window.electronAPI.startNotionOAuth({ demoMode });
+                
+                if (result.error) {
+                    updateNotionStatus('error', result.error);
+                    if (result.error.includes('redirect_uri') || result.error.includes('client_id') || result.error.includes('403')) {
+                        showErrorToast('OAuth misconfigured: check redirect URIs and client IDs');
+                    }
+                    // Re-enable button on error
+                    isNotionConnecting = false;
+                    btn.disabled = false;
+                    text.textContent = 'Connect Notion';
+                } else if (result.inProgress) {
+                    updateNotionStatus('success', result.message);
+                    // Keep button disabled while OAuth is in progress
+                } else {
+                    // Success will be handled by oauth-success event
+                    updateNotionStatus('success', 'Connection in progress...');
+                }
+            } catch (error) {
+                updateNotionStatus('error', `Connection failed: ${error.message}`);
+                showErrorToast(`Notion connection failed: ${error.message}`);
+                // Re-enable button on error
+                isNotionConnecting = false;
+                btn.disabled = false;
+                text.textContent = 'Connect Notion';
+            }
+        }
+
+        // Initialize the app
+        console.log('Synk app initialized with new UI and OAuth fixes');
+    </script>
+</body>
+</html>
