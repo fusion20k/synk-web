@@ -657,6 +657,10 @@
         
         async function handlePurchase(plan) {
             // ✅ REQUIRED: User must be logged in to purchase
+            console.log('🔍 handlePurchase called for plan:', plan);
+            console.log('🔍 window.authManager exists?', !!window.authManager);
+            console.log('🔍 authManager.isInitialized?', window.authManager?.isInitialized);
+            
             // Wait for auth manager to be ready
             let authReady = false;
             let attempts = 0;
@@ -664,14 +668,21 @@
             while (!authReady && attempts < 20) {
                 if (window.authManager && window.authManager.isInitialized) {
                     authReady = true;
+                    console.log('✅ Auth manager ready after', attempts, 'attempts');
                 } else {
                     await new Promise(r => setTimeout(r, 100));
                     attempts++;
                 }
             }
             
+            if (!authReady) {
+                console.warn('⚠️ Auth manager did not initialize in time');
+            }
+            
             // Check if user is logged in
             const isLoggedIn = window.authManager && window.authManager.currentUser;
+            console.log('🔍 User logged in?', !!isLoggedIn);
+            console.log('🔍 Current user:', window.authManager?.currentUser?.email || 'NO USER');
             
             if (!isLoggedIn) {
                 console.log('❌ User not logged in - redirecting to signup');
@@ -686,6 +697,7 @@
             
             // Get the payment link for the selected plan and billing type
             const paymentUrl = paymentLinks[plan][billingType];
+            console.log('💳 Payment URL:', paymentUrl);
             
             if (paymentUrl) {
                 // User is logged in - proceed to Stripe payment page
