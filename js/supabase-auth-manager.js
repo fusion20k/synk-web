@@ -135,16 +135,23 @@ class SupabaseAuthManager {
                     
                     <div class="profile-dropdown" id="profile-dropdown" role="menu" aria-hidden="true">
                         <div class="dropdown-header">
-                            <p class="dropdown-email" title="${email}">${email}</p>
+                            <div class="dropdown-avatar">
+                                ${firstInitial}
+                            </div>
+                            <div class="dropdown-user-info">
+                                <p class="dropdown-email" title="${email}">${email}</p>
+                            </div>
                         </div>
                         
                         <div class="dropdown-divider"></div>
                         
                         <div class="dropdown-menu">
                             <a href="account.html" class="dropdown-item" role="menuitem">
+                                <span class="dropdown-icon">⚙️</span>
                                 Manage Account
                             </a>
                             <button id="logout-btn" class="dropdown-item logout-item" role="menuitem" type="button">
+                                <span class="dropdown-icon">🚪</span>
                                 Log Out
                             </button>
                         </div>

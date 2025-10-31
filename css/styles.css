@@ -547,7 +547,7 @@ nav a:hover::after {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #FF5555 0%, #FF3333 100%);
+  background: linear-gradient(135deg, #FF4500 0%, #FF8C00 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -594,7 +594,7 @@ nav a:hover::after {
 .dropdown-header {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.75rem;
   padding: 1rem;
   background: rgba(255, 69, 0, 0.05);
   border-radius: 11px 11px 0 0;
@@ -604,7 +604,7 @@ nav a:hover::after {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #FF5555 0%, #FF3333 100%);
+  background: linear-gradient(135deg, #FF4500 0%, #FF8C00 100%);
   display: flex;
   align-items: center;
   justify-content: center;
