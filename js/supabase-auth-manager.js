@@ -135,12 +135,7 @@ class SupabaseAuthManager {
                     
                     <div class="profile-dropdown" id="profile-dropdown" role="menu" aria-hidden="true">
                         <div class="dropdown-header">
-                            <div class="dropdown-avatar">
-                                ${firstInitial}
-                            </div>
-                            <div class="dropdown-user-info">
-                                <p class="dropdown-email" title="${email}">${email}</p>
-                            </div>
+                            <p class="dropdown-email" title="${email}">${email}</p>
                         </div>
                         
                         <div class="dropdown-divider"></div>
