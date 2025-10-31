@@ -124,5 +124,17 @@
     <script src="js/supabase-auth-manager.js"></script>
     <script src="js/scripts.js"></script>
     <script src="js/auth.js"></script>
+    
+    <!-- Forward redirect parameter to signup link -->
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirect = urlParams.get('redirect');
+        if (redirect) {
+            const signupLink = document.getElementById('signup-link');
+            if (signupLink) {
+                signupLink.href = `signup.html?redirect=${encodeURIComponent(redirect)}`;
+            }
+        }
+    </script>
 </body>
 </html>

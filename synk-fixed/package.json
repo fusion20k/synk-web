@@ -1,0 +1,33 @@
+{
+  "name": "synk",
+  "version": "1.0.0",
+  "description": "Notion & Google Calendar Sync",
+  "main": "electron-main.js",
+  "scripts": {
+    "start": "electron electron-main.js",
+    "test": "electron main-test.js",
+    "dev": "cross-env NODE_ENV=development electron electron-main.js --dev",
+    "prod": "cross-env NODE_ENV=production electron src/main.js",
+    "validate": "node startup-validator.js",
+    "validate-prod": "cross-env NODE_ENV=production node startup-validator.js",
+    "test-config": "node test-config.js",
+    "test-config-prod": "cross-env NODE_ENV=production node test-config.js",
+    "test-oauth": "node test-oauth-flow.js"
+  },
+  "author": "Synk Team",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.11.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "electron-log": "^4.4.8",
+    "electron-store": "^8.2.0",
+    "express": "^4.21.2",
+    "keytar": "^7.9.0",
+    "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "electron": "^22.3.27"
+  }
+}
