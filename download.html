@@ -7,6 +7,8 @@
     <meta name="description" content="Download the Synk desktop app installer for seamless Notion ↔ Google Calendar syncing.">
     <link rel="stylesheet" href="css/styles.css?v=7.0">
     <link rel="icon" href="assets/icons/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <!-- Supabase Client Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -46,10 +48,10 @@
                     <p style="color: var(--text-secondary); margin: 1rem 0 2rem;">
                         Get the Synk desktop app to enable seamless syncing between Notion and Google Calendar.
                     </p>
-                    <a href="https://github.com/fusion20k/synk-web/releases/latest/download/Synk%20Setup.exe" download="Synk Setup.exe" class="cta-button">
+                    <button id="download-btn" class="cta-button" onclick="downloadLatestRelease()">
                         Download for Windows
                         <span>↓</span>
-                    </a>
+                    </button>
                     <p style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">
                         Compatible with Windows 10 and later. Latest version: 1.0.0
                     </p>
@@ -89,5 +91,43 @@
     <script src="js/supabase-auth-manager.js"></script>
     <!-- Main Website Scripts -->
     <script src="js/scripts.js"></script>
+    
+    <!-- GitHub Release Download Script -->
+    <script>
+        async function downloadLatestRelease() {
+            const btn = document.getElementById('download-btn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = 'Fetching latest version...';
+            
+            try {
+                const response = await fetch('https://api.github.com/repos/fusion20k/synk-web/releases/latest');
+                if (!response.ok) throw new Error('Failed to fetch release');
+                
+                const release = await response.json();
+                const asset = release.assets.find(a => a.name === 'Synk Setup.exe');
+                
+                if (!asset) throw new Error('Installer not found in latest release');
+                
+                // Create a temporary link and click it to trigger download
+                const link = document.createElement('a');
+                link.href = asset.browser_download_url;
+                link.download = 'Synk Setup.exe';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            } catch (error) {
+                console.error('Download error:', error);
+                btn.disabled = false;
+                btn.innerHTML = 'Download Failed - Try Again';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                }, 3000);
+            }
+        }
+    </script>
 </body>
 </html>
