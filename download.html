@@ -105,7 +105,7 @@
                 if (!response.ok) throw new Error('Failed to fetch release');
                 
                 const release = await response.json();
-                const asset = release.assets.find(a => a.name === 'Synk Setup.exe');
+                const asset = release.assets.find(a => a.name === 'Synk.Setup.exe');
                 
                 if (!asset) throw new Error('Installer not found in latest release');
                 

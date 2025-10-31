@@ -147,11 +147,9 @@ class SupabaseAuthManager {
                         
                         <div class="dropdown-menu">
                             <a href="account.html" class="dropdown-item" role="menuitem">
-                                <span class="dropdown-icon">⚙️</span>
                                 Manage Account
                             </a>
                             <button id="logout-btn" class="dropdown-item logout-item" role="menuitem" type="button">
-                                <span class="dropdown-icon">🚪</span>
                                 Log Out
                             </button>
                         </div>
