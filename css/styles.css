@@ -544,8 +544,8 @@ nav a:hover::after {
 
 /* Avatar Circle */
 .avatar-circle {
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   background: var(--gradient-primary);
   display: flex;
@@ -553,7 +553,7 @@ nav a:hover::after {
   justify-content: center;
   color: #FFFFFF;
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 1rem;
   box-shadow: 0 2px 12px rgba(255, 69, 0, 0.3);
   border: 2px solid rgba(255, 69, 0, 0.2);
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
