@@ -594,11 +594,7 @@ body.auth-body main {
 
 /* Dropdown Menu Items */
 .dropdown-menu {
-  display: flex;
-  flex-direction: column;
   padding: 0.5rem 0.5rem;
-  visibility: visible;
-  opacity: 1;
 }
 
 .dropdown-item {
