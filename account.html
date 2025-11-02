@@ -386,15 +386,17 @@
         const STRIPE_PORTAL_URL = 'https://billing.stripe.com/p/login/7sYaEQaRD57SghT5hSbMQ00';
 
         document.addEventListener('DOMContentLoaded', async () => {
-            // Check if user is logged in
-            userEmail = localStorage.getItem('synk_user_email');
-            if (!userEmail) {
+            // Initialize Supabase first
+            initializeSupabase();
+
+            // Check if user is logged in via Supabase session
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session || !session.user) {
                 window.location.href = 'login.html';
                 return;
             }
 
-            // Initialize Supabase
-            initializeSupabase();
+            userEmail = session.user.email;
 
             // Load user data
             await loadUserProfile();
