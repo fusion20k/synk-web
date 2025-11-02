@@ -385,16 +385,25 @@
         let supabaseClient = null;
         const STRIPE_PORTAL_URL = 'https://billing.stripe.com/p/login/7sYaEQaRD57SghT5hSbMQ00';
 
+        function initializeSupabase() {
+            const SUPABASE_URL = 'https://nbolvclqiaqrupxknvlu.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ib2x2Y2xxaWFxcnVweGtudmx1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ4MjgsImV4cCI6MjA3MTIzMDgyOH0.yz33_9PEZbC2ew_2lQyxb6B_cQruSANVrwM_4h-afg8';
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
-            // Check if user is logged in
-            userEmail = localStorage.getItem('synk_user_email');
-            if (!userEmail) {
+            // Initialize Supabase first
+            initializeSupabase();
+
+            // Check if user is logged in by verifying Supabase session
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session || !session.user) {
                 window.location.href = 'login.html';
                 return;
             }
 
-            // Initialize Supabase
-            initializeSupabase();
+            // Get user email from session
+            userEmail = session.user.email;
 
             // Load user data
             await loadUserProfile();
@@ -405,12 +414,6 @@
             setupTabNavigation();
             setupButtonListeners();
         });
-
-        function initializeSupabase() {
-            const SUPABASE_URL = 'https://nbolvclqiaqrupxknvlu.supabase.co';
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ib2x2Y2xxaWFxcnVweGtudmx1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ4MjgsImV4cCI6MjA3MTIzMDgyOH0.yz33_9PEZbC2ew_2lQyxb6B_cQruSANVrwM_4h-afg8';
-            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        }
 
         async function loadUserProfile() {
             try {
