@@ -617,7 +617,7 @@
             document.getElementById('confirm-cancel-btn').addEventListener('click', async () => {
                 try {
                     const authToken = localStorage.getItem('synk_auth_token');
-                    const response = await fetch('https://synk-web.onrender.com/api/cancel-subscription', {
+                    const response = await fetch('https://synk-web.onrender.com/api/stripe/cancel-subscription', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -627,15 +627,22 @@
                     });
 
                     if (response.ok) {
-                        showSuccessMessage('Subscription cancelled successfully');
+                        const data = await response.json();
+                        
+                        // Show success message with coupon code
+                        const successMsg = `✅ Subscription cancelled successfully!\n\n🎉 Special Offer:\nUse code: ${data.coupon_code}\nGet 30% OFF when you re-subscribe\n(Valid for 90 days)`;
+                        showSuccessMessage(successMsg);
+                        
+                        // Close modal and reload after showing message
                         closeCancelModal();
-                        setTimeout(() => location.reload(), 2000);
+                        setTimeout(() => location.reload(), 3000);
                     } else {
-                        showErrorMessage('Failed to cancel subscription');
+                        const errorData = await response.json();
+                        showErrorMessage(errorData.error || 'Failed to cancel subscription');
                     }
                 } catch (error) {
                     console.error('Error cancelling subscription:', error);
-                    showErrorMessage('Error cancelling subscription');
+                    showErrorMessage('Error cancelling subscription: ' + error.message);
                 }
             });
 
