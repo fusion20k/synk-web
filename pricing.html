@@ -136,42 +136,31 @@
         .plan-features {
             list-style: none;
             padding: 0;
+            margin: 0;
             margin-bottom: 3rem;
             text-align: left;
         }
         
         .plan-features li {
-            padding: 0.75rem 0;
+            padding: 0.75rem 0 0.75rem 1.5rem;
+            margin: 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             color: var(--text-secondary);
-            position: relative;
-            padding-left: 2rem;
+            list-style: none;
+        }
+        
+        .plan-features li::before {
+            content: '• ';
+            color: var(--accent-orange);
+            margin-right: 0.5rem;
         }
         
         .plan-features li:last-child {
             border-bottom: none;
         }
         
-        .plan-features li::before {
-            content: '›';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--accent-orange);
-            font-weight: bold;
-            font-size: 1.5rem;
-        }
-        
         .plan-features li.unavailable {
             opacity: 0.5;
-        }
-        
-        .plan-features li.unavailable::before {
-            content: '✕';
-            color: var(--text-muted);
-            top: 50%;
-            transform: translateY(-50%);
         }
         
         .plan-button {
@@ -655,15 +644,53 @@
             }
         }
         
-        function handlePurchase(plan) {
+        async function handlePurchase(plan) {
+            // ✅ REQUIRED: User must be logged in to purchase
+            console.log('🔍 handlePurchase called for plan:', plan);
+            console.log('🔍 window.authManager exists?', !!window.authManager);
+            console.log('🔍 authManager.isInitialized?', window.authManager?.isInitialized);
+            
+            // Wait for auth manager to be ready
+            let authReady = false;
+            let attempts = 0;
+            
+            while (!authReady && attempts < 20) {
+                if (window.authManager && window.authManager.isInitialized) {
+                    authReady = true;
+                    console.log('✅ Auth manager ready after', attempts, 'attempts');
+                } else {
+                    await new Promise(r => setTimeout(r, 100));
+                    attempts++;
+                }
+            }
+            
+            if (!authReady) {
+                console.warn('⚠️ Auth manager did not initialize in time');
+            }
+            
+            // Check if user is logged in
+            const isLoggedIn = window.authManager && window.authManager.currentUser;
+            console.log('🔍 User logged in?', !!isLoggedIn);
+            console.log('🔍 Current user:', window.authManager?.currentUser?.email || 'NO USER');
+            
+            if (!isLoggedIn) {
+                console.log('❌ User not logged in - redirecting to signup');
+                alert('You must be logged in to purchase a plan. You will be redirected to the signup page.');
+                // Redirect to signup page
+                window.location.href = 'signup.html?redirect=pricing.html';
+                return;
+            }
+            
             const isYearly = document.getElementById('billing-toggle').checked;
             const billingType = isYearly ? 'yearly' : 'monthly';
             
             // Get the payment link for the selected plan and billing type
             const paymentUrl = paymentLinks[plan][billingType];
+            console.log('💳 Payment URL:', paymentUrl);
             
             if (paymentUrl) {
-                // Redirect to Stripe payment page
+                // User is logged in - proceed to Stripe payment page
+                console.log(`✅ User ${window.authManager.currentUser.email} initiating ${plan} ${billingType} purchase`);
                 window.open(paymentUrl, '_blank');
             } else {
                 console.error('Payment link not found for:', plan, billingType);
