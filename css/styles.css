@@ -1031,6 +1031,13 @@ main {
   position: relative;
   padding-left: 1.5rem;
   line-height: 1.6;
+  list-style: none;
+}
+
+.plan-features li::before {
+  content: '• ';
+  color: var(--accent-orange);
+  margin-right: 0.5rem;
 }
 
 .plan-features li:last-child {
