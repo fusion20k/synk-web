@@ -689,16 +689,27 @@
                     });
 
                     if (response.ok) {
-                        showSuccessMessage('Account deleted. Redirecting...');
+                        showSuccessMessage('Account deleted. Logging out...');
+                        
+                        // Clear all session data
                         localStorage.removeItem('synk_auth_token');
                         localStorage.removeItem('synk_user_email');
-                        setTimeout(() => window.location.href = 'index.html', 2000);
+                        sessionStorage.clear();
+                        
+                        // Sign out from Supabase
+                        await supabaseClient.auth.signOut();
+                        
+                        // Redirect to home after 1.5 seconds
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 1500);
                     } else {
-                        showErrorMessage('Failed to delete account');
+                        const errorData = await response.json();
+                        showErrorMessage(errorData.error || 'Failed to delete account');
                     }
                 } catch (error) {
                     console.error('Error deleting account:', error);
-                    showErrorMessage('Error deleting account');
+                    showErrorMessage('Error deleting account: ' + error.message);
                 }
             });
 
