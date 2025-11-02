@@ -1022,15 +1022,24 @@ main {
   list-style: none;
   padding: 0 2.5rem 2.5rem;
   margin: 0;
+  text-align: left;
 }
 
 .plan-features li {
   color: var(--text-secondary);
-  padding: 0.75rem 0;
+  padding: 0.75rem 0 0.75rem 1.2rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   position: relative;
-  padding-left: 1.5rem;
   line-height: 1.6;
+  list-style: none;
+  text-align: left;
+}
+
+.plan-features li::before {
+  content: '• ';
+  color: var(--accent-orange);
+  position: absolute;
+  left: 0;
 }
 
 .plan-features li:last-child {
