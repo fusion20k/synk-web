@@ -405,20 +405,6 @@
             // Get user email from session
             userEmail = session.user.email;
 
-            // Verify user exists in database
-            const { data: userRecord, error: userError } = await supabaseClient
-                .from('users')
-                .select('id')
-                .eq('email', userEmail)
-                .single();
-
-            if (!userRecord || userError) {
-                // User was deleted from database but session still valid - redirect to login
-                await supabaseClient.auth.signOut();
-                window.location.href = 'login.html';
-                return;
-            }
-
             // Load user data
             await loadUserProfile();
             await loadSubscriptionData();
