@@ -17,3 +17,11 @@ Thumbs.db
 *.tmp
 *.temp
 node_modules
+
+# Nested git repositories (submodules)
+_tmp_push_synk_web/
+_tmp_synk_backend/
+synk-backend/
+synk-fixed/
+synk-fixed-old/deploy-package/
+synk-web/
