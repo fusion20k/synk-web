@@ -251,6 +251,10 @@ class SupabaseAuthManager {
 
             console.log('[Supabase Auth] Auto-login successful:', loginData);
             
+            // Create user profile in public.users table
+            console.log('[Supabase Auth] Creating public user profile...');
+            await this.createPublicUserProfile(email);
+            
             // Get fresh session
             const { data: { session } } = await this.supabaseClient.auth.getSession();
             console.log('[Supabase Auth] Session after signup+login:', session);
