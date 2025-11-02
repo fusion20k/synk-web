@@ -1032,6 +1032,7 @@ main {
   padding-left: 1.5rem;
   line-height: 1.6;
   list-style: none;
+  text-align: left;
 }
 
 .plan-features li::before {
