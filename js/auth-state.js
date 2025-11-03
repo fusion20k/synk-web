@@ -102,6 +102,7 @@ class AuthStateManager {
 
         if (userDropdown) {
             userDropdown.classList.add('active');
+            userDropdown.classList.remove('open'); // Ensure dropdown menu is closed
             userDropdown.style.display = 'flex';
         }
 

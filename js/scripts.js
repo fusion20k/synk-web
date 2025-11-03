@@ -412,6 +412,11 @@ function initAuthState() {
     
     checkCurrentUser();
     
+    // Ensure dropdown is closed on page load
+    if (userDropdown) {
+        userDropdown.classList.remove('open');
+    }
+    
     // User avatar click handler - toggle dropdown
     if (userAvatar) {
         userAvatar.addEventListener('click', (e) => {
@@ -470,6 +475,7 @@ function showLoggedInState(email) {
     if (userDropdown) {
         userDropdown.classList.add('ready');
         userDropdown.classList.add('active');
+        userDropdown.classList.remove('open'); // Ensure dropdown menu is closed
     }
     
     if (userEmailEl) userEmailEl.textContent = email;
