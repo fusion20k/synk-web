@@ -357,9 +357,9 @@ nav a:hover::after {
 }
 
 .dropdown-menu {
-  position: fixed;
-  top: auto;
-  right: 2rem;
+  position: absolute;
+  top: 100%;
+  right: 0;
   background: var(--bg-card);
   border: 1px solid rgba(255, 69, 0, 0.15);
   border-radius: 12px;
@@ -372,7 +372,7 @@ nav a:hover::after {
   z-index: 1001;
   overflow: hidden;
   backdrop-filter: blur(10px);
-  margin-top: 65px;
+  margin-top: 8px;
 }
 
 .user-dropdown.open .dropdown-menu {
