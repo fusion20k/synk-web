@@ -1,11 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pricing - Synk</title>
     <meta name="description" content="Choose the perfect plan for your productivity needs. Synk offers flexible pricing for individuals and teams.">
-    <link rel="stylesheet" href="css/styles.css?v=7.0">
+    <link rel="stylesheet" href="css/styles.css?v=7.1">
     <link rel="icon" href="assets/icons/favicon.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -431,7 +431,7 @@
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             How does the free trial work?
-                            <span class="faq-toggle">›</span>
+                            <span class="faq-toggle">�</span>
                         </div>
                         <div class="faq-answer">
                             Your 14-day free trial begins automatically when you connect both Notion and Google Calendar. No credit card required to start. You'll have full access to all features during the trial.
@@ -441,7 +441,7 @@
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             What happens after my trial ends?
-                            <span class="faq-toggle">›</span>
+                            <span class="faq-toggle">�</span>
                         </div>
                         <div class="faq-answer">
                             After your trial ends, you'll need to subscribe to continue using Synk. Your sync configurations will be saved, and you can resume immediately upon subscription.
@@ -451,7 +451,7 @@
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             What's the difference between Pro and Ultimate?
-                            <span class="faq-toggle">›</span>
+                            <span class="faq-toggle">�</span>
                         </div>
                         <div class="faq-answer">
                             Pro includes all core sync features perfect for individuals and small teams. Ultimate adds advanced features like custom field mapping, advanced filtering conditions, bulk operations, detailed analytics, and configuration export/import for power users.
@@ -461,7 +461,7 @@
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             Can I cancel anytime?
-                            <span class="faq-toggle">›</span>
+                            <span class="faq-toggle">�</span>
                         </div>
                         <div class="faq-answer">
                             Yes, you can cancel your subscription at any time. Your service will continue until the end of your current billing period.
@@ -471,7 +471,7 @@
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             What happens to my data if I cancel?
-                            <span class="faq-toggle">›</span>
+                            <span class="faq-toggle">�</span>
                         </div>
                         <div class="faq-answer">
                             Your data remains in your Notion and Google Calendar accounts. Synk only facilitates synchronization and doesn't store your content permanently.
@@ -481,7 +481,7 @@
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             Do you offer refunds?
-                            <span class="faq-toggle">›</span>
+                            <span class="faq-toggle">�</span>
                         </div>
                         <div class="faq-answer">
                             Yes, we offer a 30-day money-back guarantee. Contact support for assistance with refunds.
@@ -491,7 +491,7 @@
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             Is my data secure?
-                            <span class="faq-toggle">›</span>
+                            <span class="faq-toggle">�</span>
                         </div>
                         <div class="faq-answer">
                             Absolutely. We use OAuth authentication, encrypt all data in transit, and follow industry best practices for security. We never store your passwords.
@@ -621,10 +621,10 @@
         }
         
         async function handlePurchase(plan) {
-            // ✅ REQUIRED: User must be logged in to purchase
-            console.log('🔍 handlePurchase called for plan:', plan);
-            console.log('🔍 window.authManager exists?', !!window.authManager);
-            console.log('🔍 authManager.isInitialized?', window.authManager?.isInitialized);
+            // ? REQUIRED: User must be logged in to purchase
+            console.log('?? handlePurchase called for plan:', plan);
+            console.log('?? window.authManager exists?', !!window.authManager);
+            console.log('?? authManager.isInitialized?', window.authManager?.isInitialized);
             
             // Wait for auth manager to be ready
             let authReady = false;
@@ -633,7 +633,7 @@
             while (!authReady && attempts < 20) {
                 if (window.authManager && window.authManager.isInitialized) {
                     authReady = true;
-                    console.log('✅ Auth manager ready after', attempts, 'attempts');
+                    console.log('? Auth manager ready after', attempts, 'attempts');
                 } else {
                     await new Promise(r => setTimeout(r, 100));
                     attempts++;
@@ -641,16 +641,16 @@
             }
             
             if (!authReady) {
-                console.warn('⚠️ Auth manager did not initialize in time');
+                console.warn('?? Auth manager did not initialize in time');
             }
             
             // Check if user is logged in
             const isLoggedIn = window.authManager && window.authManager.currentUser;
-            console.log('🔍 User logged in?', !!isLoggedIn);
-            console.log('🔍 Current user:', window.authManager?.currentUser?.email || 'NO USER');
+            console.log('?? User logged in?', !!isLoggedIn);
+            console.log('?? Current user:', window.authManager?.currentUser?.email || 'NO USER');
             
             if (!isLoggedIn) {
-                console.log('❌ User not logged in - redirecting to signup');
+                console.log('? User not logged in - redirecting to signup');
                 alert('You must be logged in to purchase a plan. You will be redirected to the signup page.');
                 // Redirect to signup page
                 window.location.href = 'signup.html?redirect=pricing.html';
@@ -662,11 +662,11 @@
             
             // Get the payment link for the selected plan and billing type
             const paymentUrl = paymentLinks[plan][billingType];
-            console.log('💳 Payment URL:', paymentUrl);
+            console.log('?? Payment URL:', paymentUrl);
             
             if (paymentUrl) {
                 // User is logged in - proceed to Stripe payment page
-                console.log(`✅ User ${window.authManager.currentUser.email} initiating ${plan} ${billingType} purchase`);
+                console.log(`? User ${window.authManager.currentUser.email} initiating ${plan} ${billingType} purchase`);
                 window.open(paymentUrl, '_blank');
             } else {
                 console.error('Payment link not found for:', plan, billingType);
@@ -675,8 +675,11 @@
         }
     </script>
     <!-- Unified Supabase Auth Manager (must come first) -->
-    <script src="js/supabase-auth-manager.js"></script>
+    <script src="js/supabase-auth-manager.js?v=1.1"></script>
     <!-- Main Website Scripts -->
-    <script src="js/scripts.js"></script>
+    <script src="js/scripts.js?v=2.0"></script>
 </body>
 </html>
+
+
+
