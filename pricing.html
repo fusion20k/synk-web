@@ -367,7 +367,11 @@
                     <!-- Pro Plan -->
                     <div class="pricing-card featured">
                         <h3 class="plan-name">Pro</h3>
-                        <div class="plan-price" id="pro-price">$12.99</div>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 0.5rem;">
+                            <div class="plan-price" id="pro-price" style="text-decoration: line-through; opacity: 0.6; font-size: 2rem;">$12.99</div>
+                            <div class="plan-price" style="font-size: 3.5rem; color: #ff4500;">$7.99</div>
+                            <span style="background: #ff4500; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: 700;">30% OFF</span>
+                        </div>
                         <div class="plan-period" id="pro-period">per month</div>
                         <div class="yearly-savings" id="pro-savings" style="display: none; color: #ff4500; font-size: 0.9rem; margin-top: 5px;">Save $30.89 per year</div>
                         <p class="plan-description">Perfect for individuals and small teams who need reliable sync.</p>
@@ -395,7 +399,11 @@
                     <!-- Ultimate Plan -->
                     <div class="pricing-card">
                         <h3 class="plan-name">Ultimate</h3>
-                        <div class="plan-price" id="ultimate-price">$24.99</div>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 0.5rem;">
+                            <div class="plan-price" id="ultimate-price" style="text-decoration: line-through; opacity: 0.6; font-size: 2rem;">$24.99</div>
+                            <div class="plan-price" style="font-size: 3.5rem; color: #ff4500;">$14.99</div>
+                            <span style="background: #ff4500; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: 700;">30% OFF</span>
+                        </div>
                         <div class="plan-period" id="ultimate-period">per month</div>
                         <div class="yearly-savings" id="ultimate-savings" style="display: none; color: #ff4500; font-size: 0.9rem; margin-top: 5px;">Save $59.89 per year</div>
                         <p class="plan-description">Advanced features for power users who need more control.</p>
@@ -431,7 +439,7 @@
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             How does the free trial work?
-                            <span class="faq-toggle">›</span>
+                            <span class="faq-toggle">ï¿½</span>
                         </div>
                         <div class="faq-answer">
                             Your 14-day free trial begins automatically when you connect both Notion and Google Calendar. No credit card required to start. You'll have full access to all features during the trial.
@@ -441,7 +449,7 @@
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             What happens after my trial ends?
-                            <span class="faq-toggle">›</span>
+                            <span class="faq-toggle">ï¿½</span>
                         </div>
                         <div class="faq-answer">
                             After your trial ends, you'll need to subscribe to continue using Synk. Your sync configurations will be saved, and you can resume immediately upon subscription.
@@ -451,7 +459,7 @@
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             What's the difference between Pro and Ultimate?
-                            <span class="faq-toggle">›</span>
+                            <span class="faq-toggle">ï¿½</span>
                         </div>
                         <div class="faq-answer">
                             Pro includes all core sync features perfect for individuals and small teams. Ultimate adds advanced features like custom field mapping, advanced filtering conditions, bulk operations, detailed analytics, and configuration export/import for power users.
@@ -461,7 +469,7 @@
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             Can I cancel anytime?
-                            <span class="faq-toggle">›</span>
+                            <span class="faq-toggle">ï¿½</span>
                         </div>
                         <div class="faq-answer">
                             Yes, you can cancel your subscription at any time. Your service will continue until the end of your current billing period.
@@ -471,7 +479,7 @@
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             What happens to my data if I cancel?
-                            <span class="faq-toggle">›</span>
+                            <span class="faq-toggle">ï¿½</span>
                         </div>
                         <div class="faq-answer">
                             Your data remains in your Notion and Google Calendar accounts. Synk only facilitates synchronization and doesn't store your content permanently.
@@ -481,7 +489,7 @@
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             Do you offer refunds?
-                            <span class="faq-toggle">›</span>
+                            <span class="faq-toggle">ï¿½</span>
                         </div>
                         <div class="faq-answer">
                             Yes, we offer a 30-day money-back guarantee. Contact support for assistance with refunds.
@@ -491,7 +499,7 @@
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             Is my data secure?
-                            <span class="faq-toggle">›</span>
+                            <span class="faq-toggle">ï¿½</span>
                         </div>
                         <div class="faq-answer">
                             Absolutely. We use OAuth authentication, encrypt all data in transit, and follow industry best practices for security. We never store your passwords.
@@ -548,11 +556,11 @@
         // Pricing data
         const pricing = {
             pro: {
-                monthly: 12.99,
+                monthly: 7.99,    // 30% OFF from $12.99
                 yearly: 124.99 // ~20% discount
             },
             ultimate: {
-                monthly: 24.99,
+                monthly: 14.99,   // 30% OFF from $24.99
                 yearly: 239.99 // ~20% discount
             }
         };
@@ -560,11 +568,17 @@
         // Payment links
         const paymentLinks = {
             pro: {
-                monthly: 'https://buy.stripe.com/5kQ5kw0cZ8k46Hjh0AbMQ03',
+                // UPDATED: 30% OFF PROMOTION FOR MONTHLY - NEW PRICING: $7.99/month
+                monthly: 'https://buy.stripe.com/bJefZa2l7eIse9L4dObMQ07',
+                // OLD MONTHLY LINK (ARCHIVED):
+                // monthly: 'https://buy.stripe.com/5kQ5kw0cZ8k46Hjh0AbMQ03',
                 yearly: 'https://buy.stripe.com/fZufZae3P43O5DfbGgbMQ05'
             },
             ultimate: {
-                monthly: 'https://buy.stripe.com/aFa3co4tfeIsaXz5hSbMQ04',
+                // UPDATED: 30% OFF PROMOTION FOR MONTHLY - NEW PRICING: $14.99/month
+                monthly: 'https://buy.stripe.com/4gM5kw8Jvasc0iV39KbMQ08',
+                // OLD MONTHLY LINK (ARCHIVED):
+                // monthly: 'https://buy.stripe.com/aFa3co4tfeIsaXz5hSbMQ04',
                 yearly: 'https://buy.stripe.com/fZu14g1h39o8fdPh0AbMQ06'
             }
         };
