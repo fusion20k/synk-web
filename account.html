@@ -456,9 +456,9 @@
                     .single();
 
                 if (data) {
-                    const plan = data.plan || 'Pro';
+                    const plan = data.plan || 'N/A';
                     document.getElementById('plan-badge').textContent = plan;
-                    document.getElementById('plan-status').textContent = data.status || 'Active';
+                    document.getElementById('plan-status').textContent = data.status || 'N/A';
 
                     // Set next billing date
                     if (data.current_period_end) {
@@ -468,20 +468,13 @@
                         document.getElementById('next-billing-date').textContent = 'N/A';
                     }
 
-                    // Set billing amount from Supabase data or use defaults
+                    // Set billing amount from Supabase data
                     if (data.price) {
                         const price = (data.price / 100).toFixed(2);
                         const cycle = data.billing_cycle === 'annual' ? '/year' : '/month';
                         document.getElementById('billing-amount').textContent = `$${price}${cycle}`;
                     } else {
-                        // Use defaults based on plan
-                        if (plan === 'Pro') {
-                            document.getElementById('billing-amount').textContent = '$9.99/month';
-                        } else if (plan === 'Ultimate') {
-                            document.getElementById('billing-amount').textContent = '$19.99/month';
-                        } else {
-                            document.getElementById('billing-amount').textContent = 'View in Stripe Portal';
-                        }
+                        document.getElementById('billing-amount').textContent = 'N/A';
                     }
 
                     // Show trial countdown if applicable
@@ -496,18 +489,18 @@
                     }
                 } else if (error) {
                     console.warn('Could not load subscription data:', error.message);
-                    // Set sensible defaults
-                    document.getElementById('plan-badge').textContent = 'Pro';
-                    document.getElementById('plan-status').textContent = 'Active';
-                    document.getElementById('billing-amount').textContent = 'View in Stripe Portal';
+                    // Set N/A for unknown values
+                    document.getElementById('plan-badge').textContent = 'N/A';
+                    document.getElementById('plan-status').textContent = 'N/A';
+                    document.getElementById('billing-amount').textContent = 'N/A';
                     document.getElementById('next-billing-date').textContent = 'N/A';
                 }
             } catch (error) {
                 console.error('Error loading subscription:', error);
-                // Set sensible defaults instead of leaving empty
-                document.getElementById('plan-badge').textContent = 'Pro';
-                document.getElementById('plan-status').textContent = 'Active';
-                document.getElementById('billing-amount').textContent = 'View in Stripe Portal';
+                // Set N/A for unknown values
+                document.getElementById('plan-badge').textContent = 'N/A';
+                document.getElementById('plan-status').textContent = 'N/A';
+                document.getElementById('billing-amount').textContent = 'N/A';
                 document.getElementById('next-billing-date').textContent = 'N/A';
             }
         }
