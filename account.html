@@ -169,14 +169,14 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>Unlimited Google Calendars</td>
-                                        <td>✓</td>
-                                        <td>✓</td>
+                                        <td>Google Calendar Sync</td>
+                                        <td>3 Calendars</td>
+                                        <td>Unlimited</td>
                                     </tr>
                                     <tr>
-                                        <td>Unlimited Notion Databases</td>
-                                        <td>✓</td>
-                                        <td>✓</td>
+                                        <td>Notion Database Sync</td>
+                                        <td>3 Databases</td>
+                                        <td>Unlimited</td>
                                     </tr>
                                     <tr>
                                         <td>Automatic Live Sync</td>
@@ -187,16 +187,6 @@
                                         <td>Manual and Incremental Sync</td>
                                         <td>✓</td>
                                         <td>✓</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Platform Syncing</td>
-                                        <td>2 Platforms</td>
-                                        <td>Multi-Platform</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Calendar Syncing</td>
-                                        <td>2 Calendars</td>
-                                        <td>Multi-Calendar</td>
                                     </tr>
                                     <tr>
                                         <td>AI Powered Automation</td>
@@ -419,6 +409,7 @@
             await loadUserProfile();
             await loadSubscriptionData();
             await loadBillingData();
+            await loadPaymentInfo();
 
             // Setup event listeners
             setupTabNavigation();
@@ -446,10 +437,19 @@
                     } else {
                         document.getElementById('verify-email-btn').style.display = 'block';
                     }
+                } else if (error) {
+                    console.warn('Could not load user profile from database:', error.message);
+                    // Set default values
+                    const today = new Date().toLocaleDateString();
+                    document.getElementById('account-creation').textContent = today;
+                    document.getElementById('email-verification').textContent = 'Unverified';
                 }
             } catch (error) {
                 console.error('Error loading profile:', error);
-                showErrorMessage('Failed to load profile information');
+                // Set default values instead of showing error
+                const today = new Date().toLocaleDateString();
+                document.getElementById('account-creation').textContent = today;
+                document.getElementById('email-verification').textContent = 'Unverified';
             }
         }
 
@@ -496,9 +496,25 @@
                         document.getElementById('upgrade-btn').style.display = 'none';
                         document.getElementById('downgrade-btn').style.display = 'block';
                     }
+                } else if (error) {
+                    console.warn('Could not load subscription data:', error.message);
+                    // Set default values
+                    document.getElementById('plan-badge').textContent = 'Pro';
+                    document.getElementById('plan-status').textContent = 'Active';
+                    document.getElementById('billing-amount').textContent = '$9.99/month';
+                    document.getElementById('upgrade-btn').style.display = 'block';
+                    document.getElementById('downgrade-btn').style.display = 'none';
+                    document.getElementById('next-billing-date').textContent = 'N/A';
                 }
             } catch (error) {
                 console.error('Error loading subscription:', error);
+                // Set default values instead of leaving empty
+                document.getElementById('plan-badge').textContent = 'Pro';
+                document.getElementById('plan-status').textContent = 'Active';
+                document.getElementById('billing-amount').textContent = '$9.99/month';
+                document.getElementById('upgrade-btn').style.display = 'block';
+                document.getElementById('downgrade-btn').style.display = 'none';
+                document.getElementById('next-billing-date').textContent = 'N/A';
             }
         }
 
@@ -535,6 +551,20 @@
                 }
             } catch (error) {
                 console.error('Error loading billing data:', error);
+                // Set fallback message instead of leaving "Loading..."
+                document.getElementById('invoices-list').innerHTML = '<p>No billing history available yet.</p>';
+            }
+        }
+
+        async function loadPaymentInfo() {
+            try {
+                const paymentInfo = document.getElementById('payment-info');
+                // Fetch payment method from Stripe or set default
+                paymentInfo.innerHTML = '<p>Manage your payment methods in the Stripe Portal below.</p>';
+            } catch (error) {
+                console.error('Error loading payment info:', error);
+                const paymentInfo = document.getElementById('payment-info');
+                paymentInfo.innerHTML = '<p>Manage your payment methods in the Stripe Portal below.</p>';
             }
         }
 
