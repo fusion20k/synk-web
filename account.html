@@ -208,12 +208,6 @@
                         </div>
 
                         <div class="subscription-actions">
-                            <button id="upgrade-btn" class="auth-btn primary" style="display: none;">
-                                <span class="btn-text">Upgrade Plan</span>
-                            </button>
-                            <button id="downgrade-btn" class="auth-btn secondary" style="display: none;">
-                                <span class="btn-text">Downgrade Plan</span>
-                            </button>
                             <button id="manage-subscription-btn" class="auth-btn primary">
                                 <span class="btn-text">Manage Subscription</span>
                             </button>
@@ -457,7 +451,7 @@
             try {
                 const { data, error } = await supabaseClient
                     .from('subscriptions')
-                    .select('plan, status, trial_ends_at, current_period_end')
+                    .select('plan, status, trial_ends_at, current_period_end, price, billing_cycle')
                     .eq('user_email', userEmail)
                     .single();
 
@@ -466,18 +460,31 @@
                     document.getElementById('plan-badge').textContent = plan;
                     document.getElementById('plan-status').textContent = data.status || 'Active';
 
+                    // Set next billing date
                     if (data.current_period_end) {
                         const billingDate = new Date(data.current_period_end).toLocaleDateString();
                         document.getElementById('next-billing-date').textContent = billingDate;
+                    } else {
+                        document.getElementById('next-billing-date').textContent = 'N/A';
                     }
 
-                    if (plan === 'Pro') {
-                        document.getElementById('billing-amount').textContent = '$9.99/month';
-                    } else if (plan === 'Ultimate') {
-                        document.getElementById('billing-amount').textContent = '$19.99/month';
+                    // Set billing amount from Supabase data or use defaults
+                    if (data.price) {
+                        const price = (data.price / 100).toFixed(2);
+                        const cycle = data.billing_cycle === 'annual' ? '/year' : '/month';
+                        document.getElementById('billing-amount').textContent = `$${price}${cycle}`;
+                    } else {
+                        // Use defaults based on plan
+                        if (plan === 'Pro') {
+                            document.getElementById('billing-amount').textContent = '$9.99/month';
+                        } else if (plan === 'Ultimate') {
+                            document.getElementById('billing-amount').textContent = '$19.99/month';
+                        } else {
+                            document.getElementById('billing-amount').textContent = 'View in Stripe Portal';
+                        }
                     }
 
-                    // Show trial countdown if applicable (Pro plan has free trial)
+                    // Show trial countdown if applicable
                     if (data.trial_ends_at) {
                         const trialEnd = new Date(data.trial_ends_at);
                         const today = new Date();
@@ -487,33 +494,20 @@
                             document.getElementById('trial-days').textContent = daysLeft;
                         }
                     }
-
-                    // Show upgrade/downgrade buttons based on plan
-                    if (plan === 'Pro') {
-                        document.getElementById('upgrade-btn').style.display = 'block';
-                        document.getElementById('downgrade-btn').style.display = 'none';
-                    } else if (plan === 'Ultimate') {
-                        document.getElementById('upgrade-btn').style.display = 'none';
-                        document.getElementById('downgrade-btn').style.display = 'block';
-                    }
                 } else if (error) {
                     console.warn('Could not load subscription data:', error.message);
-                    // Set default values
+                    // Set sensible defaults
                     document.getElementById('plan-badge').textContent = 'Pro';
                     document.getElementById('plan-status').textContent = 'Active';
-                    document.getElementById('billing-amount').textContent = '$9.99/month';
-                    document.getElementById('upgrade-btn').style.display = 'block';
-                    document.getElementById('downgrade-btn').style.display = 'none';
+                    document.getElementById('billing-amount').textContent = 'View in Stripe Portal';
                     document.getElementById('next-billing-date').textContent = 'N/A';
                 }
             } catch (error) {
                 console.error('Error loading subscription:', error);
-                // Set default values instead of leaving empty
+                // Set sensible defaults instead of leaving empty
                 document.getElementById('plan-badge').textContent = 'Pro';
                 document.getElementById('plan-status').textContent = 'Active';
-                document.getElementById('billing-amount').textContent = '$9.99/month';
-                document.getElementById('upgrade-btn').style.display = 'block';
-                document.getElementById('downgrade-btn').style.display = 'none';
+                document.getElementById('billing-amount').textContent = 'View in Stripe Portal';
                 document.getElementById('next-billing-date').textContent = 'N/A';
             }
         }
