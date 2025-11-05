@@ -434,15 +434,13 @@
                 } else if (error) {
                     console.warn('Could not load user profile from database:', error.message);
                     // Set default values
-                    const today = new Date().toLocaleDateString();
-                    document.getElementById('account-creation').textContent = today;
+                    document.getElementById('account-creation').textContent = 'N/A';
                     document.getElementById('email-verification').textContent = 'Unverified';
                 }
             } catch (error) {
                 console.error('Error loading profile:', error);
                 // Set default values instead of showing error
-                const today = new Date().toLocaleDateString();
-                document.getElementById('account-creation').textContent = today;
+                document.getElementById('account-creation').textContent = 'N/A';
                 document.getElementById('email-verification').textContent = 'Unverified';
             }
         }
@@ -762,7 +760,7 @@
             const offersDiv = document.getElementById('retention-offers');
             offersDiv.innerHTML = `
                 <div class="retention-offer">
-                    <p>✨ <strong>Special Offer:</strong> Get 50% off for the next 3 months!</p>
+                    <p>✨ <strong>Special Offer:</strong> Get 30% off for the next 3 months!</p>
                     <button class="auth-btn secondary" onclick="showSuccessMessage('Offer applied!')">Accept Offer</button>
                 </div>
             `;
