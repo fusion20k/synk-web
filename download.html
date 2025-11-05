@@ -59,12 +59,12 @@
                     <p style="color: var(--text-secondary); margin: 1rem 0 2rem;">
                         Get the Synk desktop app to enable seamless syncing between Notion and Google Calendar.
                     </p>
-                    <a href="downloads/Synk Setup.exe" download="Synk Setup.exe" class="cta-button">
+                    <a href="https://github.com/fusion20k/synk-web/releases/latest/download/Synk%20Setup.exe" download="Synk Setup.exe" class="cta-button" id="download-btn">
                         Download for Windows
                         <span>↓</span>
                     </a>
-                    <p style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">
-                        Compatible with Windows 10 and later. Latest version: 1.0.0
+                    <p style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;" id="version-info">
+                        Compatible with Windows 10 and later. Latest version: 1.1.0
                     </p>
                     <p style="margin-top: 1.5rem; color: #d0d0d0; background: rgba(255, 69, 0, 0.14); border: 1px solid rgba(255, 69, 0, 0.4); padding: 1.25rem; border-radius: var(--border-radius); font-size: 0.95rem; line-height: 1.6;">
                         <strong style="color: var(--accent-orange);">Early Access Release:</strong> This is an early access version. You may experience occasional bugs or unexpected behavior. Please report any issues to help us improve!
@@ -105,6 +105,8 @@
     <script src="js/supabase-auth-manager.js?v=1.1"></script>
     <!-- Main Website Scripts -->
     <script src="js/scripts.js?v=2.0"></script>
+    <!-- Release Manager - Auto-updates download links from GitHub -->
+    <script src="js/release-manager.js?v=1.0"></script>
 </body>
 </html>
 
