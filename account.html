@@ -639,6 +639,38 @@
                 loadRetentionOffers();
             });
 
+            // Accept Retention Offer
+            window.acceptRetentionOffer = async function() {
+                try {
+                    const authToken = localStorage.getItem('synk_auth_token');
+                    const response = await fetch('https://synk-web.onrender.com/api/stripe/apply-retention-coupon', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${authToken}`
+                        },
+                        body: JSON.stringify({ email: userEmail })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        showSuccessMessage('✨ Coupon applied! 20% off your next 3 months. Thank you!');
+                        
+                        // Hide the offer after accepting
+                        document.getElementById('retention-offers').innerHTML = '';
+                        
+                        // Reload after 2 seconds
+                        setTimeout(() => location.reload(), 2000);
+                    } else {
+                        const errorData = await response.json();
+                        showErrorMessage(errorData.error || 'Failed to apply coupon');
+                    }
+                } catch (error) {
+                    console.error('Error applying retention coupon:', error);
+                    showErrorMessage('Error applying coupon: ' + error.message);
+                }
+            };
+
             document.getElementById('confirm-cancel-btn').addEventListener('click', async () => {
                 try {
                     const authToken = localStorage.getItem('synk_auth_token');
@@ -655,7 +687,7 @@
                         const data = await response.json();
                         
                         // Show success message with coupon code
-                        const successMsg = `✅ Subscription cancelled successfully!\n\n🎉 Special Offer:\nUse code: ${data.coupon_code}\nGet 30% OFF when you re-subscribe\n(Valid for 90 days)`;
+                        const successMsg = `✅ Subscription cancelled successfully!\n\n🎉 Special Offer:\nUse code: ${data.coupon_code}\nGet 20% OFF when you re-subscribe\n(Valid for 90 days)`;
                         showSuccessMessage(successMsg);
                         
                         // Close modal and reload after showing message
@@ -756,14 +788,56 @@
             });
         }
 
-        function loadRetentionOffers() {
+        async function loadRetentionOffers() {
             const offersDiv = document.getElementById('retention-offers');
-            offersDiv.innerHTML = `
-                <div class="retention-offer">
-                    <p>✨ <strong>Special Offer:</strong> Get 30% off for the next 3 months!</p>
-                    <button class="auth-btn secondary" onclick="showSuccessMessage('Offer applied!')">Accept Offer</button>
-                </div>
-            `;
+            
+            try {
+                const authToken = localStorage.getItem('synk_auth_token');
+                const response = await fetch('https://synk-web.onrender.com/api/stripe/check-retention-coupon', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // If user has already used the coupon, don't show the offer
+                    if (data.coupon_used) {
+                        offersDiv.innerHTML = `
+                            <div class="retention-offer" style="background: rgba(76, 175, 80, 0.1); border-color: rgba(76, 175, 80, 0.3);">
+                                <p>✓ <strong>Offer Already Applied:</strong> You're already enjoying 20% off!</p>
+                            </div>
+                        `;
+                    } else {
+                        // Show the offer
+                        offersDiv.innerHTML = `
+                            <div class="retention-offer">
+                                <p>✨ <strong>Special Offer:</strong> Get 20% off for the next 3 months!</p>
+                                <button class="auth-btn secondary" onclick="acceptRetentionOffer()">Accept Offer</button>
+                            </div>
+                        `;
+                    }
+                } else {
+                    // Fallback if API fails
+                    offersDiv.innerHTML = `
+                        <div class="retention-offer">
+                            <p>✨ <strong>Special Offer:</strong> Get 20% off for the next 3 months!</p>
+                            <button class="auth-btn secondary" onclick="acceptRetentionOffer()">Accept Offer</button>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading retention offers:', error);
+                // Fallback if API fails
+                offersDiv.innerHTML = `
+                    <div class="retention-offer">
+                        <p>✨ <strong>Special Offer:</strong> Get 20% off for the next 3 months!</p>
+                        <button class="auth-btn secondary" onclick="acceptRetentionOffer()">Accept Offer</button>
+                    </div>
+                `;
+            }
         }
 
         function checkDeleteConfirmation() {
