@@ -370,7 +370,7 @@
                         <div id="pro-pricing-display" style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 0.5rem;">
                             <div class="plan-price" id="pro-price-old" style="text-decoration: line-through; opacity: 0.6; font-size: 2rem;">$12.99</div>
                             <div class="plan-price" id="pro-price" style="font-size: 3.5rem; color: #ff4500;">$7.99</div>
-                            <span id="pro-badge" style="background: #ff4500; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: 700;">30% OFF</span>
+                            <span id="pro-badge" style="background: #ff4500; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: 700;">40% OFF</span>
                         </div>
                         <div class="plan-period" id="pro-period">per month</div>
                         <div class="yearly-savings" id="pro-savings" style="display: none; color: #ff4500; font-size: 0.9rem; margin-top: 5px;">Save $30.89 per year</div>
@@ -400,7 +400,7 @@
                         <div id="ultimate-pricing-display" style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 0.5rem;">
                             <div class="plan-price" id="ultimate-price-old" style="text-decoration: line-through; opacity: 0.6; font-size: 2rem;">$24.99</div>
                             <div class="plan-price" id="ultimate-price" style="font-size: 3.5rem; color: #ff4500;">$14.99</div>
-                            <span id="ultimate-badge" style="background: #ff4500; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: 700;">30% OFF</span>
+                            <span id="ultimate-badge" style="background: #ff4500; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: 700;">40% OFF</span>
                         </div>
                         <div class="plan-period" id="ultimate-period">per month</div>
                         <div class="yearly-savings" id="ultimate-savings" style="display: none; color: #ff4500; font-size: 0.9rem; margin-top: 5px;">Save $59.89 per year</div>
@@ -554,11 +554,11 @@
         // Pricing data
         const pricing = {
             pro: {
-                monthly: 7.99,    // 30% OFF from $12.99
+                monthly: 7.99,    // 40% OFF from $12.99
                 yearly: 124.99 // ~20% discount
             },
             ultimate: {
-                monthly: 14.99,   // 30% OFF from $24.99
+                monthly: 14.99,   // 40% OFF from $24.99
                 yearly: 239.99 // ~20% discount
             }
         };
@@ -566,14 +566,14 @@
         // Payment links
         const paymentLinks = {
             pro: {
-                // UPDATED: 30% OFF PROMOTION FOR MONTHLY - NEW PRICING: $7.99/month
+                // UPDATED: 40% OFF PROMOTION FOR MONTHLY - NEW PRICING: $7.99/month
                 monthly: 'https://buy.stripe.com/bJefZa2l7eIse9L4dObMQ07',
                 // OLD MONTHLY LINK (ARCHIVED):
                 // monthly: 'https://buy.stripe.com/5kQ5kw0cZ8k46Hjh0AbMQ03',
                 yearly: 'https://buy.stripe.com/fZufZae3P43O5DfbGgbMQ05'
             },
             ultimate: {
-                // UPDATED: 30% OFF PROMOTION FOR MONTHLY - NEW PRICING: $14.99/month
+                // UPDATED: 40% OFF PROMOTION FOR MONTHLY - NEW PRICING: $14.99/month
                 monthly: 'https://buy.stripe.com/4gM5kw8Jvasc0iV39KbMQ08',
                 // OLD MONTHLY LINK (ARCHIVED):
                 // monthly: 'https://buy.stripe.com/aFa3co4tfeIsaXz5hSbMQ04',
@@ -635,7 +635,7 @@
                 ultimatePeriod.textContent = 'per year';
                 ultimateSavings.style.display = 'block';
             } else {
-                // MONTHLY: Show discounted monthly pricing (with 30% OFF badge)
+                // MONTHLY: Show discounted monthly pricing (with 40% OFF badge)
                 proPrice.textContent = `$${pricing.pro.monthly}`;
                 proPriceOld.style.display = 'block';
                 proBadge.style.display = 'inline-block';
