@@ -386,7 +386,7 @@
                     <div class="pricing-card featured">
                         <h3 class="plan-name">Pro</h3>
                         <div id="pro-pricing-display" style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 0.5rem;">
-                            <div class="plan-price" id="pro-price" style="font-size: 3.5rem; color: #ff4500;">$5</div>
+                            <div class="plan-price" id="pro-price" style="font-size: 3.5rem; color: #ff4500;">$4.99</div>
                         </div>
                         <div class="plan-period" id="pro-period">per month</div>
                         <div class="yearly-savings" id="pro-savings" style="display: none; color: #ff4500; font-size: 0.9rem; margin-top: 5px;">Save $10 per year</div>
@@ -426,7 +426,7 @@
                             <span class="faq-toggle">�</span>
                         </div>
                         <div class="faq-answer">
-                            Free plan lets you sync 1 Google Calendar and 1 Notion database with manual sync. Pro plan includes 3 connections, automatic live sync, and manual/incremental sync options for just $5/month.
+                            Free plan lets you sync 1 Google Calendar and 1 Notion database with manual sync. Pro plan includes 3 connections, automatic live sync, and manual/incremental sync options for just $4.99/month.
                         </div>
                     </div>
                     
@@ -446,7 +446,7 @@
                             <span class="faq-toggle">�</span>
                         </div>
                         <div class="faq-answer">
-                            Free plan costs nothing and stays free forever. Pro plan is $5/month with a 20% discount if you pay annually ($50/year). You can cancel anytime, no commitment required.
+                            Free plan costs nothing and stays free forever. Pro plan is $4.99/month with a 20% discount if you pay annually ($49.90/year). You can cancel anytime, no commitment required.
                         </div>
                     </div>
                     
@@ -544,21 +544,20 @@
                 yearly: 0
             },
             pro: {
-                monthly: 5.00,
-                yearly: 50 // $5 * 10 months (20% annual discount)
+                monthly: 4.99,
+                yearly: 49.90 // $4.99 * 10 months (20% annual discount)
             }
         };
         
         // Payment links
         const paymentLinks = {
             free: {
-                monthly: null,
-                yearly: null
+                monthly: 'https://buy.stripe.com/dRmbIU2l757S0iV4dObMQ09',
+                yearly: 'https://buy.stripe.com/dRmbIU2l757S0iV4dObMQ09'
             },
             pro: {
-                // NEW PRICING: $5/month
-                monthly: 'https://buy.stripe.com/bJefZa2l7eIse9L4dObMQ07',
-                yearly: 'https://buy.stripe.com/fZufZae3P43O5DfbGgbMQ05'
+                monthly: 'https://buy.stripe.com/7sY4gs8Jvasc5Df6lWbMQ0b',
+                yearly: 'https://buy.stripe.com/7sY4gs8Jvasc5Df6lWbMQ0b'
             }
         };
         
