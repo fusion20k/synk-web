@@ -364,21 +364,38 @@
                 </div>
                 
                 <div class="pricing-grid">
+                    <!-- Free Plan -->
+                    <div class="pricing-card">
+                        <h3 class="plan-name">Free</h3>
+                        <div id="free-pricing-display" style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 0.5rem;">
+                            <div class="plan-price" id="free-price" style="font-size: 3.5rem; color: #fff;">$0</div>
+                        </div>
+                        <div class="plan-period" id="free-period">forever</div>
+                        <p class="plan-description">Perfect for getting started with basic sync features.</p>
+                        
+                        <ul class="plan-features">
+                            <li>1 Google Calendar Syncing</li>
+                            <li>1 Notion Database Syncing</li>
+                            <li>Manual Sync</li>
+                            <li>Community Support</li>
+                        </ul>
+                        
+                        <button class="plan-button secondary" onclick="handlePurchase('free')">Get Started Free</button>
+                    </div>
+
                     <!-- Pro Plan -->
                     <div class="pricing-card featured">
                         <h3 class="plan-name">Pro</h3>
                         <div id="pro-pricing-display" style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 0.5rem;">
-                            <div class="plan-price" id="pro-price-old" style="text-decoration: line-through; opacity: 0.6; font-size: 2rem;">$12.99</div>
-                            <div class="plan-price" id="pro-price" style="font-size: 3.5rem; color: #ff4500;">$7.99</div>
-                            <span id="pro-badge" style="background: #ff4500; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: 700;">40% OFF</span>
+                            <div class="plan-price" id="pro-price" style="font-size: 3.5rem; color: #ff4500;">$5</div>
                         </div>
                         <div class="plan-period" id="pro-period">per month</div>
-                        <div class="yearly-savings" id="pro-savings" style="display: none; color: #ff4500; font-size: 0.9rem; margin-top: 5px;">Save $30.89 per year</div>
+                        <div class="yearly-savings" id="pro-savings" style="display: none; color: #ff4500; font-size: 0.9rem; margin-top: 5px;">Save $10 per year</div>
                         <p class="plan-description">Perfect for individuals and small teams who need reliable sync.</p>
                         
                         <div style="background: rgba(255, 69, 0, 0.1); border: 1px solid rgba(255, 69, 0, 0.3); border-radius: 8px; padding: 12px; margin: 20px 0; text-align: center;">
-                            <strong style="color: #ff4500;">14-Day Free Trial</strong>
-                            <p style="margin: 5px 0 0; font-size: 0.9rem; color: #ccc;">No credit card required</p>
+                            <strong style="color: #ff4500;">Most Popular</strong>
+                            <p style="margin: 5px 0 0; font-size: 0.9rem; color: #ccc;">Great value for daily users</p>
                         </div>
                         
                         <ul class="plan-features">
@@ -386,40 +403,10 @@
                             <li>3 Notion Database Syncing</li>
                             <li>Automatic Live Sync</li>
                             <li>Manual and Incremental Sync</li>
+                            <li>Email Support</li>
                         </ul>
                         
-                        <button class="plan-button" onclick="handlePurchase('pro')">Start Free Trial</button>
-                        <p style="margin-top: 15px; font-size: 0.85rem; color: #888; text-align: center;">
-                            14-day free trial begins after payment method entered
-                        </p>
-                    </div>
-
-                    <!-- Ultimate Plan -->
-                    <div class="pricing-card">
-                        <h3 class="plan-name">Ultimate</h3>
-                        <div id="ultimate-pricing-display" style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 0.5rem;">
-                            <div class="plan-price" id="ultimate-price-old" style="text-decoration: line-through; opacity: 0.6; font-size: 2rem;">$24.99</div>
-                            <div class="plan-price" id="ultimate-price" style="font-size: 3.5rem; color: #ff4500;">$14.99</div>
-                            <span id="ultimate-badge" style="background: #ff4500; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; font-weight: 700;">40% OFF</span>
-                        </div>
-                        <div class="plan-period" id="ultimate-period">per month</div>
-                        <div class="yearly-savings" id="ultimate-savings" style="display: none; color: #ff4500; font-size: 0.9rem; margin-top: 5px;">Save $59.89 per year</div>
-                        <p class="plan-description">Advanced features for power users who need more control.</p>
-                        
-                        <ul class="plan-features">
-                            <li><strong>Everything in Pro</strong></li>
-                            <li>Unlimited Google Calendar Syncing</li>
-                            <li>Unlimited Notion Database Syncing</li>
-                            <li>AI Powered Automation <span style="color: #ff9500; font-size: 0.8rem; font-weight: 600;">(Coming Soon)</span></li>
-                            <li>Early Access to New Features</li>
-                            <li>Priority Support</li>
-                        </ul>
-                        
-                        <button class="plan-button secondary" onclick="handlePurchase('ultimate')">Get Ultimate</button>
-                        <p style="margin-top: 15px; font-size: 0.85rem; color: #888; text-align: center; line-height: 1.5;">
-                            <strong style="color: #ff4500;">Early Access Plan</strong><br>
-                            Ultimate plan features are currently in development. By subscribing, you acknowledge this is for early access to new features and priority support.
-                        </p>
+                        <button class="plan-button" onclick="handlePurchase('pro')">Start Pro Plan</button>
                     </div>
                 </div>
             </div>
@@ -436,31 +423,31 @@
                 <div class="faq-container">
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
-                            How does the free trial work?
+                            What's the difference between Free and Pro?
                             <span class="faq-toggle">�</span>
                         </div>
                         <div class="faq-answer">
-                            Your 14-day free trial begins automatically when you connect both Notion and Google Calendar. No credit card required to start. You'll have full access to all features during the trial.
+                            Free plan lets you sync 1 Google Calendar and 1 Notion database with manual sync. Pro plan includes 3 connections, automatic live sync, and manual/incremental sync options for just $5/month.
                         </div>
                     </div>
                     
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
-                            What happens after my trial ends?
+                            Can I try Pro before purchasing?
                             <span class="faq-toggle">�</span>
                         </div>
                         <div class="faq-answer">
-                            After your trial ends, you'll need to subscribe to continue using Synk. Your sync configurations will be saved, and you can resume immediately upon subscription.
+                            You can use the Free plan to test Synk features. When you're ready for more connections and automatic syncing, upgrade to Pro at any time.
                         </div>
                     </div>
                     
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
-                            What's the difference between Pro and Ultimate?
+                            How does pricing work?
                             <span class="faq-toggle">�</span>
                         </div>
                         <div class="faq-answer">
-                            Pro includes all core sync features perfect for individuals and small teams. Ultimate adds advanced features like custom field mapping, advanced filtering conditions, bulk operations, detailed analytics, and configuration export/import for power users.
+                            Free plan costs nothing and stays free forever. Pro plan is $5/month with a 20% discount if you pay annually ($50/year). You can cancel anytime, no commitment required.
                         </div>
                     </div>
                     
@@ -553,31 +540,26 @@
         
         // Pricing data
         const pricing = {
-            pro: {
-                monthly: 7.99,    // 40% OFF from $12.99
-                yearly: 124.99 // ~20% discount
+            free: {
+                monthly: 0,
+                yearly: 0
             },
-            ultimate: {
-                monthly: 14.99,   // 40% OFF from $24.99
-                yearly: 239.99 // ~20% discount
+            pro: {
+                monthly: 5.00,
+                yearly: 50 // $5 * 10 months (20% annual discount)
             }
         };
         
         // Payment links
         const paymentLinks = {
-            pro: {
-                // UPDATED: 40% OFF PROMOTION FOR MONTHLY - NEW PRICING: $7.99/month
-                monthly: 'https://buy.stripe.com/bJefZa2l7eIse9L4dObMQ07',
-                // OLD MONTHLY LINK (ARCHIVED):
-                // monthly: 'https://buy.stripe.com/5kQ5kw0cZ8k46Hjh0AbMQ03',
-                yearly: 'https://buy.stripe.com/fZufZae3P43O5DfbGgbMQ05'
+            free: {
+                monthly: null,
+                yearly: null
             },
-            ultimate: {
-                // UPDATED: 40% OFF PROMOTION FOR MONTHLY - NEW PRICING: $14.99/month
-                monthly: 'https://buy.stripe.com/4gM5kw8Jvasc0iV39KbMQ08',
-                // OLD MONTHLY LINK (ARCHIVED):
-                // monthly: 'https://buy.stripe.com/aFa3co4tfeIsaXz5hSbMQ04',
-                yearly: 'https://buy.stripe.com/fZu14g1h39o8fdPh0AbMQ06'
+            pro: {
+                // NEW PRICING: $5/month
+                monthly: 'https://buy.stripe.com/bJefZa2l7eIse9L4dObMQ07',
+                yearly: 'https://buy.stripe.com/fZufZae3P43O5DfbGgbMQ05'
             }
         };
         
@@ -605,52 +587,23 @@
         function updatePricing(isYearly) {
             // Pro plan
             const proPrice = document.getElementById('pro-price');
-            const proPriceOld = document.getElementById('pro-price-old');
-            const proBadge = document.getElementById('pro-badge');
             const proPeriod = document.getElementById('pro-period');
             const proSavings = document.getElementById('pro-savings');
             
-            // Ultimate plan
-            const ultimatePrice = document.getElementById('ultimate-price');
-            const ultimatePriceOld = document.getElementById('ultimate-price-old');
-            const ultimateBadge = document.getElementById('ultimate-badge');
-            const ultimatePeriod = document.getElementById('ultimate-period');
-            const ultimateSavings = document.getElementById('ultimate-savings');
-            
             if (isYearly) {
-                // YEARLY: Show original yearly pricing (no discount badge)
+                // YEARLY: Show yearly pricing
                 proPrice.textContent = `$${pricing.pro.yearly}`;
-                proPriceOld.style.display = 'none';
-                proBadge.style.display = 'none';
-                proPrice.style.color = '#fff';
-                proPrice.style.fontSize = '2.5rem';
+                proPrice.style.color = '#ff4500';
+                proPrice.style.fontSize = '3.5rem';
                 proPeriod.textContent = 'per year';
                 proSavings.style.display = 'block';
-                
-                ultimatePrice.textContent = `$${pricing.ultimate.yearly}`;
-                ultimatePriceOld.style.display = 'none';
-                ultimateBadge.style.display = 'none';
-                ultimatePrice.style.color = '#fff';
-                ultimatePrice.style.fontSize = '2.5rem';
-                ultimatePeriod.textContent = 'per year';
-                ultimateSavings.style.display = 'block';
             } else {
-                // MONTHLY: Show discounted monthly pricing (with 40% OFF badge)
+                // MONTHLY: Show monthly pricing
                 proPrice.textContent = `$${pricing.pro.monthly}`;
-                proPriceOld.style.display = 'block';
-                proBadge.style.display = 'inline-block';
                 proPrice.style.color = '#ff4500';
                 proPrice.style.fontSize = '3.5rem';
                 proPeriod.textContent = 'per month';
                 proSavings.style.display = 'none';
-                
-                ultimatePrice.textContent = `$${pricing.ultimate.monthly}`;
-                ultimatePriceOld.style.display = 'block';
-                ultimateBadge.style.display = 'inline-block';
-                ultimatePrice.style.color = '#ff4500';
-                ultimatePrice.style.fontSize = '3.5rem';
-                ultimatePeriod.textContent = 'per month';
-                ultimateSavings.style.display = 'none';
             }
         }
         
@@ -685,9 +638,16 @@
             
             if (!isLoggedIn) {
                 console.log('? User not logged in - redirecting to signup');
-                alert('You must be logged in to purchase a plan. You will be redirected to the signup page.');
+                alert('You must be logged in to get started. You will be redirected to the signup page.');
                 // Redirect to signup page
                 window.location.href = 'signup.html?redirect=pricing.html';
+                return;
+            }
+            
+            // Handle free plan
+            if (plan === 'free') {
+                console.log('? User starting with free plan - redirecting to app');
+                window.location.href = 'account.html';
                 return;
             }
             
