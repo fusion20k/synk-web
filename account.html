@@ -150,9 +150,6 @@
                                     <p><strong>Status:</strong> <span id="plan-status">Active</span></p>
                                     <p><strong>Next Billing Date:</strong> <span id="next-billing-date">N/A</span></p>
                                     <p><strong>Billing Amount:</strong> <span id="billing-amount">N/A</span></p>
-                                    <div id="trial-countdown" style="display: none;">
-                                        <p><strong>Trial Expires In:</strong> <span id="trial-days">0</span> days</p>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -441,7 +438,7 @@
             try {
                 const { data, error } = await supabaseClient
                     .from('subscriptions')
-                    .select('plan, status, trial_ends_at, current_period_end, price, billing_cycle')
+                    .select('plan, status, current_period_end, price, billing_cycle')
                     .eq('user_email', userEmail)
                     .single();
 
@@ -465,17 +462,6 @@
                         document.getElementById('billing-amount').textContent = `$${price}${cycle}`;
                     } else {
                         document.getElementById('billing-amount').textContent = 'N/A';
-                    }
-
-                    // Show trial countdown if applicable
-                    if (data.trial_ends_at) {
-                        const trialEnd = new Date(data.trial_ends_at);
-                        const today = new Date();
-                        const daysLeft = Math.ceil((trialEnd - today) / (1000 * 60 * 60 * 24));
-                        if (daysLeft > 0) {
-                            document.getElementById('trial-countdown').style.display = 'block';
-                            document.getElementById('trial-days').textContent = daysLeft;
-                        }
                     }
                 } else if (error) {
                     console.warn('Could not load subscription data:', error.message);
