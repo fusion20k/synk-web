@@ -643,7 +643,7 @@
                 return;
             }
             
-            const isYearly = !document.getElementById('billing-toggle').checked;
+            const isYearly = document.getElementById('billing-toggle').checked;
             const billingType = isYearly ? 'yearly' : 'monthly';
             
             // Get the payment link for the selected plan and billing type
