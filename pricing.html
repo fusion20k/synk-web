@@ -643,13 +643,6 @@
                 return;
             }
             
-            // Handle free plan
-            if (plan === 'free') {
-                console.log('? User starting with free plan - redirecting to app');
-                window.location.href = 'account.html';
-                return;
-            }
-            
             const isYearly = document.getElementById('billing-toggle').checked;
             const billingType = isYearly ? 'yearly' : 'monthly';
             
