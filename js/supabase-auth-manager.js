@@ -359,6 +359,9 @@ class SupabaseAuthManager {
                 .from('users')
                 .insert({
                     email,
+                    plan: 'free',
+                    subscription_type: null,
+                    subscription_end_date: null,
                     sync_enabled: false,
                     last_sync_time: null
                     // google_refresh_token, google_token_expiry will be NULL initially
@@ -409,6 +412,48 @@ class SupabaseAuthManager {
 
             check();
         });
+    }
+
+    /**
+     * Update user plan in Supabase
+     */
+    async updateUserPlan(email, plan, subscriptionType = null, subscriptionEndDate = null) {
+        if (!this.supabaseClient) {
+            console.error('[Supabase Auth] Cannot update plan: Supabase client not initialized');
+            return false;
+        }
+
+        try {
+            console.log('[Supabase Auth] Updating user plan for:', email, 'to:', plan);
+            
+            const updateData = {
+                plan,
+                subscription_type: subscriptionType,
+                subscription_end_date: subscriptionEndDate
+            };
+            
+            const { data, error } = await this.supabaseClient
+                .from('users')
+                .update(updateData)
+                .eq('email', email)
+                .select();
+
+            if (error) {
+                console.error('[Supabase Auth] Error updating user plan:', {
+                    message: error.message,
+                    code: error.code,
+                    status: error.status,
+                    details: error.details
+                });
+                return false;
+            }
+
+            console.log('[Supabase Auth] User plan successfully updated:', data);
+            return true;
+        } catch (error) {
+            console.error('[Supabase Auth] Unexpected error in updateUserPlan:', error);
+            return false;
+        }
     }
 
     /**
