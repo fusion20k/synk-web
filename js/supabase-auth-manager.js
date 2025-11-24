@@ -360,11 +360,8 @@ class SupabaseAuthManager {
                 .insert({
                     email,
                     plan: 'free',
-                    subscription_type: null,
-                    subscription_end_date: null,
                     sync_enabled: false,
                     last_sync_time: null
-                    // google_refresh_token, google_token_expiry will be NULL initially
                 })
                 .select();
 
@@ -428,9 +425,7 @@ class SupabaseAuthManager {
             
             const updateData = {
                 plan,
-                subscription_type: subscriptionType,
-                subscription_end_date: subscriptionEndDate
-            };
+                                            };
             
             const { data, error } = await this.supabaseClient
                 .from('users')
