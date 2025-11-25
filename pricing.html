@@ -607,6 +607,13 @@
         }
         
         async function handlePurchase(plan) {
+            // Handle free plan - redirect to download
+            if (plan === 'free') {
+                console.log('Redirecting to download page for free plan');
+                window.location.href = 'download.html';
+                return;
+            }
+            
             // ? REQUIRED: User must be logged in to purchase
             console.log('?? handlePurchase called for plan:', plan);
             console.log('?? window.authManager exists?', !!window.authManager);
@@ -653,7 +660,26 @@
             if (paymentUrl) {
                 // User is logged in - proceed to Stripe payment page
                 console.log(`? User ${window.authManager.currentUser.email} initiating ${plan} ${billingType} purchase`);
-                window.open(paymentUrl, '_blank');
+                
+                // For pro plan, update the user's plan in Supabase after opening payment
+                if (plan === 'pro') {
+                    window.open(paymentUrl, '_blank');
+                    
+                    // Wait 3 seconds for payment to process, then update plan
+                    setTimeout(async () => {
+                        const updated = await window.authManager.updateUserPlan(
+                            window.authManager.currentUser.email,
+                            'pro',
+                            billingType,
+                            null
+                        );
+                        if (updated) {
+                            console.log('User plan updated to pro in Supabase');
+                        }
+                    }, 3000);
+                } else {
+                    window.open(paymentUrl, '_blank');
+                }
             } else {
                 console.error('Payment link not found for:', plan, billingType);
                 alert('Payment link not available. Please contact support.');
