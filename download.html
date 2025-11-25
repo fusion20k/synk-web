@@ -59,10 +59,10 @@
                     <p style="color: var(--text-secondary); margin: 1rem 0 2rem;">
                         Get the Synk desktop app to enable seamless syncing between Notion and Google Calendar.
                     </p>
-                    <a href="https://github.com/fusion20k/synk-web/releases/latest/download/Synk%20Setup.exe" download="Synk Setup.exe" class="cta-button" id="download-btn">
+                    <button class="cta-button" id="download-btn" onclick="return false;">
                         Download for Windows
                         <span>↓</span>
-                    </a>
+                    </button>
                     <p style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;" id="version-info">
                         Compatible with Windows 10 and later. Latest version: 1.1.0
                     </p>
@@ -73,6 +73,22 @@
             </div>
         </section>
     </main>
+
+    <!-- Testing Overlay Modal -->
+    <div id="testing-overlay" class="testing-overlay">
+        <div class="testing-modal">
+            <div class="testing-header">
+                <h2>🧪 Testing in Progress</h2>
+            </div>
+            <div class="testing-content">
+                <p>We're currently testing new features and plan management systems. Downloads are temporarily disabled.</p>
+                <p style="margin-top: 1rem; color: var(--text-secondary);">We'll be back online soon. Thank you for your patience!</p>
+            </div>
+            <div class="testing-footer">
+                <button id="close-testing-modal" class="testing-close-btn">Okay</button>
+            </div>
+        </div>
+    </div>
 
     <footer>
         <div class="container">
@@ -107,6 +123,135 @@
     <script src="js/scripts.js?v=2.0"></script>
     <!-- Release Manager - Auto-updates download links from GitHub -->
     <script src="js/release-manager.js?v=1.0"></script>
+    
+    <!-- Testing Mode - Disable Downloads -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const downloadBtn = document.getElementById('download-btn');
+            const testingOverlay = document.getElementById('testing-overlay');
+            const closeModalBtn = document.getElementById('close-testing-modal');
+            
+            if (downloadBtn) {
+                downloadBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (testingOverlay) {
+                        testingOverlay.style.display = 'flex';
+                    }
+                });
+            }
+            
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', function() {
+                    if (testingOverlay) {
+                        testingOverlay.style.display = 'none';
+                    }
+                });
+            }
+            
+            if (testingOverlay) {
+                testingOverlay.addEventListener('click', function(e) {
+                    if (e.target === testingOverlay) {
+                        testingOverlay.style.display = 'none';
+                    }
+                });
+            }
+        });
+    </script>
+    
+    <!-- Testing Modal Styles -->
+    <style>
+        .testing-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(2px);
+        }
+        
+        .testing-modal {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border: 1px solid rgba(255, 140, 0, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+            max-width: 450px;
+            width: 90%;
+            padding: 2rem;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .testing-header {
+            border-bottom: 2px solid rgba(255, 140, 0, 0.3);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .testing-header h2 {
+            margin: 0;
+            color: #ff8c00;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .testing-content {
+            color: #e0e0e0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .testing-content p {
+            margin: 0 0 0.5rem 0;
+        }
+        
+        .testing-footer {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .testing-close-btn {
+            background: linear-gradient(135deg, #ff8c00, #ff6b00);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3);
+        }
+        
+        .testing-close-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 140, 0, 0.4);
+            background: linear-gradient(135deg, #ff9d1a, #ff7d00);
+        }
+        
+        .testing-close-btn:active {
+            transform: translateY(0);
+        }
+    </style>
 </body>
 </html>
 
