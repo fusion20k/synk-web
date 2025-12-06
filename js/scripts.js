@@ -86,6 +86,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Contact form handling - FormSubmit handles submission natively
     const contactForm = document.getElementById('contact-form');
     if (contactForm) {
+        // Check if redirected back with success parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('success') === 'true') {
+            showNotification('Thank you for your message! We\'ll get back to you soon.', 'success');
+            // Clean URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        
         contactForm.addEventListener('submit', function(e) {
             // Basic client-side validation before native form submission
             const name = this.querySelector('#name').value;
@@ -104,12 +112,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Show sending state
+            // Show sending state (form will submit naturally)
             const submitButton = this.querySelector('.submit-button');
             submitButton.textContent = 'Sending...';
             submitButton.disabled = true;
             
-            // Form will submit naturally to FormSubmit
+            // Form submits naturally to FormSubmit, no e.preventDefault()
         });
     }
 
