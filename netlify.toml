@@ -2,6 +2,13 @@
   publish = ""
   command = ""
 
+# Form notifications
+[[plugins]]
+  package = "@netlify/plugin-emails"
+
+[plugins.inputs]
+  to = "support@synk-official.com"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

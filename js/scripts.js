@@ -106,18 +106,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // Simulate form submission
+            // Submit to Netlify Forms
             const submitButton = this.querySelector('.submit-button');
             const originalText = submitButton.textContent;
             submitButton.textContent = 'Sending...';
             submitButton.disabled = true;
             
-            setTimeout(() => {
+            fetch('/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams(formData).toString()
+            })
+            .then(() => {
                 showNotification('Thank you for your message! We\'ll get back to you soon.', 'success');
                 this.reset();
                 submitButton.textContent = originalText;
                 submitButton.disabled = false;
-            }, 2000);
+            })
+            .catch((error) => {
+                console.error('Form submission error:', error);
+                showNotification('Sorry, there was an error sending your message. Please try again or email us directly.', 'error');
+                submitButton.textContent = originalText;
+                submitButton.disabled = false;
+            });
         });
     }
 
