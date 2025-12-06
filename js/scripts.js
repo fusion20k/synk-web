@@ -83,52 +83,33 @@ document.addEventListener('DOMContentLoaded', function() {
         observer.observe(el);
     });
 
-    // Contact form handling
+    // Contact form handling - FormSubmit handles submission natively
     const contactForm = document.getElementById('contact-form');
     if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
-            e.preventDefault();
+            // Basic client-side validation before native form submission
+            const name = this.querySelector('#name').value;
+            const email = this.querySelector('#email').value;
+            const message = this.querySelector('#message').value;
             
-            // Get form data
-            const formData = new FormData(this);
-            const name = formData.get('name');
-            const email = formData.get('email');
-            const message = formData.get('message');
-            
-            // Basic validation
             if (!name || !email || !message) {
+                e.preventDefault();
                 showNotification('Please fill in all fields.', 'error');
                 return;
             }
             
             if (!isValidEmail(email)) {
+                e.preventDefault();
                 showNotification('Please enter a valid email address.', 'error');
                 return;
             }
             
-            // Submit to Netlify Forms
+            // Show sending state
             const submitButton = this.querySelector('.submit-button');
-            const originalText = submitButton.textContent;
             submitButton.textContent = 'Sending...';
             submitButton.disabled = true;
             
-            fetch('/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams(formData).toString()
-            })
-            .then(() => {
-                showNotification('Thank you for your message! We\'ll get back to you soon.', 'success');
-                this.reset();
-                submitButton.textContent = originalText;
-                submitButton.disabled = false;
-            })
-            .catch((error) => {
-                console.error('Form submission error:', error);
-                showNotification('Sorry, there was an error sending your message. Please try again or email us directly.', 'error');
-                submitButton.textContent = originalText;
-                submitButton.disabled = false;
-            });
+            // Form will submit naturally to FormSubmit
         });
     }
 
