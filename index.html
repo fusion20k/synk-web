@@ -56,14 +56,15 @@
 
     <main>
         <!-- Hero Section -->
-        <section class="hero" style="padding: 8rem 0 6rem;">
-            <div class="container" style="max-width: 1400px;">
+        <section class="hero" style="padding: 8rem 0 6rem; background: var(--bg-primary); position: relative; overflow: hidden;">
+            <div style="position: absolute; inset: 0; background: radial-gradient(circle at 20% 50%, rgba(255, 69, 0, 0.08), transparent 50%), radial-gradient(circle at 80% 50%, rgba(126, 87, 194, 0.08), transparent 50%); pointer-events: none;"></div>
+            <div class="container" style="max-width: 1400px; position: relative; z-index: 1;">
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 4rem; align-items: center;">
                     <div>
                         <div style="display: inline-block; padding: 0.5rem 1rem; background: rgba(255, 69, 0, 0.1); border: 1px solid rgba(255, 69, 0, 0.3); border-radius: 50px; margin-bottom: 2rem; font-size: 0.9rem; color: var(--accent-orange);">
                             Now Available for Windows
                         </div>
-                        <h1 style="font-size: clamp(2.5rem, 5vw, 4rem); line-height: 1.2; margin-bottom: 1.5rem;">Your Notion & Google Calendar, Perfectly in Sync</h1>
+                        <h1 style="font-size: clamp(2.5rem, 5vw, 4rem); line-height: 1.2; margin-bottom: 1.5rem; color: var(--text-primary);">Your Notion & Google Calendar, Perfectly in Sync</h1>
                         <p style="font-size: 1.25rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 3rem; max-width: 600px;">Stop manually copying tasks between apps. Synk automatically keeps your Notion databases and Google Calendar perfectly aligned—so you can focus on what matters.</p>
                         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
                             <a href="download.html" class="cta-button" style="padding: 1.2rem 2.5rem; font-size: 1.1rem;">
@@ -140,7 +141,9 @@
                         </ul>
                     </div>
                     <div style="background: var(--bg-card); padding: 3rem; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1); text-align: center;">
-                        <div style="font-size: 4rem; margin-bottom: 1rem;">⚡</div>
+                        <svg style="width: 64px; height: 64px; margin-bottom: 1rem;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z" fill="#FFA500" stroke="#FF8C00" stroke-width="1.5" stroke-linejoin="round"/>
+                        </svg>
                         <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">< 1s</div>
                         <div style="color: var(--text-secondary);">Average Sync Time</div>
                     </div>
@@ -194,7 +197,11 @@
                         </ul>
                     </div>
                     <div style="background: var(--bg-card); padding: 3rem; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1); text-align: center;">
-                        <div style="font-size: 4rem; margin-bottom: 1rem;">🔒</div>
+                        <svg style="width: 64px; height: 64px; margin-bottom: 1rem;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="5" y="11" width="14" height="10" rx="2" fill="#FFD700" stroke="#FFA500" stroke-width="1.5"/>
+                            <path d="M8 11V7a4 4 0 118 0v4" stroke="#FFD700" stroke-width="1.5" stroke-linecap="round"/>
+                            <circle cx="12" cy="16" r="1.5" fill="#FF8C00"/>
+                        </svg>
                         <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">256-bit</div>
                         <div style="color: var(--text-secondary);">Encryption Standard</div>
                     </div>
