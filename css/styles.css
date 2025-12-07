@@ -1713,7 +1713,7 @@ footer {
 .faq-item:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-light);
-  border-color: rgba(92, 107, 192, 0.2);
+  border-color: rgba(255, 69, 0, 0.3);
 }
 
 .faq-item h3 {
