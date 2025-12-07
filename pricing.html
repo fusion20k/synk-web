@@ -213,6 +213,16 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .faq-question:hover {
+            color: var(--accent-orange);
+        }
+        
+        .faq-item:focus-within {
+            border-color: rgba(255, 69, 0, 0.3);
+            outline: none;
         }
         
         .faq-answer {

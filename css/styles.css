@@ -1630,7 +1630,7 @@ footer {
 .use-case:hover {
   transform: translateY(-5px);
   box-shadow: var(--shadow-medium);
-  border-color: rgba(92, 107, 192, 0.3);
+  border-color: rgba(255, 69, 0, 0.3);
 }
 
 .use-case h3 {
@@ -1748,7 +1748,7 @@ footer {
 .support-option:hover {
   transform: translateY(-5px);
   box-shadow: var(--shadow-medium);
-  border-color: rgba(92, 107, 192, 0.3);
+  border-color: rgba(255, 69, 0, 0.3);
 }
 
 .support-icon {
