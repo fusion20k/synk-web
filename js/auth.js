@@ -157,12 +157,11 @@ if (signupForm) {
 
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirm-password').value;
         const termsAccepted = document.getElementById('terms').checked;
         const signupBtn = document.getElementById('signup-btn');
 
         // Validation
-        if (!email || !password || !confirmPassword) {
+        if (!email || !password) {
             showError('Please fill in all fields');
             return;
         }
@@ -177,11 +176,6 @@ if (signupForm) {
         // Password validation
         if (password.length < 8) {
             showError('Password must be at least 8 characters long');
-            return;
-        }
-
-        if (password !== confirmPassword) {
-            showError('Passwords do not match');
             return;
         }
 
@@ -265,21 +259,16 @@ if (passwordInput && signupForm) {
 }
 
 // ============================================
-// REAL-TIME PASSWORD MATCH VALIDATION
+// TOGGLE PASSWORD VISIBILITY
 // ============================================
-const confirmPasswordInput = document.getElementById('confirm-password');
-if (confirmPasswordInput && signupForm) {
-    confirmPasswordInput.addEventListener('input', (e) => {
-        const password = document.getElementById('password').value;
-        const confirmPassword = e.target.value;
-
-        if (confirmPassword.length === 0) {
-            confirmPasswordInput.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-        } else if (password === confirmPassword) {
-            confirmPasswordInput.style.borderColor = '#90ee90';
-        } else {
-            confirmPasswordInput.style.borderColor = '#ff6b6b';
-        }
+const togglePasswordBtn = document.getElementById('toggle-password');
+if (togglePasswordBtn) {
+    togglePasswordBtn.addEventListener('click', () => {
+        const passwordInput = document.getElementById('password');
+        const isPassword = passwordInput.type === 'password';
+        
+        passwordInput.type = isPassword ? 'text' : 'password';
+        togglePasswordBtn.textContent = isPassword ? 'Hide' : 'Show';
     });
 }
 
