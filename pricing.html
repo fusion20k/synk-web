@@ -360,15 +360,15 @@
 
     <main>
         <!-- Hero Intro Section -->
-        <section id="pricing-hero" style="height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; padding: 0 2rem;">
-            <div style="text-align: center; opacity: 0; animation: fadeInUp 1.5s ease-out forwards; width: 100%; max-width: 1200px;">
+        <section id="pricing-hero" style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 0 2rem;">
+            <div style="text-align: center; opacity: 0; animation: fadeInUp 1.5s ease-out forwards; width: 100%; max-width: 1200px; margin-top: -10vh;">
                 <h1 style="font-size: clamp(4rem, 10vw, 8rem); font-weight: 700; line-height: 1.1; margin: 0;">Free.</h1>
                 <h1 style="font-size: clamp(4rem, 10vw, 8rem); font-weight: 700; line-height: 1.1; margin: 0; color: var(--accent-orange);">Forever.</h1>
                 <p style="font-size: 1.5rem; color: var(--text-secondary); margin-top: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">Start syncing Notion and Google Calendar at no cost. Upgrade when you need more.</p>
             </div>
             
             <!-- Scroll Indicator -->
-            <div style="position: absolute; bottom: 4rem; left: 50%; transform: translateX(-50%); opacity: 0; animation: fadeInUp 1.5s ease-out 1s forwards; width: 100%; display: flex; justify-content: center;">
+            <div style="position: absolute; bottom: 3rem; left: 0; right: 0; opacity: 0; animation: fadeInUp 1.5s ease-out 1s forwards; display: flex; justify-content: center;">
                 <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; cursor: pointer;" onclick="document.getElementById('pricing-plans').scrollIntoView({behavior: 'smooth'})">
                     <span style="font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 2px;">Scroll to see plans</span>
                     <svg style="width: 24px; height: 24px; color: var(--accent-orange); animation: bounce 2s infinite;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
