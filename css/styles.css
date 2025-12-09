@@ -775,19 +775,34 @@ main {
   text-align: center;
   position: relative;
   overflow: hidden;
-  background: #121111 !important;
-  background-image: none !important;
+  background: #0a0a0a url('../assets/images/HeroImage.png?v=3') no-repeat center center;
+  background-size: cover;
 }
 
-/* Vignette and glow effects disabled for new layout */
+/* Dark overlay to help text pop */
 .hero::before {
-  display: none !important;
-  content: none !important;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 10, 10, 0.7);
+  z-index: 1;
+  pointer-events: none;
 }
 
+/* Subtle glow effect */
 .hero::after {
-  display: none !important;
-  content: none !important;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(ellipse at center, transparent 0%, rgba(10, 10, 10, 0.4) 70%);
+  z-index: 2;
+  pointer-events: none;
 }
 
 .hero-content {
