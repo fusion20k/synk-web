@@ -775,37 +775,16 @@ main {
   text-align: center;
   position: relative;
   overflow: hidden;
-  background: #0a0a0a url('../assets/images/HeroImage.png?v=2') no-repeat center center;
-  background-size: cover;
+  background: var(--bg-primary);
 }
 
-/* Vignette effect - darkens edges */
+/* Vignette and glow effects disabled for new layout */
 .hero::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(ellipse at center, transparent 0%, rgba(10, 10, 10, 0.5) 60%, rgba(10, 10, 10, 0.85) 100%);
-  z-index: 1;
-  pointer-events: none;
+  display: none;
 }
 
-/* Dragon's Breath glow effect */
 .hero::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    radial-gradient(ellipse at 30% 50%, rgba(255, 69, 0, 0.2) 0%, transparent 50%),
-    radial-gradient(ellipse at 70% 50%, rgba(220, 20, 60, 0.15) 0%, transparent 50%);
-  z-index: 1;
-  pointer-events: none;
-  mix-blend-mode: screen;
+  display: none;
 }
 
 .hero-content {
