@@ -1716,6 +1716,10 @@ footer {
   border-color: rgba(255, 69, 0, 0.3);
 }
 
+.faq-item.active {
+  border-color: rgba(255, 69, 0, 0.5);
+}
+
 .faq-item h3 {
   font-size: 1.25rem;
   font-weight: 600;
