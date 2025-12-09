@@ -775,16 +775,19 @@ main {
   text-align: center;
   position: relative;
   overflow: hidden;
-  background: var(--bg-primary);
+  background: #121111 !important;
+  background-image: none !important;
 }
 
 /* Vignette and glow effects disabled for new layout */
 .hero::before {
-  display: none;
+  display: none !important;
+  content: none !important;
 }
 
 .hero::after {
-  display: none;
+  display: none !important;
+  content: none !important;
 }
 
 .hero-content {
