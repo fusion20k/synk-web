@@ -83,9 +83,22 @@ if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value;
+        // Get form elements with null checks
+        const emailEl = document.getElementById('email');
+        const passwordEl = document.getElementById('password');
         const loginBtn = document.getElementById('login-btn');
+
+        if (!emailEl || !passwordEl) {
+            console.error('Form elements missing:', {
+                email: !!emailEl,
+                password: !!passwordEl
+            });
+            showError('Form error. Please refresh the page and try again.');
+            return;
+        }
+
+        const email = emailEl.value.trim();
+        const password = passwordEl.value;
 
         // Validation
         if (!email || !password) {
@@ -155,10 +168,25 @@ if (signupForm) {
     signupForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value;
-        const termsAccepted = document.getElementById('terms').checked;
+        // Get form elements with null checks
+        const emailEl = document.getElementById('email');
+        const passwordEl = document.getElementById('password');
+        const termsEl = document.getElementById('terms');
         const signupBtn = document.getElementById('signup-btn');
+
+        if (!emailEl || !passwordEl || !termsEl) {
+            console.error('Form elements missing:', {
+                email: !!emailEl,
+                password: !!passwordEl,
+                terms: !!termsEl
+            });
+            showError('Form error. Please refresh the page and try again.');
+            return;
+        }
+
+        const email = emailEl.value.trim();
+        const password = passwordEl.value;
+        const termsAccepted = termsEl.checked;
 
         // Validation
         if (!email || !password) {

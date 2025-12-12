@@ -153,6 +153,18 @@ body.auth-body main {
     0 0 20px rgba(255, 69, 0, 0.15);
 }
 
+.form-group input[type="password"]:valid {
+  border-color: #10b981;
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.3);
+}
+
+.form-group input[type="password"]:valid:focus {
+  border-color: #10b981;
+  box-shadow: 
+    0 0 0 3px rgba(16, 185, 129, 0.1),
+    0 0 20px rgba(16, 185, 129, 0.15);
+}
+
 .form-group input::placeholder {
   color: var(--text-muted);
 }
