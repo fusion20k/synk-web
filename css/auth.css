@@ -2,7 +2,7 @@
 
 /* Cosmic space background on auth pages */
 body.auth-body {
-  background: #0a0a0a;
+  background: transparent;
   position: relative;
   overflow-x: hidden;
 }
