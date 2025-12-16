@@ -10,15 +10,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <style>
-        /* Dragon background on body - at the very back */
+        /* Cosmic space background - endless possibilities */
         body.pricing-page {
-            background: #0a0a0a url('assets/images/HeroImage.png?v=2') no-repeat center top;
-            background-size: cover;
-            background-attachment: fixed;
+            background: #0a0a0a;
             position: relative;
+            overflow-x: hidden;
         }
         
-        /* Much darker overlay to prevent overpowering */
+        /* Cosmic gradient overlay with stars effect */
         body.pricing-page::before {
             content: '';
             position: fixed;
@@ -26,9 +25,46 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: radial-gradient(ellipse at center, rgba(10, 10, 10, 0.85) 0%, rgba(10, 10, 10, 0.92) 50%, rgba(10, 10, 10, 0.97) 100%);
+            background: 
+                radial-gradient(2px 2px at 20% 30%, white, transparent),
+                radial-gradient(2px 2px at 60% 70%, white, transparent),
+                radial-gradient(1px 1px at 50% 50%, white, transparent),
+                radial-gradient(1px 1px at 80% 10%, white, transparent),
+                radial-gradient(2px 2px at 90% 60%, white, transparent),
+                radial-gradient(1px 1px at 33% 80%, white, transparent),
+                radial-gradient(ellipse at top, rgba(255, 69, 0, 0.15) 0%, transparent 40%),
+                radial-gradient(ellipse at bottom, rgba(255, 101, 0, 0.1) 0%, transparent 50%),
+                linear-gradient(180deg, #0a0a0a 0%, #0f0a0d 50%, #0a0a0a 100%);
+            background-size: 200% 200%, 200% 200%, 200% 200%, 200% 200%, 200% 200%, 200% 200%, 100% 100%, 100% 100%, 100% 100%;
             z-index: 0;
             pointer-events: none;
+            animation: twinkle 8s ease-in-out infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        /* Additional nebula effect */
+        body.pricing-page::after {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(ellipse at 30% 20%, rgba(255, 69, 0, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(255, 101, 0, 0.06) 0%, transparent 50%);
+            z-index: 0;
+            pointer-events: none;
+            animation: nebula 20s ease-in-out infinite;
+        }
+        
+        @keyframes nebula {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
         }
         
         /* Ensure all content is above the background */
