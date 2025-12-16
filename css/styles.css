@@ -80,7 +80,9 @@ body::before {
     radial-gradient(1px 1px at 28% 68%, rgba(255, 255, 255, 0.8), transparent),
     radial-gradient(1px 1px at 58% 78%, rgba(255, 255, 255, 0.7), transparent),
     radial-gradient(1px 1px at 88% 95%, rgba(255, 255, 255, 0.8), transparent),
-    radial-gradient(1px 1px at 42% 92%, rgba(255, 255, 255, 0.7), transparent);
+    radial-gradient(1px 1px at 42% 92%, rgba(255, 255, 255, 0.7), transparent),
+    /* Dark space background */
+    #0a0a0a;
   background-size: 100% 100%;
   pointer-events: none;
   z-index: 0;
