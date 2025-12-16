@@ -1,7 +1,7 @@
 /* Import Inter font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* Dragon's Breath Theme - Version 2.0 - Updated with cache busting */
+/* Cosmic Horizons Theme - Version 2.0 - Endless Possibilities */
 
 /* CSS Variables for consistent theming */
 :root {
@@ -778,13 +778,49 @@ main {
   background: var(--bg-primary);
 }
 
-/* Vignette and glow effects disabled for new layout */
+/* Subtle cosmic starfield effect */
 .hero::before {
-  display: none;
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(2px 2px at 15% 25%, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(1px 1px at 75% 15%, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(1px 1px at 45% 60%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(2px 2px at 85% 75%, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(1px 1px at 25% 85%, rgba(255, 255, 255, 0.4), transparent),
+    radial-gradient(1px 1px at 65% 40%, rgba(255, 255, 255, 0.6), transparent);
+  background-size: 100% 100%;
+  pointer-events: none;
+  opacity: 0.4;
+  animation: starTwinkle 6s ease-in-out infinite;
 }
 
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.6; }
+}
+
+/* Subtle cosmic nebula glow */
 .hero::after {
-  display: none;
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120%;
+  height: 140%;
+  background: radial-gradient(ellipse at center, rgba(255, 69, 0, 0.06) 0%, transparent 60%);
+  pointer-events: none;
+  animation: cosmicPulse 8s ease-in-out infinite;
+}
+
+@keyframes cosmicPulse {
+  0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
+  50% { opacity: 0.7; transform: translateX(-50%) scale(1.05); }
 }
 
 .hero-content {
