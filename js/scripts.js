@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
 
-        // Add styles with Dragon's Breath theme
+        // Add styles with Cosmic theme
         const bgColor = type === 'success' 
             ? 'linear-gradient(135deg, rgba(255, 69, 0, 0.95), rgba(220, 20, 60, 0.95))' 
             : type === 'error' 
