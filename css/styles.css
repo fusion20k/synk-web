@@ -1154,7 +1154,7 @@ section {
 /* About Section */
 .about {
   padding: 6rem 0;
-  background: var(--bg-secondary);
+  background: transparent;
 }
 
 .about-content {
