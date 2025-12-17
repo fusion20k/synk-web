@@ -105,110 +105,17 @@ class SupabaseAuthManager {
 
     /**
      * Update UI based on auth state
+     * 
+     * Note: UI updates are handled by scripts.js through the 'auth-state-changed' event
+     * This method is kept for backward compatibility
      */
     updateUI() {
-        const container = document.getElementById('auth-section-container');
-        if (!container) return;
-
-        if (this.currentUser) {
-            this.renderLoggedInUI(container);
-        } else {
-            this.renderLoggedOutUI(container);
-        }
+        // UI is now managed by scripts.js listening to 'auth-state-changed' events
+        // No direct DOM manipulation needed here
+        console.log('[Supabase Auth] UI state:', this.currentUser ? 'logged in' : 'logged out');
     }
 
-    /**
-     * Render logged-in UI (user avatar dropdown)
-     */
-    renderLoggedInUI(container) {
-        const email = this.currentUser?.email || 'User';
-        const firstInitial = email.charAt(0).toUpperCase();
 
-        container.innerHTML = `
-            <div class="auth-section logged-in">
-                <div class="user-profile">
-                    <button class="avatar-btn" id="avatar-btn" title="${email}" aria-label="User menu">
-                        <div class="avatar-circle">
-                            ${firstInitial}
-                        </div>
-                    </button>
-                    
-                    <div class="profile-dropdown" id="profile-dropdown" role="menu" aria-hidden="true">
-                        <div class="dropdown-header">
-                            <div class="dropdown-avatar">
-                                ${firstInitial}
-                            </div>
-                            <div class="dropdown-user-info">
-                                <p class="dropdown-email" title="${email}">${email}</p>
-                            </div>
-                        </div>
-                        
-                        <div class="dropdown-divider"></div>
-                        
-                        <div class="dropdown-menu">
-                            <a href="account.html" class="dropdown-item" role="menuitem">
-                                <span class="dropdown-icon">⚙️</span>
-                                Manage Account
-                            </a>
-                            <button id="logout-btn" class="dropdown-item logout-item" role="menuitem" type="button">
-                                <span class="dropdown-icon">🚪</span>
-                                Log Out
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        // Setup event handlers
-        this.setupDropdownHandlers(container);
-    }
-
-    /**
-     * Render logged-out UI (login/signup buttons)
-     */
-    renderLoggedOutUI(container) {
-        container.innerHTML = `
-            <div class="auth-section logged-out">
-                <a href="/login.html" class="btn-login">Log In</a>
-                <a href="/signup.html" class="btn-signup">Sign Up</a>
-            </div>
-        `;
-    }
-
-    /**
-     * Setup dropdown event handlers
-     */
-    setupDropdownHandlers(container) {
-        const avatarBtn = container.querySelector('#avatar-btn');
-        const profileDropdown = container.querySelector('#profile-dropdown');
-        const logoutBtn = container.querySelector('#logout-btn');
-
-        if (avatarBtn && profileDropdown) {
-            avatarBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const isOpen = profileDropdown.classList.contains('show');
-                profileDropdown.classList.toggle('show');
-                profileDropdown.setAttribute('aria-hidden', isOpen);
-            });
-
-            // Close dropdown when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!container.contains(e.target)) {
-                    profileDropdown.classList.remove('show');
-                    profileDropdown.setAttribute('aria-hidden', 'true');
-                }
-            });
-        }
-
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', async (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                await this.logout();
-            });
-        }
-    }
 
     /**
      * Sign up with Supabase
@@ -468,7 +375,7 @@ class SupabaseAuthManager {
 
             // Redirect to home
             setTimeout(() => {
-                window.location.href = '/';
+                window.location.href = 'index.html';
             }, 300);
 
             return { success: true };

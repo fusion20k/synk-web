@@ -115,14 +115,10 @@ body::after {
   50% { opacity: 1; transform: scale(1.05) rotate(5deg); }
 }
 
-/* Ensure all content is above the background */
-header {
-  position: fixed;
-  z-index: 1000;
-}
-
+/* Ensure main and footer don't create stacking context issues */
 main, footer {
   position: relative;
+  z-index: 1;
 }
 
 /* Container */
