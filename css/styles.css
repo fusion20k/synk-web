@@ -126,6 +126,7 @@ header, main, footer {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 2rem;
+  background: transparent;
 }
 
 /* Header */
@@ -843,6 +844,7 @@ nav a:hover::after {
 /* Main Content */
 main {
   margin-top: 80px;
+  background: transparent;
 }
 
 /* Hero Section */
