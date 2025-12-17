@@ -116,9 +116,13 @@ body::after {
 }
 
 /* Ensure all content is above the background */
-header, main, footer {
+header {
+  position: fixed;
+  z-index: 1000;
+}
+
+main, footer {
   position: relative;
-  z-index: 1;
 }
 
 /* Container */
