@@ -847,6 +847,11 @@ main {
   background: transparent;
 }
 
+/* All sections should be transparent to show starfield */
+section {
+  background: transparent;
+}
+
 /* Hero Section */
 .hero {
   min-height: 90vh;
