@@ -525,7 +525,7 @@
                             <li>Priority Support</li>
                         </ul>
                         
-                        <button class="plan-button" onclick="handlePurchase('pro')">Start Pro Plan</button>
+                        <button class="plan-button" onclick="handlePurchase('pro')">Upgrade to Pro</button>
                     </div>
                 </div>
             </div>
@@ -770,25 +770,8 @@
                 // User is logged in - proceed to Stripe payment page
                 console.log(`? User ${window.authManager.currentUser.email} initiating ${plan} ${billingType} purchase`);
                 
-                // For pro plan, update the user's plan in Supabase after opening payment
-                if (plan === 'pro') {
-                    window.open(paymentUrl, '_blank');
-                    
-                    // Wait 3 seconds for payment to process, then update plan
-                    setTimeout(async () => {
-                        const updated = await window.authManager.updateUserPlan(
-                            window.authManager.currentUser.email,
-                            'pro',
-                            billingType,
-                            null
-                        );
-                        if (updated) {
-                            console.log('User plan updated to pro in Supabase');
-                        }
-                    }, 3000);
-                } else {
-                    window.open(paymentUrl, '_blank');
-                }
+                // Open Stripe checkout - plan will be updated via webhook after successful payment
+                window.location.href = paymentUrl;
             } else {
                 console.error('Payment link not found for:', plan, billingType);
                 alert('Payment link not available. Please contact support.');
