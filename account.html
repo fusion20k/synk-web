@@ -3,16 +3,361 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Account - Synk</title>
+    <title>Account - Synk</title>
     <link rel="stylesheet" href="css/styles.css?v=8.1">
-    <link rel="stylesheet" href="css/auth.css?v=2.3">
-    <link rel="stylesheet" href="css/account.css?v=2.3">
-    <!-- Supabase Client Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Stripe -->
     <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body {
+            background: #0a0a0a;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        .account-page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+        }
+
+        .page-header {
+            margin-bottom: 50px;
+        }
+
+        .page-header h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin: 0 0 10px 0;
+            background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            color: #888;
+            margin: 0;
+        }
+
+        .account-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .account-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .account-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 30px;
+        }
+
+        .account-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .card-header h2 {
+            font-size: 1.5rem;
+            margin: 0;
+            color: #fff;
+        }
+
+        .plan-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: capitalize;
+        }
+
+        .plan-badge.free {
+            background: #333;
+            color: #fff;
+        }
+
+        .plan-badge.pro {
+            background: linear-gradient(135deg, #ff4500 0%, #dc143c 100%);
+            color: #fff;
+        }
+
+        .plan-details {
+            margin-bottom: 25px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #252525;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #888;
+            font-size: 0.95rem;
+        }
+
+        .detail-value {
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .detail-value.trial {
+            color: #ff4500;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 25px 0;
+        }
+
+        .feature-list li {
+            padding: 10px 0;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-list li::before {
+            content: '✓';
+            color: #10b981;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #ff4500 0%, #dc143c 100%);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 69, 0, 0.3);
+        }
+
+        .cta-button.secondary {
+            background: #2a2a2a;
+            color: #fff;
+        }
+
+        .cta-button.secondary:hover {
+            background: #333;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .cta-button.danger {
+            background: #dc143c;
+        }
+
+        .cta-button.danger:hover {
+            background: #b01030;
+            box-shadow: 0 10px 30px rgba(220, 20, 60, 0.3);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .button-group .cta-button {
+            width: auto;
+            flex: 1;
+        }
+
+        .info-box {
+            background: rgba(255, 69, 0, 0.05);
+            border: 1px solid rgba(255, 69, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .info-box p {
+            margin: 0;
+            color: #ff4500;
+            font-size: 0.95rem;
+        }
+
+        .success-box {
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .success-box p {
+            margin: 0;
+            color: #10b981;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            max-width: 500px;
+            margin: 100px auto;
+            padding: 40px;
+        }
+
+        .modal-header {
+            margin-bottom: 25px;
+        }
+
+        .modal-header h3 {
+            font-size: 1.75rem;
+            margin: 0;
+            color: #fff;
+        }
+
+        .modal-close {
+            float: right;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #888;
+            background: none;
+            border: none;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #fff;
+        }
+
+        .modal-body {
+            margin-bottom: 25px;
+        }
+
+        .modal-body p {
+            color: #aaa;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #ff4500;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            color: #aaa;
+            font-weight: 400;
+        }
+
+        .error-message,
+        .success-message {
+            display: none;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+
+        .error-message {
+            background: rgba(220, 20, 60, 0.1);
+            border: 1px solid rgba(220, 20, 60, 0.3);
+            color: #dc143c;
+        }
+
+        .success-message {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .logout-section {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid #2a2a2a;
+        }
+
+        .logout-section button {
+            background: #2a2a2a;
+            max-width: 300px;
+        }
+    </style>
 </head>
-<body class="auth-body">
+<body>
     <header>
         <div class="header-content">
             <a href="index.html" class="logo">Synk</a>
@@ -22,17 +367,13 @@
                 <a href="pricing.html">Pricing</a>
                 <a href="download.html">Download</a>
                 <a href="contact.html">Contact</a>
-                <a href="privacy.html">Privacy</a>
-                <a href="terms.html">Terms</a>
             </nav>
             
-            <!-- Auth Buttons (shown when logged out) -->
             <div class="auth-buttons" id="auth-buttons">
                 <a href="login.html" class="auth-btn login">Log In</a>
                 <a href="signup.html" class="auth-btn signup">Sign Up</a>
             </div>
             
-            <!-- User Dropdown (shown when logged in) -->
             <div class="user-dropdown" id="user-dropdown">
                 <div class="user-avatar" id="user-avatar">U</div>
                 <div class="dropdown-menu">
@@ -53,513 +394,362 @@
         </div>
     </header>
 
-    <main class="auth-page account-page">
-        <div class="auth-container account-container">
-            <div class="auth-card account-card">
-                <div class="auth-header">
-                    <h1>Manage Your Account</h1>
-                    <p>Update your account information, subscription, and preferences</p>
+    <main class="account-page">
+        <div class="page-header">
+            <h1>Account</h1>
+            <p>Manage your subscription and account settings</p>
+        </div>
+
+        <div id="error-message" class="error-message"></div>
+        <div id="success-message" class="success-message"></div>
+
+        <div class="account-grid">
+            <!-- Current Plan Card -->
+            <div class="account-card">
+                <div class="card-header">
+                    <h2>Current Plan</h2>
+                    <div class="plan-badge free" id="plan-badge">Free</div>
                 </div>
 
-                <!-- Notification Messages -->
-                <div id="error-message" class="error-message" style="display: none;"></div>
-                <div id="success-message" class="success-message" style="display: none;"></div>
-
-                <!-- Account Tabs -->
-                <div class="account-tabs">
-                    <button class="tab-btn active" data-tab="profile">Profile</button>
-                    <button class="tab-btn" data-tab="subscription">Subscription</button>
-                    <button class="tab-btn" data-tab="billing">Billing</button>
-                    <button class="tab-btn" data-tab="security">Security & Settings</button>
-                </div>
-
-                <!-- SECTION 5.1: USER PROFILE -->
-                <div class="tab-content active" id="profile-tab">
-                    <div class="account-section">
-                        <h2>User Profile</h2>
-                        
-                        <div class="profile-info">
-                            <div class="info-row">
-                                <label>Email Address</label>
-                                <div class="info-value" id="profile-email">Loading...</div>
-                                <span class="info-badge" id="email-verification">Unverified</span>
-                            </div>
-
-                            <div class="info-row">
-                                <label>Account Created</label>
-                                <div class="info-value" id="account-creation">Loading...</div>
-                            </div>
-
-                            <div class="info-row">
-                                <label>Account Status</label>
-                                <div class="info-value" id="account-status">Active</div>
-                            </div>
-                        </div>
-
-                        <div class="profile-actions">
-                            <button id="change-password-btn" class="auth-btn primary">
-                                <span class="btn-text">Change Password</span>
-                            </button>
-                            <button id="verify-email-btn" class="auth-btn secondary" style="display: none;">
-                                <span class="btn-text">Verify Email</span>
-                            </button>
-                        </div>
-
-                        <!-- Change Password Modal -->
-                        <div id="password-modal" class="modal" style="display: none;">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h3>Change Password</h3>
-                                    <button class="modal-close" onclick="closePasswordModal()">&times;</button>
-                                </div>
-                                <form id="password-form" class="modal-form">
-                                    <div class="form-group">
-                                        <label for="current-password">Current Password</label>
-                                        <input type="password" id="current-password" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="new-password">New Password</label>
-                                        <input type="password" id="new-password" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="confirm-password">Confirm Password</label>
-                                        <input type="password" id="confirm-password" required>
-                                    </div>
-                                    <div class="modal-actions">
-                                        <button type="button" class="auth-btn secondary" onclick="closePasswordModal()">Cancel</button>
-                                        <button type="submit" class="auth-btn primary">Update Password</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                <div class="plan-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Status</span>
+                        <span class="detail-value" id="plan-status">Active</span>
+                    </div>
+                    <div class="detail-row" id="trial-row" style="display: none;">
+                        <span class="detail-label">Trial</span>
+                        <span class="detail-value trial" id="trial-status">14 days remaining</span>
+                    </div>
+                    <div class="detail-row" id="billing-row" style="display: none;">
+                        <span class="detail-label">Billing</span>
+                        <span class="detail-value" id="billing-info">$14.99/month</span>
+                    </div>
+                    <div class="detail-row" id="next-billing-row" style="display: none;">
+                        <span class="detail-label">Next billing</span>
+                        <span class="detail-value" id="next-billing">Jan 30, 2026</span>
                     </div>
                 </div>
 
-                <!-- SECTION 5.2: SUBSCRIPTION DASHBOARD -->
-                <div class="tab-content" id="subscription-tab">
-                    <div class="account-section">
-                        <h2>Subscription Dashboard</h2>
-                        
-                        <div class="subscription-status">
-                            <div class="status-card">
-                                <div class="status-header">
-                                    <h3>Current Plan</h3>
-                                    <div class="plan-badge" id="plan-badge">Loading...</div>
-                                </div>
-                                <div class="status-details">
-                                    <p><strong>Status:</strong> <span id="plan-status">Active</span></p>
-                                    <p><strong>Next Billing Date:</strong> <span id="next-billing-date">N/A</span></p>
-                                    <p><strong>Billing Amount:</strong> <span id="billing-amount">N/A</span></p>
-                                </div>
-                            </div>
-                        </div>
+                <div id="free-plan-features" style="display: none;">
+                    <ul class="feature-list">
+                        <li>1 Google Calendar</li>
+                        <li>1 Notion Database</li>
+                        <li>Manual Sync</li>
+                    </ul>
+                    <a href="pricing.html" class="cta-button">Upgrade to Pro</a>
+                </div>
 
-                        <div class="features-comparison">
-                            <h3>Plan Features Comparison</h3>
-                            <table class="comparison-table">
-                                <thead>
-                                    <tr>
-                                        <th>Feature</th>
-                                        <th>Free</th>
-                                        <th>Pro</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Google Calendar Sync</td>
-                                        <td>1 Calendar</td>
-                                        <td>Unlimited</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Notion Database Sync</td>
-                                        <td>1 Database</td>
-                                        <td>Unlimited</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Automatic Live Sync</td>
-                                        <td>✗</td>
-                                        <td>✓</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Manual and Incremental Sync</td>
-                                        <td>✓</td>
-                                        <td>✓</td>
-                                    </tr>
-                                    <tr>
-                                        <td>AI Integration</td>
-                                        <td>✗</td>
-                                        <td>✓ (Coming Soon)</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Support</td>
-                                        <td>—</td>
-                                        <td>Priority Support</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                <div id="pro-plan-features" style="display: none;">
+                    <ul class="feature-list">
+                        <li>Unlimited Calendars</li>
+                        <li>Unlimited Databases</li>
+                        <li>Automatic & Incremental Sync</li>
+                        <li>Priority Support</li>
+                    </ul>
+                    <button class="cta-button secondary" id="manage-plan-btn">Manage Subscription</button>
+                </div>
+            </div>
 
-                        <div class="subscription-actions">
-                            <button id="manage-subscription-btn" class="auth-btn primary">
-                                <span class="btn-text">Manage Subscription</span>
-                            </button>
-                        </div>
+            <!-- Account Info Card -->
+            <div class="account-card">
+                <div class="card-header">
+                    <h2>Account Info</h2>
+                </div>
+
+                <div class="plan-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Email</span>
+                        <span class="detail-value" id="account-email">Loading...</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Account created</span>
+                        <span class="detail-value" id="account-created">Loading...</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Customer ID</span>
+                        <span class="detail-value" id="customer-id">—</span>
                     </div>
                 </div>
 
-                <!-- SECTION 5.3: BILLING MANAGEMENT -->
-                <div class="tab-content" id="billing-tab">
-                    <div class="account-section">
-                        <h2>Billing Management</h2>
-                        
-                        <div class="billing-portal">
-                            <div class="portal-info">
-                                <p>Access your full billing history, payment methods, and invoices through our secure Stripe Customer Portal.</p>
-                            </div>
-                            <button id="stripe-portal-btn" class="auth-btn primary">
-                                <span class="btn-text">Open Stripe Billing Portal</span>
-                            </button>
-                        </div>
-
-                        <div class="payment-methods">
-                            <h3>Payment Method</h3>
-                            <div id="payment-info" class="payment-info">
-                                <p>Loading payment information...</p>
-                            </div>
-                            <div class="payment-actions">
-                                <button id="update-payment-btn" class="auth-btn secondary" style="display: none;">
-                                    <span class="btn-text">Update Payment Method</span>
-                                </button>
-                                <button id="remove-payment-btn" class="auth-btn secondary" style="display: none;">
-                                    <span class="btn-text">Remove Payment Method</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="billing-history">
-                            <h3>Billing History</h3>
-                            <div id="invoices-list" class="invoices-list">
-                                <p>Loading billing history...</p>
-                            </div>
-                        </div>
-
-                        <div class="cancellation-section">
-                            <h3>Subscription Management</h3>
-                            <p>Need to cancel your subscription?</p>
-                            <button id="cancel-subscription-btn" class="auth-btn danger">
-                                <span class="btn-text">Cancel Subscription</span>
-                            </button>
-                        </div>
-
-                        <!-- Cancel Subscription Modal -->
-                        <div id="cancel-modal" class="modal" style="display: none;">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h3>Cancel Subscription</h3>
-                                    <button class="modal-close" onclick="closeCancelModal()">&times;</button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>We're sorry to see you go.</p>
-                                    <p style="margin-top: 20px; color: #999;">By canceling, you'll lose access to premium features at the end of your current billing period.</p>
-                                </div>
-                                <div class="modal-actions">
-                                    <button type="button" class="auth-btn secondary" onclick="closeCancelModal()">Keep Subscription</button>
-                                    <button type="button" id="confirm-cancel-btn" class="auth-btn danger">Confirm Cancellation</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SECTION 5.4: ACCOUNT CONTROLS -->
-                <div class="tab-content" id="security-tab">
-                    <div class="account-section">
-                        <h2>Account Controls</h2>
-
-                        <div class="security-options">
-                            <div class="option-card">
-                                <h3>Notification Preferences</h3>
-                                <p>Manage how you receive notifications about sync updates and billing.</p>
-                                <button id="notification-prefs-btn" class="auth-btn secondary">
-                                    <span class="btn-text">Manage Notifications</span>
-                                </button>
-                            </div>
-
-                            <div class="option-card">
-                                <h3>Security Settings</h3>
-                                <p>Manage two-factor authentication and active sessions.</p>
-                                <button id="security-settings-btn" class="auth-btn secondary">
-                                    <span class="btn-text">Security Settings</span>
-                                </button>
-                            </div>
-
-                            <div class="option-card">
-                                <h3>Data Export</h3>
-                                <p>Download a copy of all your account data and sync history.</p>
-                                <button id="export-data-btn" class="auth-btn secondary">
-                                    <span class="btn-text">Export My Data</span>
-                                </button>
-                            </div>
-
-                            <div class="option-card danger">
-                                <h3>Delete Account</h3>
-                                <p>Permanently delete your account and all associated data.</p>
-                                <button id="delete-account-btn" class="auth-btn danger">
-                                    <span class="btn-text">Delete Account</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Delete Account Modal -->
-                        <div id="delete-modal" class="modal" style="display: none;">
-                            <div class="modal-content danger">
-                                <div class="modal-header">
-                                    <h3>Delete Account</h3>
-                                    <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="warning-box">
-                                        <p><strong>⚠️ WARNING: This action cannot be undone!</strong></p>
-                                        <p>Deleting your account will:</p>
-                                        <ul>
-                                            <li>Permanently delete all your account data</li>
-                                            <li>Cancel your subscription immediately</li>
-                                            <li>Remove all sync history</li>
-                                            <li>Revoke all OAuth tokens</li>
-                                        </ul>
-                                    </div>
-                                    <div class="confirmation-steps">
-                                        <div class="step">
-                                            <input type="checkbox" id="confirm-understand" class="confirmation-checkbox">
-                                            <label for="confirm-understand">I understand this action cannot be reversed</label>
-                                        </div>
-                                        <div class="step">
-                                            <input type="checkbox" id="confirm-delete" class="confirmation-checkbox">
-                                            <label for="confirm-delete">I want to permanently delete my account</label>
-                                        </div>
-                                        <div class="step">
-                                            <label>Type your email to confirm:</label>
-                                            <input type="email" id="delete-confirm-email" placeholder="your@email.com" class="form-input">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-actions">
-                                    <button type="button" class="auth-btn secondary" onclick="closeDeleteModal()">Cancel</button>
-                                    <button type="button" id="confirm-delete-btn" class="auth-btn danger" disabled>Permanently Delete Account</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Account Actions Footer -->
-                <div class="account-actions-footer">
-                    <button id="logout-account-btn" class="auth-btn logout-btn">
-                        <span class="btn-text">Log Out</span>
-                    </button>
+                <div class="button-group" style="margin-top: 25px;">
+                    <button class="cta-button secondary" id="change-password-btn">Change Password</button>
                 </div>
             </div>
         </div>
+
+        <!-- Billing Card -->
+        <div class="account-card full-width" id="billing-card" style="display: none;">
+            <div class="card-header">
+                <h2>Billing & Invoices</h2>
+            </div>
+
+            <div class="info-box">
+                <p>Manage your payment methods, view invoices, and update billing information through Stripe's secure portal.</p>
+            </div>
+
+            <div class="button-group">
+                <button class="cta-button secondary" id="stripe-portal-btn">Open Billing Portal</button>
+                <button class="cta-button danger" id="cancel-subscription-btn">Cancel Subscription</button>
+            </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="account-card full-width">
+            <div class="card-header">
+                <h2>Danger Zone</h2>
+            </div>
+
+            <div class="plan-details">
+                <div class="detail-row">
+                    <div>
+                        <div class="detail-value" style="margin-bottom: 5px;">Delete Account</div>
+                        <div class="detail-label">Permanently delete your account and all data</div>
+                    </div>
+                    <button class="cta-button danger" id="delete-account-btn" style="width: auto;">Delete Account</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logout Section -->
+        <div class="logout-section">
+            <button class="cta-button" id="logout-account-btn">Log Out</button>
+        </div>
     </main>
 
-    <!-- Account Management Script -->
-    <script>
-        let userEmail = '';
-        let supabaseClient = null;
-        const STRIPE_PORTAL_URL = 'https://billing.stripe.com/p/login/7sYaEQaRD57SghT5hSbMQ00';
+    <!-- Change Password Modal -->
+    <div id="password-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closePasswordModal()">&times;</button>
+                <h3>Change Password</h3>
+            </div>
+            <form id="password-form">
+                <div class="form-group">
+                    <label for="current-password">Current Password</label>
+                    <input type="password" id="current-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="new-password">New Password</label>
+                    <input type="password" id="new-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm New Password</label>
+                    <input type="password" id="confirm-password" required>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="cta-button secondary" onclick="closePasswordModal()">Cancel</button>
+                    <button type="submit" class="cta-button">Update Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        function initializeSupabase() {
-            const SUPABASE_URL = 'https://nbolvclqiaqrupxknvlu.supabase.co';
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ib2x2Y2xxaWFxcnVweGtudmx1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ4MjgsImV4cCI6MjA3MTIzMDgyOH0.yz33_9PEZbC2ew_2lQyxb6B_cQruSANVrwM_4h-afg8';
-            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    <!-- Cancel Subscription Modal -->
+    <div id="cancel-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closeCancelModal()">&times;</button>
+                <h3>Cancel Subscription</h3>
+            </div>
+            <div class="modal-body">
+                <p>We're sorry to see you go!</p>
+                <p>Your Pro features will remain active until the end of your current billing period. After that, your account will automatically switch to the Free plan.</p>
+            </div>
+            <div class="button-group">
+                <button type="button" class="cta-button secondary" onclick="closeCancelModal()">Keep Subscription</button>
+                <button type="button" class="cta-button danger" id="confirm-cancel-btn">Confirm Cancellation</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Account Modal -->
+    <div id="delete-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+                <h3>Delete Account</h3>
+            </div>
+            <div class="modal-body">
+                <p style="color: #dc143c; font-weight: 600;">This action cannot be undone!</p>
+                <p>Deleting your account will permanently remove all your data, sync configurations, and cancel any active subscriptions.</p>
+                
+                <div class="form-group" style="margin-top: 25px;">
+                    <label for="delete-confirm-email">Type your email to confirm</label>
+                    <input type="email" id="delete-confirm-email" placeholder="your@email.com">
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="confirm-understand">
+                    <label for="confirm-understand">I understand this action is permanent</label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="confirm-delete">
+                    <label for="confirm-delete">I want to delete my account</label>
+                </div>
+            </div>
+            <div class="button-group">
+                <button type="button" class="cta-button secondary" onclick="closeDeleteModal()">Cancel</button>
+                <button type="button" class="cta-button danger" id="confirm-delete-btn" disabled>Delete My Account</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Synk</h3>
+                    <p>Seamless Notion to Google Calendar sync</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Product</h4>
+                    <a href="about.html">How It Works</a>
+                    <a href="pricing.html">Pricing</a>
+                    <a href="download.html">Download</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <a href="contact.html">Contact</a>
+                    <a href="privacy.html">Privacy</a>
+                    <a href="terms.html">Terms</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Synk. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const SUPABASE_URL = 'https://quwuokijucbqnvfsjyzk.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF1d3Vva2lqdWNicW52ZnNqeXprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQzODY0MTQsImV4cCI6MjA0OTk2MjQxNH0.dqDt9yuLi-Cq3KqaL5A5OKdFhT-tYojPbkv45DY9vGQ';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const STRIPE_PORTAL_URL = 'https://billing.stripe.com/p/login/test_3cs6pO8pX0yTbDi000';
+
+        let userEmail = localStorage.getItem('synk_user_email');
+
+        async function checkAuth() {
+            const token = localStorage.getItem('synk_auth_token');
+            if (!token || !userEmail) {
+                window.location.href = 'login.html';
+                return false;
+            }
+            return true;
         }
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Initialize Supabase first
-            initializeSupabase();
-
-            // Check if user is logged in by verifying Supabase session
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (!session || !session.user) {
-                window.location.href = 'login.html';
-                return;
-            }
-
-            // Get user email from session
-            userEmail = session.user.email;
-
-            // Load user data
-            await loadUserProfile();
-            await loadSubscriptionData();
-            await loadBillingData();
-            await loadPaymentInfo();
-
-            // Setup event listeners
-            setupTabNavigation();
-            setupButtonListeners();
-        });
-
-        async function loadUserProfile() {
+        async function loadUserData() {
             try {
-                document.getElementById('profile-email').textContent = userEmail;
-
-                // Load user data from Supabase
                 const { data, error } = await supabaseClient
                     .from('users')
-                    .select('created_at, email_verified')
+                    .select('*')
                     .eq('email', userEmail)
                     .single();
 
-                if (data) {
-                    const createdDate = new Date(data.created_at).toLocaleDateString();
-                    document.getElementById('account-creation').textContent = createdDate;
+                if (error) throw error;
 
-                    if (data.email_verified) {
-                        document.getElementById('email-verification').textContent = 'Verified';
-                        document.getElementById('email-verification').classList.add('verified');
-                    } else {
-                        document.getElementById('verify-email-btn').style.display = 'block';
-                    }
-                } else if (error) {
-                    console.warn('Could not load user profile from database:', error.message);
-                    // Set default values
-                    document.getElementById('account-creation').textContent = 'N/A';
-                    document.getElementById('email-verification').textContent = 'Unverified';
-                }
-            } catch (error) {
-                console.error('Error loading profile:', error);
-                // Set default values instead of showing error
-                document.getElementById('account-creation').textContent = 'N/A';
-                document.getElementById('email-verification').textContent = 'Unverified';
-            }
-        }
-
-        async function loadSubscriptionData() {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('subscriptions')
-                    .select('plan, status, current_period_end, price, billing_cycle')
-                    .eq('user_email', userEmail)
-                    .single();
-
-                if (data) {
-                    const plan = data.plan || 'N/A';
-                    document.getElementById('plan-badge').textContent = plan;
-                    document.getElementById('plan-status').textContent = data.status || 'N/A';
-
-                    // Set next billing date
-                    if (data.current_period_end) {
-                        const billingDate = new Date(data.current_period_end).toLocaleDateString();
-                        document.getElementById('next-billing-date').textContent = billingDate;
-                    } else {
-                        document.getElementById('next-billing-date').textContent = 'N/A';
-                    }
-
-                    // Set billing amount from Supabase data
-                    if (data.price) {
-                        const price = (data.price / 100).toFixed(2);
-                        const cycle = data.billing_cycle === 'annual' ? '/year' : '/month';
-                        document.getElementById('billing-amount').textContent = `$${price}${cycle}`;
-                    } else {
-                        document.getElementById('billing-amount').textContent = 'N/A';
-                    }
-                } else if (error) {
-                    console.warn('Could not load subscription data:', error.message);
-                    // Set N/A for unknown values
-                    document.getElementById('plan-badge').textContent = 'N/A';
-                    document.getElementById('plan-status').textContent = 'N/A';
-                    document.getElementById('billing-amount').textContent = 'N/A';
-                    document.getElementById('next-billing-date').textContent = 'N/A';
-                }
-            } catch (error) {
-                console.error('Error loading subscription:', error);
-                // Set N/A for unknown values
-                document.getElementById('plan-badge').textContent = 'N/A';
-                document.getElementById('plan-status').textContent = 'N/A';
-                document.getElementById('billing-amount').textContent = 'N/A';
-                document.getElementById('next-billing-date').textContent = 'N/A';
-            }
-        }
-
-        async function loadBillingData() {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('invoices')
-                    .select('*')
-                    .eq('user_email', userEmail)
-                    .order('created_at', { ascending: false })
-                    .limit(10);
-
-                if (data && data.length > 0) {
-                    const invoicesList = document.getElementById('invoices-list');
-                    invoicesList.innerHTML = '';
-                    
-                    data.forEach(invoice => {
-                        const date = new Date(invoice.created_at).toLocaleDateString();
-                        const amount = (invoice.amount / 100).toFixed(2);
-                        const row = `
-                            <div class="invoice-item">
-                                <div class="invoice-info">
-                                    <p><strong>${date}</strong></p>
-                                    <p>${invoice.description || 'Subscription'}</p>
-                                </div>
-                                <div class="invoice-amount">$${amount}</div>
-                                <a href="${invoice.invoice_url}" target="_blank" class="download-link">Download</a>
-                            </div>
-                        `;
-                        invoicesList.innerHTML += row;
-                    });
-                } else {
-                    document.getElementById('invoices-list').innerHTML = '<p>No billing history available yet.</p>';
-                }
-            } catch (error) {
-                console.error('Error loading billing data:', error);
-                // Set fallback message instead of leaving "Loading..."
-                document.getElementById('invoices-list').innerHTML = '<p>No billing history available yet.</p>';
-            }
-        }
-
-        async function loadPaymentInfo() {
-            try {
-                const paymentInfo = document.getElementById('payment-info');
-                // Fetch payment method from Stripe or set default
-                paymentInfo.innerHTML = '<p>Manage your payment methods in the Stripe Portal below.</p>';
-            } catch (error) {
-                console.error('Error loading payment info:', error);
-                const paymentInfo = document.getElementById('payment-info');
-                paymentInfo.innerHTML = '<p>Manage your payment methods in the Stripe Portal below.</p>';
-            }
-        }
-
-        function setupTabNavigation() {
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const tabName = btn.dataset.tab;
-                    
-                    // Hide all tabs
-                    document.querySelectorAll('.tab-content').forEach(tab => {
-                        tab.classList.remove('active');
-                    });
-                    
-                    // Remove active class from all buttons
-                    document.querySelectorAll('.tab-btn').forEach(b => {
-                        b.classList.remove('active');
-                    });
-                    
-                    // Show selected tab and mark button as active
-                    document.getElementById(tabName + '-tab').classList.add('active');
-                    btn.classList.add('active');
+                document.getElementById('account-email').textContent = data.email;
+                document.getElementById('account-created').textContent = new Date(data.created_at).toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
                 });
-            });
+
+                if (data.stripe_customer_id) {
+                    document.getElementById('customer-id').textContent = data.stripe_customer_id.substring(0, 20) + '...';
+                }
+
+                const plan = data.plan || 'free';
+                const isTrial = data.is_trial === true;
+                const billingPeriod = data.billing_period;
+
+                const planBadge = document.getElementById('plan-badge');
+                planBadge.textContent = plan.charAt(0).toUpperCase() + plan.slice(1);
+                planBadge.className = 'plan-badge ' + plan;
+
+                if (plan === 'free') {
+                    document.getElementById('free-plan-features').style.display = 'block';
+                    document.getElementById('pro-plan-features').style.display = 'none';
+                } else {
+                    document.getElementById('free-plan-features').style.display = 'none';
+                    document.getElementById('pro-plan-features').style.display = 'block';
+                    document.getElementById('billing-card').style.display = 'block';
+
+                    if (isTrial) {
+                        document.getElementById('trial-row').style.display = 'flex';
+                        document.getElementById('trial-status').textContent = 'Active (14-day trial)';
+                    }
+
+                    if (billingPeriod) {
+                        document.getElementById('billing-row').style.display = 'flex';
+                        const amount = billingPeriod === 'yearly' ? '$149.99/year' : '$14.99/month';
+                        document.getElementById('billing-info').textContent = amount;
+                        document.getElementById('next-billing-row').style.display = 'flex';
+                    }
+                }
+
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                showErrorMessage('Failed to load account information');
+            }
         }
 
-        function setupButtonListeners() {
-            // Logout
-            document.getElementById('logout-account-btn').addEventListener('click', () => {
-                handleLogout();
-            });
+        function showErrorMessage(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => errorDiv.style.display = 'none', 5000);
+        }
 
-            // Change Password
+        function showSuccessMessage(message) {
+            const successDiv = document.getElementById('success-message');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => successDiv.style.display = 'none', 5000);
+        }
+
+        function closePasswordModal() {
+            document.getElementById('password-modal').style.display = 'none';
+            document.getElementById('password-form').reset();
+        }
+
+        function closeCancelModal() {
+            document.getElementById('cancel-modal').style.display = 'none';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('delete-modal').style.display = 'none';
+            document.getElementById('delete-confirm-email').value = '';
+            document.getElementById('confirm-understand').checked = false;
+            document.getElementById('confirm-delete').checked = false;
+            document.getElementById('confirm-delete-btn').disabled = true;
+        }
+
+        function checkDeleteConfirmation() {
+            const email = document.getElementById('delete-confirm-email').value;
+            const understand = document.getElementById('confirm-understand').checked;
+            const confirmDelete = document.getElementById('confirm-delete').checked;
+            const btn = document.getElementById('confirm-delete-btn');
+            
+            btn.disabled = !(email === userEmail && understand && confirmDelete);
+        }
+
+        async function handleLogout() {
+            localStorage.removeItem('synk_auth_token');
+            localStorage.removeItem('synk_user_email');
+            sessionStorage.clear();
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!await checkAuth()) return;
+
+            await loadUserData();
+
+            document.getElementById('logout-account-btn').addEventListener('click', handleLogout);
+            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+
             document.getElementById('change-password-btn').addEventListener('click', () => {
                 document.getElementById('password-modal').style.display = 'block';
             });
@@ -591,7 +781,6 @@
                     if (response.ok) {
                         showSuccessMessage('Password updated successfully');
                         closePasswordModal();
-                        document.getElementById('password-form').reset();
                     } else {
                         showErrorMessage('Failed to update password');
                     }
@@ -601,18 +790,15 @@
                 }
             });
 
-            // Stripe Portal
-            document.getElementById('stripe-portal-btn').addEventListener('click', () => {
+            document.getElementById('stripe-portal-btn')?.addEventListener('click', () => {
                 window.open(STRIPE_PORTAL_URL, '_blank');
             });
 
-            // Manage Subscription
-            document.getElementById('manage-subscription-btn').addEventListener('click', () => {
+            document.getElementById('manage-plan-btn')?.addEventListener('click', () => {
                 window.open(STRIPE_PORTAL_URL, '_blank');
             });
 
-            // Cancel Subscription
-            document.getElementById('cancel-subscription-btn').addEventListener('click', () => {
+            document.getElementById('cancel-subscription-btn')?.addEventListener('click', () => {
                 document.getElementById('cancel-modal').style.display = 'block';
             });
 
@@ -629,57 +815,23 @@
                     });
 
                     if (response.ok) {
-                        const data = await response.json();
-                        
-                        // Show success message
-                        showSuccessMessage('✅ Subscription cancelled successfully!');
-                        
-                        // Close modal and reload after showing message
+                        showSuccessMessage('Subscription cancelled successfully');
                         closeCancelModal();
-                        setTimeout(() => location.reload(), 3000);
+                        setTimeout(() => location.reload(), 2000);
                     } else {
                         const errorData = await response.json();
                         showErrorMessage(errorData.error || 'Failed to cancel subscription');
                     }
                 } catch (error) {
                     console.error('Error cancelling subscription:', error);
-                    showErrorMessage('Error cancelling subscription: ' + error.message);
+                    showErrorMessage('Error cancelling subscription');
                 }
             });
 
-            // Data Export
-            document.getElementById('export-data-btn').addEventListener('click', async () => {
-                try {
-                    const authToken = localStorage.getItem('synk_auth_token');
-                    const response = await fetch('https://synk-web.onrender.com/api/export-data', {
-                        headers: {
-                            'Authorization': `Bearer ${authToken}`
-                        }
-                    });
-
-                    if (response.ok) {
-                        const blob = await response.blob();
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `synk-data-${userEmail}-${Date.now()}.json`;
-                        a.click();
-                        window.URL.revokeObjectURL(url);
-                    } else {
-                        showErrorMessage('Failed to export data');
-                    }
-                } catch (error) {
-                    console.error('Error exporting data:', error);
-                    showErrorMessage('Error exporting data');
-                }
-            });
-
-            // Delete Account
             document.getElementById('delete-account-btn').addEventListener('click', () => {
                 document.getElementById('delete-modal').style.display = 'block';
             });
 
-            // Delete account confirmation
             document.getElementById('delete-confirm-email').addEventListener('input', checkDeleteConfirmation);
             document.getElementById('confirm-understand').addEventListener('change', checkDeleteConfirmation);
             document.getElementById('confirm-delete').addEventListener('change', checkDeleteConfirmation);
@@ -699,96 +851,31 @@
                     if (response.ok) {
                         showSuccessMessage('Account deleted. Logging out...');
                         
-                        // Clear all session data
                         localStorage.removeItem('synk_auth_token');
                         localStorage.removeItem('synk_user_email');
                         sessionStorage.clear();
-                        
-                        // Sign out from Supabase
                         await supabaseClient.auth.signOut();
                         
-                        // Redirect to home after 1.5 seconds
-                        setTimeout(() => {
-                            window.location.href = 'index.html';
-                        }, 1500);
+                        setTimeout(() => window.location.href = 'index.html', 1500);
                     } else {
                         const errorData = await response.json();
                         showErrorMessage(errorData.error || 'Failed to delete account');
                     }
                 } catch (error) {
                     console.error('Error deleting account:', error);
-                    showErrorMessage('Error deleting account: ' + error.message);
+                    showErrorMessage('Error deleting account');
                 }
             });
+        });
 
-            // Notification Preferences
-            document.getElementById('notification-prefs-btn').addEventListener('click', () => {
-                showInfoMessage('Notification preferences will be available soon');
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
             });
-
-            // Security Settings
-            document.getElementById('security-settings-btn').addEventListener('click', () => {
-                showInfoMessage('Security settings will be available soon');
-            });
-        }
-
-
-
-        function checkDeleteConfirmation() {
-            const email = document.getElementById('delete-confirm-email').value;
-            const confirmUnderstand = document.getElementById('confirm-understand').checked;
-            const confirmDelete = document.getElementById('confirm-delete').checked;
-            const btn = document.getElementById('confirm-delete-btn');
-
-            btn.disabled = !(email === userEmail && confirmUnderstand && confirmDelete);
-        }
-
-        function closePasswordModal() {
-            document.getElementById('password-modal').style.display = 'none';
-        }
-
-        function closeCancelModal() {
-            document.getElementById('cancel-modal').style.display = 'none';
-        }
-
-        function closeDeleteModal() {
-            document.getElementById('delete-modal').style.display = 'none';
-            document.getElementById('delete-confirm-email').value = '';
-            document.getElementById('confirm-understand').checked = false;
-            document.getElementById('confirm-delete').checked = false;
-        }
-
-        function showErrorMessage(message) {
-            const errorDiv = document.getElementById('error-message');
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
-            setTimeout(() => errorDiv.style.display = 'none', 5000);
-        }
-
-        function showSuccessMessage(message) {
-            const successDiv = document.getElementById('success-message');
-            successDiv.textContent = message;
-            successDiv.style.display = 'block';
-            setTimeout(() => successDiv.style.display = 'none', 5000);
-        }
-
-        function showInfoMessage(message) {
-            const successDiv = document.getElementById('success-message');
-            successDiv.textContent = message;
-            successDiv.style.display = 'block';
-            setTimeout(() => successDiv.style.display = 'none', 5000);
-        }
-
-        // Close modals when clicking outside
-        window.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal')) {
-                e.target.style.display = 'none';
-            }
         });
     </script>
-    <script src="js/supabase-auth-manager.js?v=1.1"></script>
-    <script src="js/scripts.js?v=2.0"></script>
+    <script src="js/header.js"></script>
 </body>
 </html>
-
-
