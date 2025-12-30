@@ -124,12 +124,24 @@
         
         .pricing-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 3rem;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
             margin-top: 4rem;
-            max-width: 1200px;
+            max-width: 1400px;
             margin-left: auto;
             margin-right: auto;
+        }
+        
+        @media (max-width: 1200px) {
+            .pricing-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
         }
         
         .pricing-card {
@@ -529,14 +541,15 @@
                     </div>
 
                     <!-- Enterprise Plan -->
-                    <div class="pricing-card">
+                    <div class="pricing-card" style="display: flex; flex-direction: column;">
                         <h3 class="plan-name">Need More?</h3>
-                        <div style="min-height: 80px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
-                            <div class="plan-price" style="font-size: 1.5rem; color: var(--text-primary); text-align: center; line-height: 1.4;">Custom Pricing</div>
+                        <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
+                            <div class="plan-price" style="font-size: 2.5rem; color: var(--text-primary);">Custom</div>
                         </div>
-                        <p class="plan-description" style="margin-bottom: 3rem;">For teams, enterprises, or custom needs, contact us. We'll build a plan that fits your workflow.</p>
+                        <div class="plan-period">pricing</div>
+                        <p class="plan-description" style="flex: 1; padding: 2rem 0;">For teams, enterprises, or custom needs, contact us. We'll build a plan that fits your workflow.</p>
                         
-                        <a href="contact.html" class="plan-button secondary" style="display: inline-block; width: 100%; text-align: center; text-decoration: none; margin-top: auto;">Contact Us</a>
+                        <a href="contact.html" class="plan-button secondary" style="display: inline-block; width: 100%; text-align: center; text-decoration: none;">Contact Us</a>
                     </div>
                 </div>
             </div>
