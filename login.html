@@ -8,58 +8,10 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
-            background: transparent;
+            background: #0a0a0a;
             margin: 0;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            position: relative;
-            overflow-x: hidden;
         }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(3px 3px at 12% 18%, white, transparent),
-                radial-gradient(3px 3px at 28% 32%, white, transparent),
-                radial-gradient(3px 3px at 58% 42%, white, transparent),
-                radial-gradient(3px 3px at 72% 58%, white, transparent),
-                radial-gradient(3px 3px at 18% 68%, white, transparent),
-                radial-gradient(3px 3px at 82% 78%, white, transparent),
-                radial-gradient(2px 2px at 8% 10%, rgba(255, 255, 255, 0.9), transparent),
-                radial-gradient(2px 2px at 38% 15%, rgba(255, 255, 255, 0.9), transparent),
-                radial-gradient(1px 1px at 5% 8%, rgba(255, 255, 255, 0.8), transparent),
-                radial-gradient(1px 1px at 32% 5%, rgba(255, 255, 255, 0.7), transparent),
-                linear-gradient(180deg, #0a0a0a 0%, #1a0f12 50%, #0a0a0a 100%);
-            background-size: 100% 100%;
-            z-index: 0;
-            pointer-events: none;
-            animation: starfield 12s ease-in-out infinite;
-        }
-
-        @keyframes starfield {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
-        }
-
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(ellipse at 30% 20%, rgba(255, 69, 0, 0.15) 0%, transparent 45%),
-                radial-gradient(ellipse at 70% 80%, rgba(255, 101, 0, 0.12) 0%, transparent 45%);
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        header, main { position: relative; z-index: 1; }
 
         .login-page {
             max-width: 550px;
@@ -362,8 +314,8 @@
     </main>
 
     <script>
-        const SUPABASE_URL = 'https://quwuokijucbqnvfsjyzk.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF1d3Vva2lqdWNicW52ZnNqeXprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQzODY0MTQsImV4cCI6MjA0OTk2MjQxNH0.dqDt9yuLi-Cq3KqaL5A5OKdFhT-tYojPbkv45DY9vGQ';
+        const SUPABASE_URL = 'https://nbolvclqiaqrupxknvlu.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ib2x2Y2xxaWFxcnVweGtudmx1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ4MjgsImV4cCI6MjA3MTIzMDgyOH0.yz33_9PEZbC2ew_2lQyxb6B_cQruSANVrwM_4h-afg8';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         document.getElementById('google-login-btn').addEventListener('click', async function() {
