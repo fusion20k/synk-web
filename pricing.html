@@ -479,7 +479,7 @@
                             <input type="checkbox" id="billing-toggle">
                             <span class="toggle-slider"></span>
                         </label>
-                        <span class="billing-option" id="yearly-label">Yearly <span style="color: #ff4500; font-size: 0.8rem;">(Save 20%)</span></span>
+                        <span class="billing-option" id="yearly-label">Yearly <span style="color: #ff4500; font-size: 0.8rem;">(Save $30)</span></span>
                     </div>
                 </div>
                 
@@ -496,7 +496,7 @@
                         <ul class="plan-features">
                             <li>1 Google Calendar Syncing</li>
                             <li>1 Notion Database Syncing</li>
-                            <li>Manual & Automatic Sync</li>
+                            <li>Manual Sync</li>
                         </ul>
                         
                         <button class="plan-button secondary" onclick="handlePurchase('free')">Get Started Free</button>
@@ -506,10 +506,10 @@
                     <div class="pricing-card featured">
                         <h3 class="plan-name">Pro</h3>
                         <div id="pro-pricing-display" style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 0.5rem;">
-                            <div class="plan-price" id="pro-price" style="font-size: 3.5rem; color: #ff4500;">$4.99</div>
+                            <div class="plan-price" id="pro-price" style="font-size: 3.5rem; color: #ff4500;">$14.99</div>
                         </div>
                         <div class="plan-period" id="pro-period">per month</div>
-                        <div class="yearly-savings" id="pro-savings" style="display: none; color: #ff4500; font-size: 0.9rem; margin-top: 5px;">Save $10 per year</div>
+                        <div class="yearly-savings" id="pro-savings" style="display: none; color: #ff4500; font-size: 0.9rem; margin-top: 5px;">Save $30 per year</div>
                         <p class="plan-description">Perfect for individuals and small teams who need reliable sync.</p>
                         
                         <div style="background: rgba(255, 69, 0, 0.1); border: 1px solid rgba(255, 69, 0, 0.3); border-radius: 8px; padding: 12px; margin: 20px 0; text-align: center;">
@@ -546,7 +546,7 @@
                             <span class="faq-toggle">→</span>
                         </div>
                         <div class="faq-answer">
-                            Free plan lets you sync 1 Google Calendar and 1 Notion database with manual and automatic sync. Pro plan includes unlimited connections, all sync modes (manual, automatic, incremental), and upcoming AI integration for just $4.99/month.
+                            Free plan lets you sync 1 Google Calendar and 1 Notion database with manual sync. Pro plan includes unlimited connections, all sync modes (manual, automatic, incremental), and upcoming AI integration for $14.99/month.
                         </div>
                     </div>
                     
@@ -556,7 +556,7 @@
                             <span class="faq-toggle">→</span>
                         </div>
                         <div class="faq-answer">
-                            You can use the Free plan to test Synk features including automatic sync. When you're ready for unlimited connections and incremental sync, upgrade to Pro at any time.
+                            You can use the Free plan to test Synk features with manual sync. When you're ready for unlimited connections, automatic sync, and incremental sync, upgrade to Pro at any time.
                         </div>
                     </div>
                     
@@ -566,7 +566,7 @@
                             <span class="faq-toggle">→</span>
                         </div>
                         <div class="faq-answer">
-                            Free plan costs nothing and stays free forever. Pro plan is $4.99/month with a 20% discount if you pay annually ($49.99/year). You can cancel anytime, no commitment required.
+                            Free plan costs nothing and stays free forever. Pro plan is $14.99/month or $149.99/year (save $30 annually). You can cancel anytime, no commitment required.
                         </div>
                     </div>
                     
@@ -654,8 +654,8 @@
                 yearly: 0
             },
             pro: {
-                monthly: 4.99,
-                yearly: 49.99 // $4.99 * 10 months (20% annual discount)
+                monthly: 14.99,
+                yearly: 149.99
             }
         };
         
@@ -666,8 +666,8 @@
                 yearly: 'https://buy.stripe.com/3cI28k0cZeIs3v7cKkbMQ0e'
             },
             pro: {
-                monthly: 'https://buy.stripe.com/7sY4gs8Jvasc5Df6lWbMQ0b',
-                yearly: 'https://buy.stripe.com/14AcMY9Nz9o89TveSsbMQ0c'
+                monthly: 'https://buy.stripe.com/28E5kw8JvdEo3v7dOobMQ0f',
+                yearly: 'https://buy.stripe.com/cNi8wIgbXbwg4zb8u4bMQ0g'
             }
         };
         
