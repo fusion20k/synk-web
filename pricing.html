@@ -510,9 +510,6 @@
                         </div>
                         <div class="plan-period" id="pro-period">per month</div>
                         <div class="yearly-savings" id="pro-savings" style="display: none; color: #ff4500; font-size: 0.9rem; margin-top: 5px;">Save $30 per year</div>
-                        <div id="trial-notice" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 10px; margin: 15px 0; font-size: 0.95rem; color: #10b981; font-weight: 600;">
-                            14-day free trial • Cancel anytime
-                        </div>
                         <p class="plan-description">Perfect for individuals and small teams who need reliable sync.</p>
                         
                         <div style="background: rgba(255, 69, 0, 0.1); border: 1px solid rgba(255, 69, 0, 0.3); border-radius: 8px; padding: 12px; margin: 20px 0; text-align: center;">
@@ -700,7 +697,6 @@
             const proPrice = document.getElementById('pro-price');
             const proPeriod = document.getElementById('pro-period');
             const proSavings = document.getElementById('pro-savings');
-            const trialNotice = document.getElementById('trial-notice');
             const proButton = document.querySelector('.pricing-card.featured .plan-button');
             
             if (isYearly) {
@@ -710,7 +706,6 @@
                 proPrice.style.fontSize = '3.5rem';
                 proPeriod.textContent = 'per year';
                 proSavings.style.display = 'block';
-                trialNotice.style.display = 'none';
                 proButton.textContent = 'Upgrade to Pro';
             } else {
                 // MONTHLY: Show monthly pricing
@@ -719,7 +714,6 @@
                 proPrice.style.fontSize = '3.5rem';
                 proPeriod.textContent = 'per month';
                 proSavings.style.display = 'none';
-                trialNotice.style.display = 'block';
                 proButton.textContent = 'Start 14-Day Free Trial';
             }
         }
