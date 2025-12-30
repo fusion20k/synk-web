@@ -49,7 +49,7 @@ body.auth-body::before {
     radial-gradient(1px 1px at 62% 95%, rgba(255, 255, 255, 0.8), transparent),
     radial-gradient(1px 1px at 8% 92%, rgba(255, 255, 255, 0.7), transparent),
     /* Background gradient */
-    linear-gradient(180deg, #0a0a0a 0%, #0f0a0d 50%, #0a0a0a 100%);
+    linear-gradient(180deg, #0a0a0a 0%, #1a0f12 50%, #0a0a0a 100%);
   background-size: 100% 100%;
   z-index: 0;
   pointer-events: none;
