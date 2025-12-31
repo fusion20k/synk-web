@@ -622,20 +622,29 @@
     </footer>
 
     <script>
-        const SUPABASE_URL = 'https://quwuokijucbqnvfsjyzk.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF1d3Vva2lqdWNicW52ZnNqeXprIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQzODY0MTQsImV4cCI6MjA0OTk2MjQxNH0.dqDt9yuLi-Cq3KqaL5A5OKdFhT-tYojPbkv45DY9vGQ';
+        const SUPABASE_URL = 'https://nbolvclqiaqrupxknvlu.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ib2x2Y2xxaWFxcnVweGtudmx1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ4MjgsImV4cCI6MjA3MTIzMDgyOH0.yz33_9PEZbC2ew_2lQyxb6B_cQruSANVrwM_4h-afg8';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const STRIPE_PORTAL_URL = 'https://billing.stripe.com/p/login/test_3cs6pO8pX0yTbDi000';
 
-        let userEmail = localStorage.getItem('synk_user_email');
+        let userEmail = null;
 
         async function checkAuth() {
-            const token = localStorage.getItem('synk_auth_token');
-            if (!token || !userEmail) {
+            try {
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+                
+                if (error || !session || !session.user) {
+                    window.location.href = 'login.html';
+                    return false;
+                }
+                
+                userEmail = session.user.email;
+                return true;
+            } catch (error) {
+                console.error('Auth check failed:', error);
                 window.location.href = 'login.html';
                 return false;
             }
-            return true;
         }
 
         async function loadUserData() {
@@ -735,11 +744,16 @@
         }
 
         async function handleLogout() {
-            localStorage.removeItem('synk_auth_token');
-            localStorage.removeItem('synk_user_email');
-            sessionStorage.clear();
-            await supabaseClient.auth.signOut();
-            window.location.href = 'index.html';
+            try {
+                await supabaseClient.auth.signOut();
+                localStorage.removeItem('synk_auth_token');
+                localStorage.removeItem('synk_user_email');
+                sessionStorage.clear();
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+                window.location.href = 'index.html';
+            }
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -765,7 +779,14 @@
                 }
 
                 try {
-                    const authToken = localStorage.getItem('synk_auth_token');
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    const authToken = session?.access_token;
+                    
+                    if (!authToken) {
+                        showErrorMessage('Authentication required');
+                        return;
+                    }
+                    
                     const response = await fetch('https://synk-web.onrender.com/api/change-password', {
                         method: 'POST',
                         headers: {
@@ -804,7 +825,14 @@
 
             document.getElementById('confirm-cancel-btn').addEventListener('click', async () => {
                 try {
-                    const authToken = localStorage.getItem('synk_auth_token');
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    const authToken = session?.access_token;
+                    
+                    if (!authToken) {
+                        showErrorMessage('Authentication required');
+                        return;
+                    }
+                    
                     const response = await fetch('https://synk-web.onrender.com/api/stripe/cancel-subscription', {
                         method: 'POST',
                         headers: {
@@ -838,7 +866,14 @@
 
             document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
                 try {
-                    const authToken = localStorage.getItem('synk_auth_token');
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    const authToken = session?.access_token;
+                    
+                    if (!authToken) {
+                        showErrorMessage('Authentication required');
+                        return;
+                    }
+                    
                     const response = await fetch('https://synk-web.onrender.com/api/delete-account', {
                         method: 'DELETE',
                         headers: {
@@ -851,10 +886,9 @@
                     if (response.ok) {
                         showSuccessMessage('Account deleted. Logging out...');
                         
-                        localStorage.removeItem('synk_auth_token');
-                        localStorage.removeItem('synk_user_email');
-                        sessionStorage.clear();
                         await supabaseClient.auth.signOut();
+                        localStorage.clear();
+                        sessionStorage.clear();
                         
                         setTimeout(() => window.location.href = 'index.html', 1500);
                     } else {
