@@ -220,11 +220,18 @@ body.auth-body main {
 
 .password-input-wrapper {
   position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper input {
+  padding-right: 60px !important;
+  flex: 1;
 }
 
 .toggle-password {
   position: absolute;
-  right: 14px;
+  right: 16px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
@@ -237,6 +244,8 @@ body.auth-body main {
   font-family: inherit;
   font-weight: 500;
   letter-spacing: 0.02em;
+  pointer-events: auto;
+  z-index: 10;
 }
 
 .toggle-password:hover {
