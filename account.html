@@ -11,7 +11,6 @@
         body {
             background: #0a0a0a;
             margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
 
         .account-page {
@@ -367,6 +366,8 @@
                 <a href="pricing.html">Pricing</a>
                 <a href="download.html">Download</a>
                 <a href="contact.html">Contact</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="terms.html">Terms</a>
             </nav>
             
             <div class="auth-buttons" id="auth-buttons">
@@ -376,13 +377,17 @@
             
             <div class="user-dropdown" id="user-dropdown">
                 <div class="user-avatar" id="user-avatar">U</div>
+                <div class="sidebar-overlay"></div>
                 <div class="dropdown-menu">
                     <div class="dropdown-header">
+                        <button class="sidebar-close" aria-label="Close sidebar">×</button>
                         <div class="dropdown-email" id="user-email">user@synk.app</div>
                     </div>
-                    <a href="account.html" class="dropdown-item">Manage Account</a>
-                    <div class="dropdown-divider"></div>
-                    <button class="dropdown-item" id="logout-btn">Log Out</button>
+                    <div class="sidebar-content">
+                        <a href="account.html" class="dropdown-item">Manage Account</a>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item" id="logout-btn">Log Out</button>
+                    </div>
                 </div>
             </div>
             

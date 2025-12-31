@@ -417,7 +417,7 @@ function initAuthState() {
         userDropdown.classList.remove('open');
     }
     
-    // User avatar click handler - toggle dropdown
+    // User avatar click handler - toggle sidebar
     if (userAvatar) {
         userAvatar.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -430,14 +430,24 @@ function initAuthState() {
         });
     }
     
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (e) => {
-        if (userDropdown && !userDropdown.contains(e.target) && userAvatar && e.target !== userAvatar) {
+    // Close sidebar when clicking overlay
+    const sidebarOverlay = document.querySelector('.sidebar-overlay');
+    if (sidebarOverlay) {
+        sidebarOverlay.addEventListener('click', () => {
             userDropdown.classList.remove('open');
-        }
-    });
+        });
+    }
     
-    // Close dropdown when pressing Escape key
+    // Close sidebar when clicking close button
+    const sidebarClose = document.querySelector('.sidebar-close');
+    if (sidebarClose) {
+        sidebarClose.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.classList.remove('open');
+        });
+    }
+    
+    // Close sidebar when pressing Escape key
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && userDropdown) {
             userDropdown.classList.remove('open');

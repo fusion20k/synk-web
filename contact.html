@@ -166,13 +166,17 @@
             <!-- User Dropdown (shown when logged in) -->
             <div class="user-dropdown" id="user-dropdown">
                 <div class="user-avatar" id="user-avatar">U</div>
+                <div class="sidebar-overlay"></div>
                 <div class="dropdown-menu">
                     <div class="dropdown-header">
+                        <button class="sidebar-close" aria-label="Close sidebar">×</button>
                         <div class="dropdown-email" id="user-email">user@synk.app</div>
                     </div>
-                    <a href="account.html" class="dropdown-item">Manage Account</a>
-                    <div class="dropdown-divider"></div>
-                    <button class="dropdown-item" id="logout-btn">Log Out</button>
+                    <div class="sidebar-content">
+                        <a href="account.html" class="dropdown-item">Manage Account</a>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item" id="logout-btn">Log Out</button>
+                    </div>
                 </div>
             </div>
             
