@@ -382,6 +382,7 @@ body.auth-body main {
   text-align: center;
   color: var(--text-secondary);
   font-size: 0.95rem;
+  margin-top: 2rem;
 }
 
 .auth-alternate a {
