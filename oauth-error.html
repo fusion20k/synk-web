@@ -229,10 +229,13 @@
                 </div>
                 
                 <div class="button-group">
-                    <button class="retry-button" onclick="closeWindow()">Return to App</button>
-                    <a id="return-link" href="synk://oauth-failed" class="close-button">Try Again in Synk</a>
+                    <a id="return-link" href="synk://oauth-failed" class="retry-button">Return to Synk App</a>
                     <a href="contact.html" class="close-button">Contact Support</a>
                 </div>
+                
+                <p style="margin-top: 1.5rem; font-size: 0.95rem; color: var(--text-muted);">
+                    <strong>Note:</strong> Please close this window after returning to the app and trying again.
+                </p>
             </div>
         </div>
     </main>
@@ -256,36 +259,7 @@
             errorDetails.style.display = 'block';
         }
         
-        function trySynkProtocol() {
-            const a = document.getElementById('return-link');
-            if (a) {
-                a.click();
-            } else {
-                window.location.href = 'synk://oauth-failed';
-            }
-        }
-        function closeWindow() {
-            try {
-                if (window.opener) {
-                    window.close();
-                    return;
-                }
-                window.close();
-                setTimeout(() => {
-                    if (!window.closed) {
-                        trySynkProtocol();
-                        setTimeout(() => {
-                            if (!document.hidden) {
-                                window.location.replace('about:blank');
-                            }
-                        }, 600);
-                    }
-                }, 100);
-            } catch (error) {
-                trySynkProtocol();
-                setTimeout(() => window.location.replace('index.html'), 800);
-            }
-        }
+        // No auto-close logic - user controls when to close
     </script>
     <script src="js/scripts.js?v=3.0"></script>
 </body>

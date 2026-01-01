@@ -95,10 +95,17 @@
             border-bottom: none;
         }
         
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
         .close-button {
-            background: var(--gradient-primary);
-            color: white;
-            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 1rem 2.5rem;
             border-radius: var(--border-radius);
             font-size: 1.1rem;
@@ -109,9 +116,19 @@
             display: inline-block;
         }
         
+        .close-button.primary {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+        }
+        
         .close-button:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-light);
+        }
+        
+        .close-button.primary:hover {
+            box-shadow: var(--shadow-medium);
         }
     </style>
 </head>
@@ -164,11 +181,11 @@
         <div class="oauth-container">
             <div class="oauth-card">
                 <div class="success-icon"></div>
-                <h1>Successfully Connected</h1>
-                <p>Your account has been successfully connected to Synk. You can now return to the application to start syncing your data between Notion and Google Calendar.</p>
+                <h1>Successfully Connected!</h1>
+                <p>Your account has been successfully connected to Synk. Return to the application to start syncing your data between Notion and Google Calendar.</p>
                 
                 <div class="success-details">
-                    <h3>What happens next:</h3>
+                    <h3>Next Steps:</h3>
                     <ul>
                         <li>Return to the Synk application</li>
                         <li>Your calendars will be automatically loaded</li>
@@ -177,49 +194,19 @@
                     </ul>
                 </div>
                 
-                <button class="close-button" onclick="closeWindow()">Close This Tab</button>
-                <div style="margin-top:12px">
-                    <a id="return-link" href="synk://oauth-success" style="color:var(--text-secondary);text-decoration:underline">Return to Synk</a>
+                <div class="button-group">
+                    <a id="return-link" href="synk://oauth-success" class="close-button primary">Return to Synk App</a>
                 </div>
+                
+                <p style="margin-top: 1.5rem; font-size: 0.95rem; color: var(--text-muted);">
+                    <strong>Note:</strong> You may close this window after returning to the app.
+                </p>
             </div>
         </div>
     </main>
 
     <script>
-        function trySynkProtocol() {
-            const a = document.getElementById('return-link');
-            if (a) {
-                a.click();
-            } else {
-                window.location.href = 'synk://oauth-success';
-            }
-        }
-        function closeWindow() {
-            try {
-                if (window.opener) {
-                    window.close();
-                    return;
-                }
-                window.close();
-                setTimeout(() => {
-                    if (!window.closed) {
-                        trySynkProtocol();
-                        setTimeout(() => {
-                            if (!document.hidden) {
-                                window.location.replace('about:blank');
-                            }
-                        }, 600);
-                    }
-                }, 100);
-            } catch (error) {
-                trySynkProtocol();
-                setTimeout(() => window.location.replace('index.html'), 800);
-            }
-        }
-        // Immediately attempt to return to app
-        setTimeout(trySynkProtocol, 200);
-        // Auto-close after 8 seconds
-        setTimeout(closeWindow, 8000);
+        // No auto-close logic - user controls when to close
     </script>
     <script src="js/scripts.js?v=3.0"></script>
 </body>
