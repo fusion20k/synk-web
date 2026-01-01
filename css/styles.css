@@ -460,14 +460,15 @@ nav a:hover::after {
 .dropdown-menu {
   position: fixed;
   top: 0;
-  right: -300px;
+  right: 0;
   height: 100vh;
   width: 280px;
   max-width: 85vw;
   background: #1a1a1a;
   border-left: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: -4px 0 24px rgba(0, 0, 0, 0.5);
-  transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 10001;
   overflow-y: auto;
   overflow-x: hidden;
@@ -476,7 +477,7 @@ nav a:hover::after {
 }
 
 .user-dropdown.open .dropdown-menu {
-  right: 0;
+  transform: translateX(0);
 }
 
 /* Sidebar Header */
