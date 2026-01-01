@@ -711,10 +711,6 @@ body.auth-body main {
     font-size: 0.8rem;
   }
 
-  .dropdown-menu {
-    padding: 0.4rem 0.4rem;
-  }
-
   .dropdown-item {
     padding: 0.65rem 0.9rem;
     font-size: 0.85rem;
@@ -781,10 +777,6 @@ body.auth-body main {
 
   .dropdown-email {
     font-size: 0.75rem;
-  }
-
-  .dropdown-menu {
-    padding: 0.35rem 0.35rem;
   }
 
   .dropdown-item {
