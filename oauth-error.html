@@ -10,247 +10,90 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <style>
+        body {
+            background: #0a0a0a;
+        }
+        
         .oauth-container {
-            min-height: calc(100vh - 80px);
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 2rem;
+            text-align: center;
         }
         
-        .oauth-card {
-            background: var(--bg-card);
-            border-radius: var(--border-radius);
-            padding: 4rem 3rem;
-            text-align: center;
-            max-width: 600px;
-            width: 100%;
-            box-shadow: var(--shadow-medium);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .oauth-content {
+            max-width: 500px;
         }
         
         .error-icon {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 2rem;
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-        
-        .error-icon::before,
-        .error-icon::after {
-            content: '';
-            position: absolute;
-            width: 4px;
-            height: 40px;
-            background: white;
-            border-radius: 2px;
-        }
-        
-        .error-icon::before {
-            transform: rotate(45deg);
-        }
-        
-        .error-icon::after {
-            transform: rotate(-45deg);
-        }
-        
-        .oauth-card h1 {
-            color: var(--text-primary);
+            font-size: 80px;
             margin-bottom: 1.5rem;
-            font-size: 2.5rem;
+        }
+        
+        h1 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 2rem;
             font-weight: 600;
         }
         
-        .oauth-card p {
+        p {
             color: var(--text-secondary);
-            margin-bottom: 2.5rem;
-            font-size: 1.2rem;
+            font-size: 1rem;
             line-height: 1.6;
+            margin-bottom: 0.5rem;
         }
         
         .error-details {
             background: rgba(255, 107, 107, 0.1);
             border: 1px solid rgba(255, 107, 107, 0.3);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            margin-bottom: 2.5rem;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1.5rem 0;
             color: #ff9999;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             font-family: 'Courier New', monospace;
             text-align: left;
+            word-break: break-all;
         }
         
-        .troubleshooting {
-            background: rgba(92, 107, 192, 0.1);
-            border: 1px solid rgba(92, 107, 192, 0.3);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            margin-bottom: 2.5rem;
-            text-align: left;
-        }
-        
-        .troubleshooting h3 {
-            color: var(--text-primary);
-            margin-bottom: 1rem;
-        }
-        
-        .troubleshooting ul {
-            list-style: none;
-            padding: 0;
-            color: var(--text-secondary);
-        }
-        
-        .troubleshooting li {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid rgba(92, 107, 192, 0.2);
-        }
-        
-        .troubleshooting li:last-child {
-            border-bottom: none;
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        .retry-button {
-            background: var(--gradient-primary);
-            color: white;
-            border: none;
-            padding: 1rem 2.5rem;
-            border-radius: var(--border-radius);
-            font-size: 1.1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        .close-button {
-            background: transparent;
-            color: var(--text-secondary);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 1rem 2.5rem;
-            border-radius: var(--border-radius);
-            font-size: 1.1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        .retry-button:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-light);
-        }
-        
-        .close-button:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.3);
+        .instruction {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 2rem;
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-content">
-            <a href="index.html" class="logo">Synk</a>
-            <nav>
-                <a href="index.html">Home</a>
-                <a href="about.html">How It Works</a>
-                <a href="pricing.html">Pricing</a>
-                <a href="download.html">Download</a>
-                <a href="contact.html">Contact</a>
-                <a href="privacy.html">Privacy</a>
-                <a href="terms.html">Terms</a>
-            </nav>
-            
-            <!-- Auth Buttons (shown when logged out) -->
-            <div class="auth-buttons" id="auth-buttons">
-                <a href="login.html" class="auth-btn login">Log In</a>
-                <a href="signup.html" class="auth-btn signup">Sign Up</a>
-            </div>
-            
-            <!-- User Dropdown (shown when logged in) -->
-            <div class="user-dropdown" id="user-dropdown">
-                <div class="user-avatar" id="user-avatar">U</div>
-                <div class="sidebar-overlay"></div>
-                <div class="dropdown-menu">
-                    <div class="dropdown-header">
-                        <button class="sidebar-close" aria-label="Close sidebar">×</button>
-                        <div class="dropdown-email" id="user-email">user@synk.app</div>
-                    </div>
-                    <div class="sidebar-content">
-                        <a href="account.html" class="dropdown-item">Manage Account</a>
-                        <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" id="logout-btn">Log Out</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="mobile-menu-toggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-    </header>
-
     <main>
         <div class="oauth-container">
-            <div class="oauth-card">
-                <div class="error-icon"></div>
+            <div class="oauth-content">
+                <div class="error-icon">✕</div>
                 <h1>Connection Failed</h1>
-                <p>There was an issue connecting your account to Synk. This could be due to a temporary network issue, authorization problem, or configuration error.</p>
+                <p>There was an issue connecting your account.</p>
                 
                 <div class="error-details" id="error-details" style="display: none;">
-                    <strong>Technical Details:</strong><br>
-                    <span id="error-message">Unknown error occurred</span>
+                    <span id="error-message"></span>
                 </div>
                 
-                <div class="troubleshooting">
-                    <h3>Troubleshooting Steps:</h3>
-                    <ul>
-                        <li>Return to the Synk application and try connecting again</li>
-                        <li>Ensure you have a stable internet connection</li>
-                        <li>Check that you granted all necessary permissions</li>
-                        <li>Try clearing your browser cache and cookies</li>
-                        <li>Contact support if the problem persists</li>
-                    </ul>
-                </div>
-                
-                <div class="button-group">
-                    <a id="return-link" href="synk://oauth-failed" class="retry-button">Return to Synk App</a>
-                    <a href="contact.html" class="close-button">Contact Support</a>
-                </div>
-                
-                <p style="margin-top: 1.5rem; font-size: 0.95rem; color: var(--text-muted);">
-                    <strong>Note:</strong> Please close this window after returning to the app and trying again.
-                </p>
+                <p class="instruction">Please close this window and try again in the app.</p>
             </div>
         </div>
     </main>
 
     <script>
-        // Check for error parameter in URL
+        // Display error details if present in URL
         const urlParams = new URLSearchParams(window.location.search);
         const error = urlParams.get('error');
         const errorDescription = urlParams.get('error_description');
         
-        if (error) {
+        if (error || errorDescription) {
             const errorDetails = document.getElementById('error-details');
             const errorMessage = document.getElementById('error-message');
             
-            let message = error;
+            let message = error || 'Unknown error';
             if (errorDescription) {
                 message += ': ' + errorDescription;
             }
@@ -258,10 +101,7 @@
             errorMessage.textContent = message;
             errorDetails.style.display = 'block';
         }
-        
-        // No auto-close logic - user controls when to close
     </script>
-    <script src="js/scripts.js?v=3.0"></script>
 </body>
 </html>
 

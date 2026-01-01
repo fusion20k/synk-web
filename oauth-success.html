@@ -10,205 +10,61 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <style>
+        body {
+            background: #0a0a0a;
+        }
+        
         .oauth-container {
-            min-height: calc(100vh - 80px);
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 2rem;
+            text-align: center;
         }
         
-        .oauth-card {
-            background: var(--bg-card);
-            border-radius: var(--border-radius);
-            padding: 4rem 3rem;
-            text-align: center;
-            max-width: 600px;
-            width: 100%;
-            box-shadow: var(--shadow-medium);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .oauth-content {
+            max-width: 500px;
         }
         
         .success-icon {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 2rem;
-            background: var(--gradient-primary);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-        
-        .success-icon::after {
-            content: '';
-            width: 40px;
-            height: 20px;
-            border: 4px solid white;
-            border-top: none;
-            border-right: none;
-            transform: rotate(-45deg);
-            margin-top: -10px;
-        }
-        
-        .oauth-card h1 {
-            color: var(--text-primary);
+            font-size: 80px;
             margin-bottom: 1.5rem;
-            font-size: 2.5rem;
+        }
+        
+        h1 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 2rem;
             font-weight: 600;
         }
         
-        .oauth-card p {
+        p {
             color: var(--text-secondary);
-            margin-bottom: 2.5rem;
-            font-size: 1.2rem;
+            font-size: 1rem;
             line-height: 1.6;
+            margin-bottom: 0.5rem;
         }
         
-        .success-details {
-            background: rgba(92, 107, 192, 0.1);
-            border: 1px solid rgba(92, 107, 192, 0.3);
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            margin-bottom: 2.5rem;
-            color: var(--accent-blue);
-        }
-        
-        .success-details h3 {
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
-        
-        .success-details ul {
-            list-style: none;
-            padding: 0;
-            text-align: left;
-        }
-        
-        .success-details li {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid rgba(92, 107, 192, 0.2);
-        }
-        
-        .success-details li:last-child {
-            border-bottom: none;
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        .close-button {
-            background: transparent;
-            color: var(--text-secondary);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 1rem 2.5rem;
-            border-radius: var(--border-radius);
-            font-size: 1.1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        .close-button.primary {
-            background: var(--gradient-primary);
-            color: white;
-            border: none;
-        }
-        
-        .close-button:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-light);
-        }
-        
-        .close-button.primary:hover {
-            box-shadow: var(--shadow-medium);
+        .instruction {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 2rem;
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="header-content">
-            <a href="index.html" class="logo">Synk</a>
-            <nav>
-                <a href="index.html">Home</a>
-                <a href="about.html">How It Works</a>
-                <a href="pricing.html">Pricing</a>
-                <a href="download.html">Download</a>
-                <a href="contact.html">Contact</a>
-                <a href="privacy.html">Privacy</a>
-                <a href="terms.html">Terms</a>
-            </nav>
-            
-            <!-- Auth Buttons (shown when logged out) -->
-            <div class="auth-buttons" id="auth-buttons">
-                <a href="login.html" class="auth-btn login">Log In</a>
-                <a href="signup.html" class="auth-btn signup">Sign Up</a>
-            </div>
-            
-            <!-- User Dropdown (shown when logged in) -->
-            <div class="user-dropdown" id="user-dropdown">
-                <div class="user-avatar" id="user-avatar">U</div>
-                <div class="sidebar-overlay"></div>
-                <div class="dropdown-menu">
-                    <div class="dropdown-header">
-                        <button class="sidebar-close" aria-label="Close sidebar">×</button>
-                        <div class="dropdown-email" id="user-email">user@synk.app</div>
-                    </div>
-                    <div class="sidebar-content">
-                        <a href="account.html" class="dropdown-item">Manage Account</a>
-                        <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" id="logout-btn">Log Out</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="mobile-menu-toggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-    </header>
-
     <main>
         <div class="oauth-container">
-            <div class="oauth-card">
-                <div class="success-icon"></div>
-                <h1>Successfully Connected!</h1>
-                <p>Your account has been successfully connected to Synk. Return to the application to start syncing your data between Notion and Google Calendar.</p>
-                
-                <div class="success-details">
-                    <h3>Next Steps:</h3>
-                    <ul>
-                        <li>Return to the Synk application</li>
-                        <li>Your calendars will be automatically loaded</li>
-                        <li>Configure your sync preferences</li>
-                        <li>Start enjoying seamless synchronization</li>
-                    </ul>
-                </div>
-                
-                <div class="button-group">
-                    <a id="return-link" href="synk://oauth-success" class="close-button primary">Return to Synk App</a>
-                </div>
-                
-                <p style="margin-top: 1.5rem; font-size: 0.95rem; color: var(--text-muted);">
-                    <strong>Note:</strong> You may close this window after returning to the app.
-                </p>
+            <div class="oauth-content">
+                <div class="success-icon">✓</div>
+                <h1>Successfully Connected</h1>
+                <p>Your account has been connected to Synk.</p>
+                <p class="instruction">You may close this window and return to the app.</p>
             </div>
         </div>
     </main>
 
-    <script>
-        // No auto-close logic - user controls when to close
-    </script>
-    <script src="js/scripts.js?v=3.0"></script>
 </body>
 </html>
 
