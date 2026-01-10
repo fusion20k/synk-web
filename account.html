@@ -498,23 +498,6 @@
             </div>
         </div>
 
-        <!-- Danger Zone -->
-        <div class="account-card full-width">
-            <div class="card-header">
-                <h2>Danger Zone</h2>
-            </div>
-
-            <div class="plan-details">
-                <div class="detail-row">
-                    <div>
-                        <div class="detail-value" style="margin-bottom: 5px;">Delete Account</div>
-                        <div class="detail-label">Permanently delete your account and all data</div>
-                    </div>
-                    <button class="cta-button danger" id="delete-account-btn" style="width: auto;">Delete Account</button>
-                </div>
-            </div>
-        </div>
-
         <!-- Logout Section -->
         <div class="logout-section">
             <button class="cta-button" id="logout-account-btn">Log Out</button>
@@ -563,39 +546,6 @@
             <div class="button-group">
                 <button type="button" class="cta-button secondary" onclick="closeCancelModal()">Keep Subscription</button>
                 <button type="button" class="cta-button danger" id="confirm-cancel-btn">Confirm Cancellation</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Account Modal -->
-    <div id="delete-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
-                <h3>Delete Account</h3>
-            </div>
-            <div class="modal-body">
-                <p style="color: #dc143c; font-weight: 600;">This action cannot be undone!</p>
-                <p>Deleting your account will permanently remove all your data, sync configurations, and cancel any active subscriptions.</p>
-                
-                <div class="form-group" style="margin-top: 25px;">
-                    <label for="delete-confirm-email">Type your email to confirm</label>
-                    <input type="email" id="delete-confirm-email" placeholder="your@email.com">
-                </div>
-
-                <div class="checkbox-group">
-                    <input type="checkbox" id="confirm-understand">
-                    <label for="confirm-understand">I understand this action is permanent</label>
-                </div>
-
-                <div class="checkbox-group">
-                    <input type="checkbox" id="confirm-delete">
-                    <label for="confirm-delete">I want to delete my account</label>
-                </div>
-            </div>
-            <div class="button-group">
-                <button type="button" class="cta-button secondary" onclick="closeDeleteModal()">Cancel</button>
-                <button type="button" class="cta-button danger" id="confirm-delete-btn" disabled>Delete My Account</button>
             </div>
         </div>
     </div>
@@ -734,23 +684,6 @@
             document.getElementById('cancel-modal').style.display = 'none';
         }
 
-        function closeDeleteModal() {
-            document.getElementById('delete-modal').style.display = 'none';
-            document.getElementById('delete-confirm-email').value = '';
-            document.getElementById('confirm-understand').checked = false;
-            document.getElementById('confirm-delete').checked = false;
-            document.getElementById('confirm-delete-btn').disabled = true;
-        }
-
-        function checkDeleteConfirmation() {
-            const email = document.getElementById('delete-confirm-email').value;
-            const understand = document.getElementById('confirm-understand').checked;
-            const confirmDelete = document.getElementById('confirm-delete').checked;
-            const btn = document.getElementById('confirm-delete-btn');
-            
-            btn.disabled = !(email === userEmail && understand && confirmDelete);
-        }
-
         async function handleLogout() {
             try {
                 await supabaseClient.auth.signOut();
@@ -864,50 +797,6 @@
                 }
             });
 
-            document.getElementById('delete-account-btn').addEventListener('click', () => {
-                document.getElementById('delete-modal').style.display = 'block';
-            });
-
-            document.getElementById('delete-confirm-email').addEventListener('input', checkDeleteConfirmation);
-            document.getElementById('confirm-understand').addEventListener('change', checkDeleteConfirmation);
-            document.getElementById('confirm-delete').addEventListener('change', checkDeleteConfirmation);
-
-            document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
-                try {
-                    const { data: { session } } = await supabaseClient.auth.getSession();
-                    const authToken = session?.access_token;
-                    
-                    if (!authToken) {
-                        showErrorMessage('Authentication required');
-                        return;
-                    }
-                    
-                    const response = await fetch('https://synk-web.onrender.com/api/delete-account', {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${authToken}`
-                        },
-                        body: JSON.stringify({ email: userEmail })
-                    });
-
-                    if (response.ok) {
-                        showSuccessMessage('Account deleted. Logging out...');
-                        
-                        await supabaseClient.auth.signOut();
-                        localStorage.clear();
-                        sessionStorage.clear();
-                        
-                        setTimeout(() => window.location.href = 'index.html', 1500);
-                    } else {
-                        const errorData = await response.json();
-                        showErrorMessage(errorData.error || 'Failed to delete account');
-                    }
-                } catch (error) {
-                    console.error('Error deleting account:', error);
-                    showErrorMessage('Error deleting account');
-                }
-            });
         });
 
         document.querySelectorAll('.modal').forEach(modal => {
