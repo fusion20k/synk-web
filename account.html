@@ -636,14 +636,17 @@
 
         async function checkAuth() {
             try {
-                const { data: { session }, error } = await supabaseClient.auth.getSession();
+                const token = localStorage.getItem('synk_auth_token');
+                const email = localStorage.getItem('synk_user_email');
                 
-                if (error || !session || !session.user) {
+                if (!token || !email) {
+                    console.log('[Account] No auth token found, redirecting to login');
                     window.location.href = 'login.html';
                     return false;
                 }
                 
-                userEmail = session.user.email;
+                userEmail = email;
+                console.log('[Account] Auth check passed for:', email);
                 return true;
             } catch (error) {
                 console.error('Auth check failed:', error);
