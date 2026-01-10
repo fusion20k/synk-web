@@ -118,61 +118,32 @@ class SupabaseAuthManager {
 
 
     /**
-     * Sign up with Supabase
+     * Sign up with Backend API
      */
     async signup(email, password) {
-        console.log('🔥🔥🔥 SIGNUP METHOD CALLED WITH EMAIL:', email);
-        
-        if (!this.supabaseClient) {
-            throw new Error('Supabase client not initialized');
-        }
+        console.log('[Auth] Signup called for email:', email);
 
         try {
-            console.log('🔥 About to call signUp...');
-            const { data, error } = await this.supabaseClient.auth.signUp({
-                email,
-                password,
-                options: {
-                    emailRedirectTo: window.location.origin
-                }
+            const response = await fetch('https://synk-web.onrender.com/signup', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email, password})
             });
 
-            if (error) {
-                throw error;
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || 'Signup failed');
             }
 
-            console.log('[Supabase Auth] Signup data:', data);
+            console.log('[Auth] Signup successful, storing token');
+            localStorage.setItem('token', data.token);
             
-            // With email verification disabled, Supabase doesn't auto-login after signup
-            // We need to manually log in the user
-            console.log('[Supabase Auth] Auto-logging in user after signup...');
-            const { data: loginData, error: loginError } = await this.supabaseClient.auth.signInWithPassword({
-                email,
-                password
-            });
-
-            if (loginError) {
-                console.error('[Supabase Auth] Auto-login failed:', loginError);
-                throw loginError;
-            }
-
-            console.log('[Supabase Auth] Auto-login successful:', loginData);
+            this.currentUser = { email };
+            this.session = { access_token: data.token };
             
-            // Create user profile in public.users table
-            console.log('[Supabase Auth] Creating public user profile...');
-            await this.createPublicUserProfile(email);
-            
-            // Get fresh session
-            const { data: { session } } = await this.supabaseClient.auth.getSession();
-            console.log('[Supabase Auth] Session after signup+login:', session);
-            
-            // Wait for auth listener to fire (this updates this.currentUser and this.session)
-            await this.waitForSessionEstablished(5000);
-            
-            // Update UI immediately
             this.updateUI();
             
-            // Dispatch auth state changed event
             window.dispatchEvent(new CustomEvent('auth-state-changed', {
                 detail: {
                     event: 'SIGNED_IN',
@@ -181,9 +152,9 @@ class SupabaseAuthManager {
                 }
             }));
 
-            return { data: loginData, success: true };
+            return { data, success: true };
         } catch (error) {
-            console.error('[Supabase Auth] Signup error:', error);
+            console.error('[Auth] Signup error:', error);
             throw error;
         }
     }
