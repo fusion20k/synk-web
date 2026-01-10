@@ -15,6 +15,9 @@ Modified frontend signup code to call backend's `/signup` endpoint instead of Su
 - Bumped auth manager version to v2.0 in all HTML files to force browser cache refresh
 - Fixed UI display issues by adding explicit `display: flex/none` styles in showLoggedInState/showLoggedOutState
 - Bumped scripts.js version to v3.1 to force cache refresh
+- Fixed critical bug: Supabase auth listener was overriding backend API session with null on INITIAL_SESSION event
+- Modified setupAuthListener to ignore empty Supabase sessions when backend API session exists
+- Bumped auth manager to v2.1
 
 ---
 
