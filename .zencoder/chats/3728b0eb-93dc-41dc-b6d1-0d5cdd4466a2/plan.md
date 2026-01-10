@@ -11,6 +11,7 @@ Modified frontend signup code to call backend's `/signup` endpoint instead of Su
 - Both now call `https://synk-web.onrender.com/signup` and store the returned JWT token in localStorage
 - Fixed auth state management to use correct localStorage keys (`synk_auth_token` and `synk_user_email`)
 - Added auth state change event dispatch to show account icon after signup
+- Fixed auth manager initialization to check localStorage on page load (so account icon persists after redirect)
 
 ---
 
