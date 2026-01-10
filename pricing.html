@@ -435,14 +435,14 @@
         <section id="pricing-hero" style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 8rem 2rem;">
             <div style="text-align: center; opacity: 0; animation: fadeInUp 1.5s ease-out forwards; width: 100%; max-width: 800px;">
                 <h1 style="font-size: clamp(3rem, 8vw, 5rem); font-weight: 700; line-height: 1.1; margin-bottom: 1.5rem; background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Simple Pricing</h1>
-                <p style="font-size: 1.4rem; color: #b8b8b8; margin-bottom: 2rem; max-width: 650px; margin-left: auto; margin-right: auto; line-height: 1.6;">Start free, upgrade when you need automation. All new signups get a 7-day Pro trial automatically.</p>
+                <p style="font-size: 1.4rem; color: #b8b8b8; margin-bottom: 2rem; max-width: 650px; margin-left: auto; margin-right: auto; line-height: 1.6;">7 days of Pro free, then decide. Start with automatic sync, choose your plan after.</p>
                 
-                <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 1.5rem; margin: 0 auto 3rem; max-width: 550px; text-align: left;">
-                    <p style="margin: 0; color: #10b981; font-size: 1rem; line-height: 1.8;">
-                        <strong style="display: block; margin-bottom: 0.5rem;">How it works:</strong>
-                        1. Sign up free — start your 7-day Pro trial<br>
-                        2. Experience full automatic sync features<br>
-                        3. After 7 days, choose Pro or continue free
+                <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; padding: 1.75rem 2rem; margin: 0 auto 3rem; max-width: 550px; text-align: left;">
+                    <p style="margin: 0; color: #d8d8d8; font-size: 1.05rem; line-height: 1.9;">
+                        <strong style="display: block; margin-bottom: 0.75rem; color: #fff; font-size: 1.1rem;">How it works:</strong>
+                        1. Sign up free — get 7 days of Pro<br>
+                        2. Experience automatic sync and Pro features<br>
+                        3. Decide: upgrade to Pro or stay on Free
                     </p>
                 </div>
                 
@@ -494,7 +494,7 @@
             <div class="container">
                 <div class="section-header">
                     <h1>Choose Your Plan</h1>
-                    <p>After your 7-day trial, select the plan that works best for you.</p>
+                    <p>After 7 days of Pro, select the plan that works best for you.</p>
 
                     <!-- Billing Toggle -->
                     <div class="billing-toggle" style="margin: 2rem 0;">
@@ -515,7 +515,7 @@
                             <div class="plan-price" id="free-price" style="font-size: 3.5rem; color: #fff;">$0</div>
                         </div>
                         <div class="plan-period" id="free-period">forever</div>
-                        <p class="plan-description">If you don't upgrade after your trial</p>
+                        <p class="plan-description">Manual sync when you need it</p>
                         
                         <ul class="plan-features">
                             <li>✓ Unlimited manual sync</li>
@@ -575,7 +575,7 @@
             <div class="container">
                 <div class="section-header">
                     <h2>Frequently Asked Questions</h2>
-                    <p>Everything you need to know about Synk's 7-day trial and pricing</p>
+                    <p>Everything you need to know about pricing and getting started</p>
                 </div>
                 
                 <div class="faq-container">
@@ -585,7 +585,7 @@
                             <span class="faq-toggle">→</span>
                         </div>
                         <div class="faq-answer">
-                            Your trial automatically ends after 7 days, and you'll be moved to the Free plan. You can upgrade to Pro at any time to regain automatic sync and unlimited connections. No credit card required for the trial.
+                            After 7 days, your account automatically moves to the Free plan. You can upgrade to Pro anytime to get automatic sync and unlimited connections back. No credit card required to start.
                         </div>
                     </div>
                     
@@ -595,17 +595,17 @@
                             <span class="faq-toggle">→</span>
                         </div>
                         <div class="faq-answer">
-                            No. The 7-day Pro trial is completely free with no payment method required. Just sign up with your email and start experiencing full Pro features immediately.
+                            No. Sign up with just your email and get 7 days of Pro features free. No payment method required until you decide to upgrade.
                         </div>
                     </div>
                     
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
-                            Can I cancel during the trial?
+                            Can I cancel anytime?
                             <span class="faq-toggle">→</span>
                         </div>
                         <div class="faq-answer">
-                            Yes! Simply don't upgrade to Pro. After 7 days, you'll automatically move to the Free plan. There's nothing to cancel — you're never charged unless you explicitly upgrade.
+                            Yes! Simply don't upgrade after 7 days and you'll stay on the Free plan. There's nothing to cancel — you're never charged unless you choose to upgrade.
                         </div>
                     </div>
                     
@@ -625,7 +625,7 @@
                             <span class="faq-toggle">→</span>
                         </div>
                         <div class="faq-answer">
-                            Free plan is $0 forever with unlimited manual syncs. Pro is $14.99/month or $149.99/year (save $30). All new accounts get a 7-day Pro trial first. You can upgrade, downgrade, or cancel anytime with no commitment.
+                            Free plan is $0 forever with unlimited manual syncs. Pro is $14.99/month or $149.99/year (save $30). All new accounts get 7 days of Pro free to start. You can upgrade, downgrade, or cancel anytime with no commitment.
                         </div>
                     </div>
                     
@@ -758,10 +758,31 @@
         }
         
         async function handlePurchase(plan) {
-            // Handle free plan - redirect to signup
+            // Handle free plan - check if logged in first
             if (plan === 'free') {
-                console.log('Redirecting to signup page for free plan');
-                window.location.href = 'signup.html';
+                // Wait for auth manager
+                let authReady = false;
+                let attempts = 0;
+                
+                while (!authReady && attempts < 20) {
+                    if (window.authManager && window.authManager.isInitialized) {
+                        authReady = true;
+                    } else {
+                        await new Promise(r => setTimeout(r, 100));
+                        attempts++;
+                    }
+                }
+                
+                // Check if user is logged in
+                const isLoggedIn = window.authManager && window.authManager.currentUser;
+                
+                if (isLoggedIn) {
+                    console.log('User already logged in - redirecting to account page');
+                    window.location.href = 'account.html';
+                } else {
+                    console.log('User not logged in - redirecting to signup');
+                    window.location.href = 'signup.html';
+                }
                 return;
             }
             
