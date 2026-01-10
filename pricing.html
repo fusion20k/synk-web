@@ -402,7 +402,7 @@
             <!-- Auth Buttons (shown when logged out) -->
             <div class="auth-buttons" id="auth-buttons">
                 <a href="login.html" class="auth-btn login">Log In</a>
-                <a href="signup.html" class="auth-btn signup">Start Free Trial</a>
+                <a href="signup.html" class="auth-btn signup">Get Started</a>
             </div>
             
             <!-- User Dropdown (shown when logged in) -->
@@ -701,8 +701,8 @@
         // Payment links
         const paymentLinks = {
             free: {
-                monthly: 'signup.html',
-                yearly: 'signup.html'
+                monthly: 'download.html',
+                yearly: 'download.html'
             },
             pro: {
                 monthly: 'https://buy.stripe.com/6oU6oA6BneIs4zb39KbMQ0k',
@@ -807,11 +807,11 @@
                 const isLoggedIn = window.authManager && window.authManager.currentUser;
                 
                 if (isLoggedIn) {
-                    console.log('User already logged in - redirecting to account page');
-                    window.location.href = 'account.html';
+                    console.log('User already logged in - redirecting to download page');
+                    window.location.href = 'download.html';
                 } else {
-                    console.log('User not logged in - redirecting to signup');
-                    window.location.href = 'signup.html';
+                    console.log('User not logged in - redirecting to download');
+                    window.location.href = 'download.html';
                 }
                 return;
             }
