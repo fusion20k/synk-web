@@ -434,14 +434,23 @@
         <!-- Trial Explainer Hero Section -->
         <section id="pricing-hero" style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 8rem 2rem;">
             <div style="text-align: center; opacity: 0; animation: fadeInUp 1.5s ease-out forwards; width: 100%; max-width: 800px;">
-                <h1 style="font-size: clamp(3rem, 8vw, 5rem); font-weight: 700; line-height: 1.1; margin-bottom: 1.5rem; background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Start with a 7-Day Free Trial of Pro</h1>
-                <p style="font-size: 1.4rem; color: #b8b8b8; margin-bottom: 3rem; max-width: 650px; margin-left: auto; margin-right: auto; line-height: 1.6;">All new accounts get full Pro features for 7 days. No credit card required. Experience automatic sync, unlimited connections, and priority support.</p>
+                <h1 style="font-size: clamp(3rem, 8vw, 5rem); font-weight: 700; line-height: 1.1; margin-bottom: 1.5rem; background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Simple Pricing</h1>
+                <p style="font-size: 1.4rem; color: #b8b8b8; margin-bottom: 2rem; max-width: 650px; margin-left: auto; margin-right: auto; line-height: 1.6;">Start free, upgrade when you need automation. All new signups get a 7-day Pro trial automatically.</p>
                 
-                <a href="signup.html" class="cta-button" style="padding: 1.6rem 3.5rem; font-size: 1.3rem; display: inline-block; margin-bottom: 3rem; box-shadow: 0 15px 50px rgba(255, 69, 0, 0.35), 0 5px 15px rgba(255, 69, 0, 0.2); transition: all 0.3s ease; font-weight: 600; text-decoration: none;">
-                    Start 7-Day Free Trial
+                <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 1.5rem; margin: 0 auto 3rem; max-width: 550px; text-align: left;">
+                    <p style="margin: 0; color: #10b981; font-size: 1rem; line-height: 1.8;">
+                        <strong style="display: block; margin-bottom: 0.5rem;">How it works:</strong>
+                        1. Sign up free — start your 7-day Pro trial<br>
+                        2. Experience full automatic sync features<br>
+                        3. After 7 days, choose Pro or continue free
+                    </p>
+                </div>
+                
+                <a href="signup.html" class="cta-button" style="padding: 1.6rem 3.5rem; font-size: 1.3rem; display: inline-block; margin-bottom: 2rem; box-shadow: 0 15px 50px rgba(255, 69, 0, 0.35), 0 5px 15px rgba(255, 69, 0, 0.2); transition: all 0.3s ease; font-weight: 600; text-decoration: none;">
+                    Get Started
                 </a>
                 
-                <p style="font-size: 1rem; color: #8a8a8a; margin-bottom: 1rem;">Then choose your plan below</p>
+                <p style="font-size: 0.95rem; color: #8a8a8a;">No credit card required • Cancel anytime</p>
             </div>
             
             <!-- Scroll Indicator -->
@@ -484,8 +493,8 @@
         <section id="pricing-plans" class="pricing-section">
             <div class="container">
                 <div class="section-header">
-                    <h1>After Your Trial</h1>
-                    <p>Your 7-day Pro trial ends automatically. Choose to continue with Pro or use our Free plan.</p>
+                    <h1>Choose Your Plan</h1>
+                    <p>After your 7-day trial, select the plan that works best for you.</p>
 
                     <!-- Billing Toggle -->
                     <div class="billing-toggle" style="margin: 2rem 0;">
@@ -517,7 +526,7 @@
                             <li style="color: #888;">✗ No bulk operations</li>
                         </ul>
                         
-                        <button class="plan-button secondary" onclick="handlePurchase('free')">Start Free Trial</button>
+                        <button class="plan-button secondary" onclick="handlePurchase('free')">Continue with Free</button>
                     </div>
 
                     <!-- Pro Plan -->
@@ -544,7 +553,7 @@
                             <li>✓ Priority Support</li>
                         </ul>
                         
-                        <button class="plan-button" onclick="handlePurchase('pro')">Start Free Trial</button>
+                        <button class="plan-button" onclick="handlePurchase('pro')">Upgrade to Pro</button>
                     </div>
                 </div>
             </div>
@@ -692,11 +701,11 @@
         // Payment links
         const paymentLinks = {
             free: {
-                monthly: 'https://buy.stripe.com/5kQ28kgbXasc1mZeSsbMQ0d',
-                yearly: 'https://buy.stripe.com/3cI28k0cZeIs3v7cKkbMQ0e'
+                monthly: 'signup.html',
+                yearly: 'signup.html'
             },
             pro: {
-                monthly: 'https://buy.stripe.com/00w14gcZL7g02r311CbMQ0h',
+                monthly: 'https://buy.stripe.com/6oU6oA6BneIs4zb39KbMQ0k',
                 yearly: 'https://buy.stripe.com/cNi8wIgbXbwg4zb8u4bMQ0g'
             }
         };
@@ -744,15 +753,15 @@
                 proPrice.style.fontSize = '3.5rem';
                 proPeriod.textContent = 'per month';
                 proSavings.style.display = 'none';
-                proButton.textContent = 'Start 7-Day Free Trial';
+                proButton.textContent = 'Upgrade to Pro';
             }
         }
         
         async function handlePurchase(plan) {
-            // Handle free plan - redirect to download
+            // Handle free plan - redirect to signup
             if (plan === 'free') {
-                console.log('Redirecting to download page for free plan');
-                window.location.href = 'download.html';
+                console.log('Redirecting to signup page for free plan');
+                window.location.href = 'signup.html';
                 return;
             }
             
