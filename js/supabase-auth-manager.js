@@ -358,30 +358,47 @@ class SupabaseAuthManager {
     }
 
     /**
-     * Log out from Supabase
+     * Log out - clears all auth state and redirects
      */
     async logout() {
-        if (!this.supabaseClient) {
-            throw new Error('Supabase client not initialized');
-        }
+        console.log('[Auth] Logging out...');
 
-        try {
-            const { error } = await this.supabaseClient.auth.signOut();
+        // Clear localStorage tokens FIRST (regardless of Supabase)
+        localStorage.removeItem('synk_auth_token');
+        localStorage.removeItem('synk_user_email');
+        sessionStorage.clear();
 
-            if (error) {
-                throw error;
+        // Clear internal state
+        this.currentUser = null;
+        this.session = null;
+
+        // Try to sign out from Supabase, but don't let it block logout if it fails
+        if (this.supabaseClient) {
+            try {
+                await this.supabaseClient.auth.signOut();
+            } catch (error) {
+                console.warn('[Auth] Supabase signOut failed (ignoring):', error);
             }
-
-            // Redirect to home
-            setTimeout(() => {
-                window.location.href = 'index.html';
-            }, 300);
-
-            return { success: true };
-        } catch (error) {
-            console.error('[Supabase Auth] Logout error:', error);
-            throw error;
         }
+
+        // Dispatch sign out event
+        window.dispatchEvent(new CustomEvent('auth-state-changed', {
+            detail: {
+                event: 'SIGNED_OUT',
+                user: null,
+                session: null
+            }
+        }));
+
+        // Update UI
+        this.updateUI();
+
+        // Redirect to home
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 300);
+
+        return { success: true };
     }
 
     /**

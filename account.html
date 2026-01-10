@@ -615,6 +615,13 @@
 
                 if (error) throw error;
 
+                if (!data) {
+                    console.error('[Account] User data not found in database');
+                    showErrorMessage('Account not found. Logging out...');
+                    setTimeout(() => handleLogout(), 2000);
+                    return;
+                }
+
                 document.getElementById('account-email').textContent = data.email;
                 document.getElementById('account-created').textContent = new Date(data.created_at).toLocaleDateString('en-US', { 
                     year: 'numeric', 
@@ -656,8 +663,9 @@
                 }
 
             } catch (error) {
-                console.error('Error loading user data:', error);
-                showErrorMessage('Failed to load account information');
+                console.error('[Account] Error loading user data:', error);
+                showErrorMessage('Account data could not be loaded. Logging out...');
+                setTimeout(() => handleLogout(), 2000);
             }
         }
 
@@ -685,16 +693,22 @@
         }
 
         async function handleLogout() {
+            console.log('[Account] Logging out...');
+            
+            // Clear localStorage tokens FIRST
+            localStorage.removeItem('synk_auth_token');
+            localStorage.removeItem('synk_user_email');
+            sessionStorage.clear();
+
+            // Try to sign out from Supabase, but don't let it block logout
             try {
                 await supabaseClient.auth.signOut();
-                localStorage.removeItem('synk_auth_token');
-                localStorage.removeItem('synk_user_email');
-                sessionStorage.clear();
-                window.location.href = 'index.html';
             } catch (error) {
-                console.error('Logout error:', error);
-                window.location.href = 'index.html';
+                console.warn('[Account] Supabase signOut failed (ignoring):', error);
             }
+
+            // Always redirect, even if Supabase fails
+            window.location.href = 'index.html';
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
