@@ -101,19 +101,30 @@ class SupabaseAuthManager {
         if (!this.supabaseClient) return;
 
         const { data: { subscription } } = this.supabaseClient.auth.onAuthStateChange((event, session) => {
-            console.log('[Supabase Auth] State changed:', event);
-            this.session = session;
-            this.currentUser = session?.user || null;
-            this.updateUI();
+            console.log('[Auth] Supabase state changed:', event);
+            
+            // Don't override backend API session with empty Supabase session
+            // Only process Supabase auth events if we're actually using Supabase auth
+            if (event === 'INITIAL_SESSION' && !session && this.currentUser) {
+                console.log('[Auth] Ignoring empty Supabase INITIAL_SESSION, keeping backend API session');
+                return;
+            }
+            
+            // Only update if we have a Supabase session or if user explicitly signed out
+            if (session || event === 'SIGNED_OUT') {
+                this.session = session;
+                this.currentUser = session?.user || null;
+                this.updateUI();
 
-            // Dispatch custom event for other components
-            window.dispatchEvent(new CustomEvent('auth-state-changed', {
-                detail: {
-                    event,
-                    user: this.currentUser,
-                    session
-                }
-            }));
+                // Dispatch custom event for other components
+                window.dispatchEvent(new CustomEvent('auth-state-changed', {
+                    detail: {
+                        event,
+                        user: this.currentUser,
+                        session
+                    }
+                }));
+            }
         });
 
         this.authUnsubscribe = subscription;
