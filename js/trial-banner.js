@@ -157,8 +157,8 @@ class TrialBanner {
                 throw new Error('Auth manager not available');
             }
 
-            // Get Stripe price ID (you'll need to replace this with actual price ID)
-            const priceId = 'price_REPLACE_WITH_ACTUAL_PRICE_ID';
+            // Stripe Pro Monthly price ID
+            const priceId = 'price_1SPX9O2VdGqzvJRLf8nDpT0d';
             const successUrl = `${window.location.origin}/upgrade-success.html`;
             const cancelUrl = `${window.location.origin}/account.html`;
 
