@@ -20,6 +20,7 @@ Modified frontend signup code to call backend's `/signup` endpoint instead of Su
 - Bumped auth manager to v2.1
 - Updated all script tags to use `v=999` for aggressive cache busting
 - Fixed account page `checkAuth()` function to check localStorage tokens instead of Supabase session
+- Removed delete account feature entirely (UI, modal, and all related JavaScript)
 
 ---
 
