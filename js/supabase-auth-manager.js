@@ -20,39 +20,55 @@ class SupabaseAuthManager {
     }
 
     /**
-     * Initialize Supabase client and auth listener
+     * Initialize auth manager and check for existing session
      */
     async initialize() {
         if (this.isInitialized) return;
 
         try {
+            // Check localStorage for backend API tokens first
+            const token = localStorage.getItem('synk_auth_token');
+            const email = localStorage.getItem('synk_user_email');
+
+            if (token && email) {
+                console.log('[Auth] Found existing session in localStorage:', email);
+                this.currentUser = { email, avatar: email.charAt(0).toUpperCase() };
+                this.session = { access_token: token };
+            }
+
             // Wait for Supabase library
             await this.waitForSupabaseLibrary();
 
-            // Create Supabase client
+            // Create Supabase client (for legacy support)
             this.supabaseClient = window.supabase.createClient(
                 'https://nbolvclqiaqrupxknvlu.supabase.co',
                 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5ib2x2Y2xxaWFxcnVweGtudmx1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2NTQ4MjgsImV4cCI6MjA3MTIzMDgyOH0.yz33_9PEZbC2ew_2lQyxb6B_cQruSANVrwM_4h-afg8'
             );
 
-            // Get current session
-            const { data: { session } } = await this.supabaseClient.auth.getSession();
-            this.session = session;
-            this.currentUser = session?.user || null;
-
-            // Setup real-time auth listener
+            // Setup real-time auth listener (for legacy Supabase auth)
             this.setupAuthListener();
 
             // Update UI
             this.updateUI();
 
             this.isInitialized = true;
-            console.log('[Supabase Auth] Initialized successfully');
+            console.log('[Auth] Initialized successfully, user:', this.currentUser?.email || 'none');
+
+            // Dispatch initial auth state
+            if (this.currentUser) {
+                window.dispatchEvent(new CustomEvent('auth-state-changed', {
+                    detail: {
+                        event: 'SIGNED_IN',
+                        user: this.currentUser,
+                        session: this.session
+                    }
+                }));
+            }
 
             // Expose globally
             window.authManager = this;
         } catch (error) {
-            console.error('[Supabase Auth] Initialization failed:', error);
+            console.error('[Auth] Initialization failed:', error);
         }
     }
 
