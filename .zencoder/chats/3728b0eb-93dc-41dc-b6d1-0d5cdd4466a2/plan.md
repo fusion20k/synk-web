@@ -13,6 +13,8 @@ Modified frontend signup code to call backend's `/signup` endpoint instead of Su
 - Added auth state change event dispatch to show account icon after signup
 - Fixed auth manager initialization to check localStorage on page load (so account icon persists after redirect)
 - Bumped auth manager version to v2.0 in all HTML files to force browser cache refresh
+- Fixed UI display issues by adding explicit `display: flex/none` styles in showLoggedInState/showLoggedOutState
+- Bumped scripts.js version to v3.1 to force cache refresh
 
 ---
 
