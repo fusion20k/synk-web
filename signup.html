@@ -24,7 +24,7 @@
             
             <div class="auth-buttons" id="auth-buttons">
                 <a href="login.html" class="auth-btn login">Log In</a>
-                <a href="signup.html" class="auth-btn signup">Sign Up</a>
+                <a href="signup.html" class="auth-btn signup">Start Free Trial</a>
             </div>
             
             <div class="user-dropdown" id="user-dropdown">
@@ -56,7 +56,7 @@
             <div class="auth-card">
                 <div class="auth-header">
                     <h1>Create Your Account</h1>
-                    <p>Start syncing Notion and Google Calendar</p>
+                    <p>Start your 7-day Pro trial — full features, no credit card</p>
                 </div>
 
                 <div id="error-message" class="error-message" style="display: none;"></div>
@@ -98,6 +98,8 @@
                             <span>I agree to the <a href="terms.html" target="_blank">Terms of Service</a> and <a href="privacy.html" target="_blank">Privacy Policy</a></span>
                         </label>
                     </div>
+
+                    <p style="font-size: 0.9rem; color: #888; text-align: center; margin: 1rem 0;">By signing up, you'll start a 7-day Pro trial. No credit card required.</p>
 
                     <button type="submit" class="auth-submit-btn" id="signup-btn">
                         <span id="btn-text">Create Account</span>
@@ -168,8 +170,8 @@
                     }
                 }));
                 
-                showSuccess('Account created successfully! Redirecting...');
-                setTimeout(() => window.location.href = 'download.html', 1500);
+                showSuccess('Account created successfully! Redirecting to onboarding...');
+                setTimeout(() => window.location.href = 'onboarding.html', 1500);
 
             } catch (error) {
                 console.error('Signup error:', error);

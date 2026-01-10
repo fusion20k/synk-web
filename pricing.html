@@ -402,7 +402,7 @@
             <!-- Auth Buttons (shown when logged out) -->
             <div class="auth-buttons" id="auth-buttons">
                 <a href="login.html" class="auth-btn login">Log In</a>
-                <a href="signup.html" class="auth-btn signup">Sign Up</a>
+                <a href="signup.html" class="auth-btn signup">Start Free Trial</a>
             </div>
             
             <!-- User Dropdown (shown when logged in) -->
@@ -431,18 +431,23 @@
     </header>
 
     <main>
-        <!-- Hero Intro Section -->
-        <section id="pricing-hero" style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; position: relative; padding: 0 2rem; padding-top: 20vh;">
-            <div style="text-align: center; opacity: 0; animation: fadeInUp 1.5s ease-out forwards; width: 100%; max-width: 1200px;">
-                <h1 style="font-size: clamp(4rem, 10vw, 8rem); font-weight: 700; line-height: 1.1; margin: 0;">Free.</h1>
-                <h1 style="font-size: clamp(4rem, 10vw, 8rem); font-weight: 700; line-height: 1.1; margin: 0; background: linear-gradient(135deg, #ff4500 0%, #dc143c 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Forever.</h1>
-                <p style="font-size: 1.5rem; color: var(--text-secondary); margin-top: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">Start syncing Notion and Google Calendar at no cost. Upgrade when you need more.</p>
+        <!-- Trial Explainer Hero Section -->
+        <section id="pricing-hero" style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; padding: 8rem 2rem;">
+            <div style="text-align: center; opacity: 0; animation: fadeInUp 1.5s ease-out forwards; width: 100%; max-width: 800px;">
+                <h1 style="font-size: clamp(3rem, 8vw, 5rem); font-weight: 700; line-height: 1.1; margin-bottom: 1.5rem; background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Start with a 7-Day Free Trial of Pro</h1>
+                <p style="font-size: 1.4rem; color: #b8b8b8; margin-bottom: 3rem; max-width: 650px; margin-left: auto; margin-right: auto; line-height: 1.6;">All new accounts get full Pro features for 7 days. No credit card required. Experience automatic sync, unlimited connections, and priority support.</p>
+                
+                <a href="signup.html" class="cta-button" style="padding: 1.6rem 3.5rem; font-size: 1.3rem; display: inline-block; margin-bottom: 3rem; box-shadow: 0 15px 50px rgba(255, 69, 0, 0.35), 0 5px 15px rgba(255, 69, 0, 0.2); transition: all 0.3s ease; font-weight: 600; text-decoration: none;">
+                    Start 7-Day Free Trial
+                </a>
+                
+                <p style="font-size: 1rem; color: #8a8a8a; margin-bottom: 1rem;">Then choose your plan below</p>
             </div>
             
             <!-- Scroll Indicator -->
-            <div style="position: absolute; bottom: 12rem; left: 0; right: 0; opacity: 0; animation: fadeInUp 1.5s ease-out 1s forwards; display: flex; justify-content: center;">
+            <div style="position: absolute; bottom: 4rem; left: 0; right: 0; opacity: 0; animation: fadeInUp 1.5s ease-out 1s forwards; display: flex; justify-content: center;">
                 <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; cursor: pointer;" onclick="document.getElementById('pricing-plans').scrollIntoView({behavior: 'smooth'})">
-                    <span style="font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 2px;">Scroll to see plans</span>
+                    <span style="font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 2px;">See plans</span>
                     <svg style="width: 24px; height: 24px; color: var(--accent-orange); animation: bounce 2s infinite;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="6 9 12 15 18 9"></polyline>
                     </svg>
@@ -479,8 +484,8 @@
         <section id="pricing-plans" class="pricing-section">
             <div class="container">
                 <div class="section-header">
-                    <h1>Simple, Transparent Pricing</h1>
-                    <p>Choose the plan that fits your workflow. Start for free and experience seamless sync.</p>
+                    <h1>After Your Trial</h1>
+                    <p>Your 7-day Pro trial ends automatically. Choose to continue with Pro or use our Free plan.</p>
 
                     <!-- Billing Toggle -->
                     <div class="billing-toggle" style="margin: 2rem 0;">
@@ -501,15 +506,18 @@
                             <div class="plan-price" id="free-price" style="font-size: 3.5rem; color: #fff;">$0</div>
                         </div>
                         <div class="plan-period" id="free-period">forever</div>
-                        <p class="plan-description">Perfect for getting started with basic sync features.</p>
+                        <p class="plan-description">If you don't upgrade after your trial</p>
                         
                         <ul class="plan-features">
-                            <li>1 Google Calendar Syncing</li>
-                            <li>1 Notion Database Syncing</li>
-                            <li>Manual Sync</li>
+                            <li>✓ Unlimited manual sync</li>
+                            <li>✓ 1 Google Calendar</li>
+                            <li>✓ 1 Notion Database</li>
+                            <li style="color: #888;">✗ No automatic sync</li>
+                            <li style="color: #888;">✗ No scheduling</li>
+                            <li style="color: #888;">✗ No bulk operations</li>
                         </ul>
                         
-                        <button class="plan-button secondary" onclick="handlePurchase('free')">Get Started Free</button>
+                        <button class="plan-button secondary" onclick="handlePurchase('free')">Start Free Trial</button>
                     </div>
 
                     <!-- Pro Plan -->
@@ -520,7 +528,7 @@
                         </div>
                         <div class="plan-period" id="pro-period">per month</div>
                         <div class="yearly-savings" id="pro-savings" style="display: none; color: #ff4500; font-size: 0.9rem; margin-top: 5px;">Save $30 per year</div>
-                        <p class="plan-description">Perfect for individuals and small teams who need reliable sync.</p>
+                        <p class="plan-description">Keep automatic sync — never manually sync again</p>
                         
                         <div style="background: rgba(255, 69, 0, 0.1); border: 1px solid rgba(255, 69, 0, 0.3); border-radius: 8px; padding: 12px; margin: 20px 0; text-align: center;">
                             <strong style="color: #ff4500;">Most Popular</strong>
@@ -528,14 +536,15 @@
                         </div>
                         
                         <ul class="plan-features">
-                            <li>Unlimited Google Calendar Syncing</li>
-                            <li>Unlimited Notion Database Syncing</li>
-                            <li>Manual, Automatic & Incremental Sync</li>
-                            <li>AI Integration <span style="font-size: 0.85rem; color: #999;">(Coming Soon)</span></li>
-                            <li>Priority Support</li>
+                            <li>✓ Never manually sync again</li>
+                            <li>✓ Automatic sync</li>
+                            <li>✓ Unlimited calendars & databases</li>
+                            <li>✓ Scheduling & bulk operations</li>
+                            <li>✓ AI Integration <span style="font-size: 0.85rem; color: #999;">(Coming Soon)</span></li>
+                            <li>✓ Priority Support</li>
                         </ul>
                         
-                        <button class="plan-button" onclick="handlePurchase('pro')">Start 7-Day Free Trial</button>
+                        <button class="plan-button" onclick="handlePurchase('pro')">Start Free Trial</button>
                     </div>
                 </div>
             </div>
@@ -557,27 +566,47 @@
             <div class="container">
                 <div class="section-header">
                     <h2>Frequently Asked Questions</h2>
-                    <p>Everything you need to know about Synk pricing and features</p>
+                    <p>Everything you need to know about Synk's 7-day trial and pricing</p>
                 </div>
                 
                 <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            What happens after 7 days?
+                            <span class="faq-toggle">→</span>
+                        </div>
+                        <div class="faq-answer">
+                            Your trial automatically ends after 7 days, and you'll be moved to the Free plan. You can upgrade to Pro at any time to regain automatic sync and unlimited connections. No credit card required for the trial.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            Do I need a credit card to start?
+                            <span class="faq-toggle">→</span>
+                        </div>
+                        <div class="faq-answer">
+                            No. The 7-day Pro trial is completely free with no payment method required. Just sign up with your email and start experiencing full Pro features immediately.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            Can I cancel during the trial?
+                            <span class="faq-toggle">→</span>
+                        </div>
+                        <div class="faq-answer">
+                            Yes! Simply don't upgrade to Pro. After 7 days, you'll automatically move to the Free plan. There's nothing to cancel — you're never charged unless you explicitly upgrade.
+                        </div>
+                    </div>
+                    
                     <div class="faq-item">
                         <div class="faq-question" onclick="toggleFAQ(this)">
                             What's the difference between Free and Pro?
                             <span class="faq-toggle">→</span>
                         </div>
                         <div class="faq-answer">
-                            Free plan lets you sync 1 Google Calendar and 1 Notion database with manual sync. Pro plan includes unlimited connections, all sync modes (manual, automatic, incremental), and upcoming AI integration for $14.99/month.
-                        </div>
-                    </div>
-                    
-                    <div class="faq-item">
-                        <div class="faq-question" onclick="toggleFAQ(this)">
-                            Can I try Pro before purchasing?
-                            <span class="faq-toggle">→</span>
-                        </div>
-                        <div class="faq-answer">
-                            Yes! Pro monthly subscriptions include a 7-day free trial. You can test all Pro features including unlimited connections, automatic sync, and incremental sync risk-free. Cancel anytime during the trial with no charge.
+                            Free = manual sync (you do the work). Pro = automatic sync (Synk does the work). Free plan offers unlimited manual syncs with 1 calendar and 1 database. Pro includes automatic sync, unlimited connections, scheduling, bulk operations, and priority support.
                         </div>
                     </div>
                     
@@ -587,27 +616,7 @@
                             <span class="faq-toggle">→</span>
                         </div>
                         <div class="faq-answer">
-                            Free plan costs nothing and stays free forever. Pro plan is $14.99/month (with 7-day free trial) or $149.99/year (save $30 annually). You can cancel anytime, no commitment required.
-                        </div>
-                    </div>
-                    
-                    <div class="faq-item">
-                        <div class="faq-question" onclick="toggleFAQ(this)">
-                            Can I cancel anytime?
-                            <span class="faq-toggle">→</span>
-                        </div>
-                        <div class="faq-answer">
-                            Yes, you can cancel your subscription at any time. Your service will continue until the end of your current billing period.
-                        </div>
-                    </div>
-                    
-                    <div class="faq-item">
-                        <div class="faq-question" onclick="toggleFAQ(this)">
-                            What happens to my data if I cancel?
-                            <span class="faq-toggle">→</span>
-                        </div>
-                        <div class="faq-answer">
-                            Your data remains in your Notion and Google Calendar accounts. Synk only facilitates synchronization and doesn't store your content permanently.
+                            Free plan is $0 forever with unlimited manual syncs. Pro is $14.99/month or $149.99/year (save $30). All new accounts get a 7-day Pro trial first. You can upgrade, downgrade, or cancel anytime with no commitment.
                         </div>
                     </div>
                     
@@ -617,7 +626,7 @@
                             <span class="faq-toggle">→</span>
                         </div>
                         <div class="faq-answer">
-                            Absolutely. We use OAuth authentication, encrypt all data in transit, and follow industry best practices for security. We never store your passwords.
+                            Absolutely. We use OAuth 2.0 authentication, encrypt all data in transit, and follow industry best practices for security. We never store your passwords or your sync data permanently.
                         </div>
                     </div>
                 </div>

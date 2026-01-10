@@ -354,6 +354,116 @@
             background: #2a2a2a;
             max-width: 300px;
         }
+
+        /* Trial Banner Styles */
+        .trial-banner {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 30px;
+            transition: opacity 0.3s ease;
+        }
+
+        .trial-banner.active-trial {
+            background: rgba(255, 69, 0, 0.08);
+            border-left: 4px solid #ff4500;
+            border-color: rgba(255, 69, 0, 0.4);
+        }
+
+        .trial-banner.expired-trial {
+            background: rgba(220, 20, 60, 0.08);
+            border-left: 4px solid #dc143c;
+            border-color: rgba(220, 20, 60, 0.4);
+        }
+
+        .trial-banner.pro-user {
+            background: rgba(16, 185, 129, 0.08);
+            border-left: 4px solid #10b981;
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+
+        .banner-content {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        #trial-message {
+            flex: 1;
+            color: #d8d8d8;
+            font-size: 1rem;
+            font-weight: 500;
+            min-width: 250px;
+        }
+
+        .banner-btn {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #ff4500 0%, #dc143c 100%);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .banner-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(255, 69, 0, 0.4);
+        }
+
+        .banner-close {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .banner-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        @media (max-width: 768px) {
+            .banner-content {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            #trial-message {
+                min-width: auto;
+                text-align: center;
+            }
+
+            .banner-btn {
+                width: 100%;
+            }
+
+            .banner-close {
+                position: absolute;
+                top: 12px;
+                right: 12px;
+            }
+
+            .trial-banner {
+                position: relative;
+                padding: 40px 16px 16px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -372,7 +482,7 @@
             
             <div class="auth-buttons" id="auth-buttons">
                 <a href="login.html" class="auth-btn login">Log In</a>
-                <a href="signup.html" class="auth-btn signup">Sign Up</a>
+                <a href="signup.html" class="auth-btn signup">Start Free Trial</a>
             </div>
             
             <div class="user-dropdown" id="user-dropdown">
@@ -403,6 +513,15 @@
         <div class="page-header">
             <h1>Account</h1>
             <p>Manage your subscription and account settings</p>
+        </div>
+
+        <!-- Trial Status Banner -->
+        <div id="trial-banner" class="trial-banner" style="display: none;">
+            <div class="banner-content">
+                <span id="trial-message">Loading trial status...</span>
+                <button id="upgrade-button" class="banner-btn">Upgrade to Pro</button>
+                <button id="dismiss-banner" class="banner-close" aria-label="Dismiss banner">×</button>
+            </div>
         </div>
 
         <div id="error-message" class="error-message"></div>
@@ -834,6 +953,7 @@
             });
         });
     </script>
+    <script src="js/trial-banner.js?v=1.0"></script>
     <script src="js/supabase-auth-manager.js?v=10101"></script>
     <script src="js/scripts.js?v=10101"></script>
 </body>

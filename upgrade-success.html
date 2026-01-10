@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Synk Pro!</title>
+    <link rel="stylesheet" href="css/styles.css?v=9.6">
+    <link rel="stylesheet" href="css/auth.css?v=2.0">
+    <link rel="icon" href="assets/icons/favicon.ico">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="auth-body">
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">Synk</a>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="about.html">How It Works</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="download.html">Download</a>
+                <a href="contact.html">Contact</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="terms.html">Terms</a>
+            </nav>
+            
+            <div class="auth-buttons" id="auth-buttons">
+                <a href="login.html" class="auth-btn login">Log In</a>
+                <a href="signup.html" class="auth-btn signup">Start Free Trial</a>
+            </div>
+            
+            <div class="user-dropdown" id="user-dropdown">
+                <div class="user-avatar" id="user-avatar">U</div>
+                <div class="sidebar-overlay"></div>
+                <div class="dropdown-menu">
+                    <div class="dropdown-header">
+                        <button class="sidebar-close" aria-label="Close sidebar">×</button>
+                        <div class="dropdown-email" id="user-email">user@synk.app</div>
+                    </div>
+                    <div class="sidebar-content">
+                        <a href="account.html" class="dropdown-item">Manage Account</a>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item" id="logout-btn">Log Out</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <main class="auth-page">
+        <div class="auth-container">
+            <div class="auth-card success-card">
+                <div class="success-icon">
+                    <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="40" cy="40" r="38" stroke="#10b981" stroke-width="4"/>
+                        <path d="M25 40L35 50L55 30" stroke="#10b981" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                
+                <h1 style="font-size: 2.5rem; margin: 1.5rem 0 1rem; color: #fff;">Welcome to Synk Pro! 🎉</h1>
+                
+                <p style="font-size: 1.2rem; color: #b8b8b8; margin-bottom: 2rem; line-height: 1.6;">
+                    Your payment was successful. Pro features are now active.
+                </p>
+
+                <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
+                    <p style="margin: 0; color: #10b981; font-size: 1rem;">
+                        ✓ Automatic sync enabled<br>
+                        ✓ Unlimited calendars & databases<br>
+                        ✓ Priority support access
+                    </p>
+                </div>
+
+                <p style="font-size: 1rem; color: #888; margin-bottom: 2rem;">
+                    Redirecting in <span id="countdown" style="color: #ff4500; font-weight: 600;">5</span> seconds...
+                </p>
+
+                <a href="account.html" class="auth-submit-btn" style="display: inline-block; text-decoration: none; text-align: center;">
+                    Go to Dashboard Now
+                </a>
+
+                <style>
+                    .success-card {
+                        text-align: center;
+                        max-width: 500px;
+                    }
+
+                    .success-icon {
+                        margin: 0 auto 1rem;
+                        animation: scaleIn 0.5s ease-out;
+                    }
+
+                    @keyframes scaleIn {
+                        from {
+                            transform: scale(0);
+                            opacity: 0;
+                        }
+                        to {
+                            transform: scale(1);
+                            opacity: 1;
+                        }
+                    }
+
+                    .auth-submit-btn {
+                        width: 100%;
+                        max-width: 100%;
+                    }
+                </style>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/upgrade-success.js?v=1.0"></script>
+    <script src="js/supabase-auth-manager.js?v=10101"></script>
+    <script src="js/scripts.js?v=10101"></script>
+</body>
+</html>

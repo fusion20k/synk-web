@@ -447,6 +447,62 @@ class SupabaseAuthManager {
     }
 
     /**
+     * Fetch trial status for current user
+     * @returns {Promise<Object>} Trial status object
+     * @throws {Error} If not authenticated or request fails
+     */
+    async getTrialStatus() {
+        const token = localStorage.getItem('synk_auth_token');
+        if (!token) {
+            throw new Error('Not authenticated');
+        }
+        
+        const response = await fetch('https://synk-web.onrender.com/api/user/trial-status', {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch trial status');
+        }
+        
+        return await response.json();
+    }
+
+    /**
+     * Initiate Stripe Checkout for upgrade
+     * @param {string} priceId - Stripe price ID
+     * @param {string} successUrl - Redirect URL after payment
+     * @param {string} cancelUrl - Redirect URL if cancelled
+     * @returns {Promise<string>} Stripe Checkout URL
+     * @throws {Error} If not authenticated or request fails
+     */
+    async initiateUpgrade(priceId, successUrl, cancelUrl) {
+        const token = localStorage.getItem('synk_auth_token');
+        if (!token) {
+            throw new Error('Not authenticated');
+        }
+        
+        const response = await fetch('https://synk-web.onrender.com/api/upgrade', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ priceId, successUrl, cancelUrl })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to create checkout session');
+        }
+        
+        const data = await response.json();
+        return data.checkout_url;
+    }
+
+    /**
      * Cleanup
      */
     destroy() {
