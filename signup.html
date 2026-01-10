@@ -157,7 +157,17 @@
                     throw new Error(data.message || 'Signup failed');
                 }
 
-                localStorage.setItem('token', data.token);
+                localStorage.setItem('synk_auth_token', data.token);
+                localStorage.setItem('synk_user_email', email);
+                
+                window.dispatchEvent(new CustomEvent('auth-state-changed', {
+                    detail: {
+                        event: 'SIGNED_IN',
+                        user: { email, avatar: email.charAt(0).toUpperCase() },
+                        session: { access_token: data.token }
+                    }
+                }));
+                
                 showSuccess('Account created successfully! Redirecting...');
                 setTimeout(() => window.location.href = 'download.html', 1500);
 

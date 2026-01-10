@@ -137,9 +137,10 @@ class SupabaseAuthManager {
             }
 
             console.log('[Auth] Signup successful, storing token');
-            localStorage.setItem('token', data.token);
+            localStorage.setItem('synk_auth_token', data.token);
+            localStorage.setItem('synk_user_email', email);
             
-            this.currentUser = { email };
+            this.currentUser = { email, avatar: email.charAt(0).toUpperCase() };
             this.session = { access_token: data.token };
             
             this.updateUI();
