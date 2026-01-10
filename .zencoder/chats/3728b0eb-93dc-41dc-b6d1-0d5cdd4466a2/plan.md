@@ -18,6 +18,8 @@ Modified frontend signup code to call backend's `/signup` endpoint instead of Su
 - Fixed critical bug: Supabase auth listener was overriding backend API session with null on INITIAL_SESSION event
 - Modified setupAuthListener to ignore empty Supabase sessions when backend API session exists
 - Bumped auth manager to v2.1
+- Updated all script tags to use `v=999` for aggressive cache busting
+- Fixed account page `checkAuth()` function to check localStorage tokens instead of Supabase session
 
 ---
 
