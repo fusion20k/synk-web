@@ -81,27 +81,24 @@
             <!-- Step 1: Welcome -->
             <div class="onboarding-step active" id="step-1">
                 <div class="step-content">
-                    <h1>🎉 Your 7-Day Pro Trial Has Started!</h1>
-                    <p class="trial-info">Trial ends: <strong id="trial-end-date">Loading...</strong></p>
-                    <p class="description">You now have access to all Pro features, including automatic sync, unlimited connections, and priority support.</p>
+                    <h1>Welcome to Synk</h1>
+                    <p class="trial-info">7 days of Pro features • Ends: <strong id="trial-end-date">Loading...</strong></p>
+                    <p class="description">You have full access to Pro features for the next 7 days. Here's how to get started with the desktop app.</p>
                     
                     <div class="feature-highlights">
                         <div class="feature-item">
-                            <span class="feature-icon">⚡</span>
                             <span class="feature-text">Automatic sync</span>
                         </div>
                         <div class="feature-item">
-                            <span class="feature-icon">∞</span>
                             <span class="feature-text">Unlimited calendars</span>
                         </div>
                         <div class="feature-item">
-                            <span class="feature-icon">🔄</span>
                             <span class="feature-text">Two-way sync</span>
                         </div>
                     </div>
 
-                    <button class="btn-primary" onclick="nextStep()">Set Up Your First Sync →</button>
-                    <a href="account.html" class="skip-link">Skip setup, go to dashboard</a>
+                    <button class="btn-primary" onclick="nextStep()">See Quick Setup Guide →</button>
+                    <a href="account.html" class="skip-link">Skip to dashboard</a>
                 </div>
             </div>
 
@@ -109,7 +106,7 @@
             <div class="onboarding-step" id="step-2">
                 <div class="step-content">
                     <h2>1. Connect Google Calendar</h2>
-                    <p class="description">Grant Synk access to sync your calendar events automatically</p>
+                    <p class="description">Download the desktop app to connect your Google Calendar</p>
                     
                     <div class="connection-box">
                         <svg style="width: 64px; height: 64px; margin-bottom: 1rem;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -119,12 +116,11 @@
                             <line x1="16" y1="2" x2="16" y2="6" stroke="#4285F4" stroke-width="2" stroke-linecap="round"/>
                         </svg>
                         <h3>Google Calendar</h3>
-                        <p>Synk will request read and write access to your calendars</p>
+                        <p>In the app: Click "Connect Calendar" and sign in with Google</p>
                     </div>
 
-                    <button class="btn-primary" onclick="connectGoogleCalendar()">Connect Google Calendar</button>
-                    <button class="btn-secondary" onclick="nextStep()">I'll connect later →</button>
-                    <a href="account.html" class="skip-link">Skip setup, go to dashboard</a>
+                    <button class="btn-primary" onclick="nextStep()">Next Step →</button>
+                    <a href="account.html" class="skip-link">Skip to dashboard</a>
                 </div>
             </div>
 
@@ -132,7 +128,7 @@
             <div class="onboarding-step" id="step-3">
                 <div class="step-content">
                     <h2>2. Connect Notion</h2>
-                    <p class="description">Choose where to sync your calendar events</p>
+                    <p class="description">Link your Notion workspace in the desktop app</p>
                     
                     <div class="connection-box">
                         <svg style="width: 64px; height: 64px; margin-bottom: 1rem;" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -140,35 +136,34 @@
                             <path d="M7 8h10M7 12h10M7 16h6" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
                         </svg>
                         <h3>Notion</h3>
-                        <p>Synk will request access to your Notion databases</p>
+                        <p>In the app: Click "Connect Notion" and select your workspace</p>
                     </div>
 
-                    <button class="btn-primary" onclick="connectNotion()">Connect Notion</button>
-                    <button class="btn-secondary" onclick="nextStep()">I'll connect later →</button>
-                    <a href="account.html" class="skip-link">Skip setup, go to dashboard</a>
+                    <button class="btn-primary" onclick="nextStep()">Next Step →</button>
+                    <a href="account.html" class="skip-link">Skip to dashboard</a>
                 </div>
             </div>
 
             <!-- Step 4: Complete -->
             <div class="onboarding-step" id="step-4">
                 <div class="step-content">
-                    <h1>🚀 You're All Set!</h1>
-                    <p class="description">Your Pro trial is active and ready to use.</p>
+                    <h1>Ready to Start</h1>
+                    <p class="description">Download the app to begin syncing your calendar with Notion.</p>
                     
                     <div class="completion-info">
-                        <p>Your trial includes:</p>
+                        <p>What's included in your 7 days of Pro:</p>
                         <ul>
-                            <li>✓ Automatic sync for 7 days</li>
-                            <li>✓ Unlimited calendars & databases</li>
-                            <li>✓ Priority support</li>
-                            <li>✓ All Pro features unlocked</li>
+                            <li>Automatic sync</li>
+                            <li>Unlimited calendars & databases</li>
+                            <li>Priority support</li>
+                            <li>All Pro features</li>
                         </ul>
-                        <p class="trial-reminder">Trial ends: <strong id="final-trial-date">Loading...</strong></p>
-                        <p class="trial-note">After your trial, you can upgrade to keep these features or use our Free plan with manual sync.</p>
+                        <p class="trial-reminder">Access until: <strong id="final-trial-date">Loading...</strong></p>
+                        <p class="trial-note">After 7 days, choose to upgrade or continue with the Free plan (manual sync).</p>
                     </div>
 
-                    <a href="account.html" class="btn-primary">Go to Dashboard</a>
-                    <a href="download.html" class="btn-secondary">Download Desktop App</a>
+                    <a href="download.html" class="btn-primary">Download Desktop App</a>
+                    <a href="account.html" class="btn-secondary">Go to Dashboard</a>
                 </div>
             </div>
         </div>
