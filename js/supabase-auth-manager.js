@@ -17,6 +17,7 @@ class SupabaseAuthManager {
         this.isInitialized = false;
         this.authUnsubscribe = null;
         this.session = null;
+        this.isLoggingOut = false;
     }
 
     /**
@@ -101,7 +102,13 @@ class SupabaseAuthManager {
         if (!this.supabaseClient) return;
 
         const { data: { subscription } } = this.supabaseClient.auth.onAuthStateChange((event, session) => {
-            console.log('[Auth] Supabase state changed:', event);
+            console.log('[Auth] Supabase state changed:', event, 'isLoggingOut:', this.isLoggingOut);
+            
+            // If we're in the middle of logging out, ignore ALL auth state changes
+            if (this.isLoggingOut) {
+                console.log('[Auth] Ignoring auth state change during logout');
+                return;
+            }
             
             // Don't override backend API session with empty Supabase session
             // Only process Supabase auth events if we're actually using Supabase auth
@@ -361,24 +368,41 @@ class SupabaseAuthManager {
      * Log out - clears all auth state and redirects
      */
     async logout() {
-        console.log('[Auth] Logging out...');
-
-        // Clear localStorage tokens FIRST (regardless of Supabase)
-        localStorage.removeItem('synk_auth_token');
-        localStorage.removeItem('synk_user_email');
-        sessionStorage.clear();
+        console.log('[Auth] Starting logout process...');
+        
+        // Set logout flag to prevent auth listener from restoring session
+        this.isLoggingOut = true;
 
         // Clear internal state
         this.currentUser = null;
         this.session = null;
 
-        // Try to sign out from Supabase, but don't let it block logout if it fails
+        // Clear localStorage tokens
+        localStorage.removeItem('synk_auth_token');
+        localStorage.removeItem('synk_user_email');
+        sessionStorage.clear();
+
+        // Clear all Supabase storage
         if (this.supabaseClient) {
             try {
-                await this.supabaseClient.auth.signOut();
+                console.log('[Auth] Signing out from Supabase...');
+                await this.supabaseClient.auth.signOut({ scope: 'local' });
+                console.log('[Auth] Supabase signOut complete');
             } catch (error) {
                 console.warn('[Auth] Supabase signOut failed (ignoring):', error);
             }
+        }
+
+        // Clear any Supabase storage that might remain
+        try {
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith('sb-')) {
+                    localStorage.removeItem(key);
+                    console.log('[Auth] Removed Supabase storage key:', key);
+                }
+            });
+        } catch (error) {
+            console.warn('[Auth] Error clearing Supabase storage:', error);
         }
 
         // Dispatch sign out event
@@ -393,10 +417,10 @@ class SupabaseAuthManager {
         // Update UI
         this.updateUI();
 
-        // Redirect to home
-        setTimeout(() => {
-            window.location.href = 'index.html';
-        }, 300);
+        console.log('[Auth] Redirecting to home...');
+        
+        // Use location.replace to prevent back button issues
+        window.location.replace('index.html');
 
         return { success: true };
     }
