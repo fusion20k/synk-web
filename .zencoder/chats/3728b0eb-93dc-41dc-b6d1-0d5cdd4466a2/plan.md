@@ -9,6 +9,8 @@ Modified frontend signup code to call backend's `/signup` endpoint instead of Su
 - Updated `js/supabase-auth-manager.js` signup method to use `fetch()` to backend API
 - Updated `signup.html` inline signup handler to use `fetch()` to backend API
 - Both now call `https://synk-web.onrender.com/signup` and store the returned JWT token in localStorage
+- Fixed auth state management to use correct localStorage keys (`synk_auth_token` and `synk_user_email`)
+- Added auth state change event dispatch to show account icon after signup
 
 ---
 
