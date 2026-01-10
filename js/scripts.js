@@ -477,6 +477,8 @@ function showLoggedInState(email) {
     const userAvatar = document.getElementById('user-avatar');
     const userEmailEl = document.getElementById('user-email');
     
+    console.log('[Auth UI] Showing logged in state for:', email);
+    
     // Hide auth buttons and show user dropdown
     if (authButtons) {
         authButtons.classList.remove('ready');
@@ -485,7 +487,8 @@ function showLoggedInState(email) {
     if (userDropdown) {
         userDropdown.classList.add('ready');
         userDropdown.classList.add('active');
-        userDropdown.classList.remove('open'); // Ensure dropdown menu is closed
+        userDropdown.classList.remove('open');
+        userDropdown.style.display = 'flex';
     }
     
     if (userEmailEl) userEmailEl.textContent = email;
@@ -500,14 +503,18 @@ function showLoggedOutState() {
     const authButtons = document.getElementById('auth-buttons');
     const userDropdown = document.getElementById('user-dropdown');
     
+    console.log('[Auth UI] Showing logged out state');
+    
     // Show auth buttons and hide user dropdown
     if (authButtons) {
         authButtons.classList.add('ready');
+        authButtons.style.display = 'flex';
     }
     if (userDropdown) {
         userDropdown.classList.remove('ready');
         userDropdown.classList.remove('active');
         userDropdown.classList.remove('open');
+        userDropdown.style.display = 'none';
     }
 }
 
