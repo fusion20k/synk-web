@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 1000);
 
     // Allow manual redirect by clicking the button
-    const dashboardButton = document.querySelector('a[href="account.html"]');
+    const dashboardButton = document.querySelector('a[href="dashboard.html"]');
     if (dashboardButton) {
         dashboardButton.addEventListener('click', (e) => {
             e.preventDefault();
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
  */
 function redirectToDashboard() {
     console.log('[UpgradeSuccess] Redirecting to dashboard...');
-    window.location.href = 'account.html';
+    window.location.href = 'dashboard.html';
 }
 
 /**

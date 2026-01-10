@@ -209,7 +209,7 @@ function connectNotion() {
  */
 function completeOnboarding() {
     console.log('[Onboarding] Onboarding completed');
-    window.location.href = 'account.html';
+    window.location.href = 'dashboard.html';
 }
 
 /**
@@ -217,7 +217,7 @@ function completeOnboarding() {
  */
 function skipOnboarding() {
     console.log('[Onboarding] User skipped onboarding');
-    window.location.href = 'account.html';
+    window.location.href = 'dashboard.html';
 }
 
 // Initialize progress bar on load

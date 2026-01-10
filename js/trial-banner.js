@@ -160,7 +160,7 @@ class TrialBanner {
             // Stripe Pro Monthly price ID
             const priceId = 'price_1SPX9O2VdGqzvJRLf8nDpT0d';
             const successUrl = `${window.location.origin}/upgrade-success.html`;
-            const cancelUrl = `${window.location.origin}/account.html`;
+            const cancelUrl = `${window.location.origin}/dashboard.html`;
 
             // Initiate upgrade (will redirect to Stripe Checkout)
             const checkoutUrl = await window.authManager.initiateUpgrade(priceId, successUrl, cancelUrl);
@@ -207,7 +207,7 @@ class TrialBanner {
 }
 
 // Auto-initialize if on account page
-if (window.location.pathname.includes('account.html')) {
+if (window.location.pathname.includes('dashboard.html') || window.location.pathname.includes('account.html')) {
     document.addEventListener('DOMContentLoaded', async () => {
         const banner = new TrialBanner('trial-banner');
         await banner.init();
