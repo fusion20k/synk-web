@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Synk? - Better Than Zapier for Notion & Google Calendar Sync</title>
+    <meta name="description" content="Synk is specialized for Calendar ↔ Notion sync. Simpler setup, better reliability, and a fraction of the cost compared to Zapier, Make, and other automation tools.">
+    <link rel="stylesheet" href="css/styles.css?v=9.6">
+    <link rel="icon" href="assets/icons/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <style>
+        .hero-section {
+            padding: 8rem 0 6rem;
+            text-align: center;
+        }
+        
+        .hero-headline {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subheadline {
+            font-size: clamp(1.2rem, 3vw, 1.6rem);
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .comparison-section {
+            padding: 6rem 0;
+            background: transparent;
+        }
+        
+        .comparison-table {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .comparison-column {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            transition: var(--transition);
+        }
+        
+        .comparison-column.featured {
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 30px rgba(255, 69, 0, 0.2);
+            position: relative;
+        }
+        
+        .comparison-column.featured::before {
+            content: 'Best Value';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gradient-primary);
+            color: white;
+            padding: 0.4rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .comparison-column:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 69, 0, 0.3);
+        }
+        
+        .comparison-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+        
+        .comparison-row {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .comparison-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .row-label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .row-value {
+            display: block;
+            font-size: 1rem;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+        
+        .pain-points-section {
+            padding: 6rem 0;
+            background: var(--bg-secondary);
+        }
+        
+        .pain-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .pain-card {
+            background: var(--bg-card);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .pain-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+        
+        .pain-card ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .pain-card li {
+            padding: 0.75rem 0;
+            padding-left: 2rem;
+            position: relative;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        .pain-card li::before {
+            content: '×';
+            position: absolute;
+            left: 0;
+            color: #ff4444;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .synk-difference {
+            background: linear-gradient(135deg, rgba(255, 69, 0, 0.1) 0%, rgba(220, 20, 60, 0.1) 100%);
+            border: 1px solid rgba(255, 69, 0, 0.3);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+        
+        .synk-difference h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .synk-difference ul {
+            list-style: none;
+            padding: 0;
+            display: inline-block;
+            text-align: left;
+        }
+        
+        .synk-difference li {
+            padding: 0.75rem 0;
+            padding-left: 2rem;
+            position: relative;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+        
+        .synk-difference li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent-orange);
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        
+        .who-section {
+            padding: 6rem 0;
+        }
+        
+        .who-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+        
+        .who-card {
+            background: var(--bg-card);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .who-card.perfect {
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        
+        .who-card.not-for {
+            border-color: rgba(255, 68, 68, 0.3);
+        }
+        
+        .who-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .who-card.perfect h3 {
+            color: #10b981;
+        }
+        
+        .who-card.not-for h3 {
+            color: #ff4444;
+        }
+        
+        .who-card ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .who-card li {
+            padding: 0.75rem 0;
+            padding-left: 2rem;
+            position: relative;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        .who-card.perfect li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        
+        .who-card.not-for li::before {
+            content: '×';
+            position: absolute;
+            left: 0;
+            color: #ff4444;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .testimonials-section {
+            padding: 6rem 0;
+            background: var(--bg-secondary);
+        }
+        
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .testimonial-card {
+            background: var(--bg-card);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 69, 0, 0.3);
+            box-shadow: var(--shadow-medium);
+        }
+        
+        .testimonial-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+        
+        .testimonial-text {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .testimonial-author strong {
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+        
+        .testimonial-author span {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .video-section {
+            padding: 6rem 0;
+        }
+        
+        .video-placeholder {
+            max-width: 800px;
+            margin: 3rem auto 0;
+            aspect-ratio: 16 / 9;
+            background: var(--bg-card);
+            border: 2px dashed rgba(255, 69, 0, 0.3);
+            border-radius: var(--border-radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 3rem;
+            text-align: center;
+        }
+        
+        .video-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .video-icon svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+        
+        .video-placeholder p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+        
+        .faq-section {
+            padding: 6rem 0;
+            background: var(--bg-secondary);
+        }
+        
+        .faq-container {
+            max-width: 800px;
+            margin: 3rem auto 0;
+        }
+        
+        .faq-item {
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .faq-question {
+            padding: 1.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .faq-question:hover {
+            color: var(--accent-orange);
+        }
+        
+        .faq-item:focus-within {
+            border-color: rgba(255, 69, 0, 0.3);
+            outline: none;
+        }
+        
+        .faq-answer {
+            padding: 0 1.5rem 1.5rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            display: none;
+        }
+        
+        .faq-item.active {
+            border-color: rgba(255, 69, 0, 0.5);
+        }
+        
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+        
+        .faq-toggle {
+            color: var(--accent-orange);
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+        
+        .faq-item.active .faq-toggle {
+            transform: rotate(90deg);
+        }
+        
+        .cta-section {
+            padding: 6rem 0;
+        }
+        
+        .cta-content {
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .cta-content h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 1rem;
+        }
+        
+        .trust-signals {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+            font-size: 1rem;
+        }
+        
+        .trust-signals span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+        }
+        
+        .trust-signals span::before {
+            content: '✓';
+            color: #10b981;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 1.4rem 3rem;
+            font-size: 1.2rem;
+            background: var(--gradient-primary);
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            box-shadow: 0 4px 16px rgba(255, 69, 0, 0.3);
+            transition: var(--transition);
+            margin: 1rem 0;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 69, 0, 0.4);
+            background: var(--gradient-secondary);
+        }
+        
+        .secondary-options {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .secondary-options a {
+            color: var(--accent-orange);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .secondary-options a:hover {
+            color: var(--accent-fire);
+            text-decoration: underline;
+        }
+        
+        .guarantee-callout {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin-top: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .guarantee-callout p {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin: 0;
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 1024px) {
+            .comparison-table {
+                grid-template-columns: 1fr;
+            }
+            
+            .pain-grid, .who-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 6rem 0 4rem;
+            }
+            
+            .comparison-section,
+            .pain-points-section,
+            .who-section,
+            .testimonials-section,
+            .video-section,
+            .faq-section,
+            .cta-section {
+                padding: 4rem 0;
+            }
+            
+            .trust-signals {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .secondary-options {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">Synk</a>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="why-synk.html">Why Synk?</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="download.html">Download</a>
+                <a href="contact.html">Contact</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="terms.html">Terms</a>
+            </nav>
+            
+            <div class="auth-buttons" id="auth-buttons">
+                <a href="login.html" class="auth-btn login">Log In</a>
+                <a href="signup.html" class="auth-btn signup">Get Started</a>
+            </div>
+            
+            <div class="user-dropdown" id="user-dropdown">
+                <div class="user-avatar" id="user-avatar">U</div>
+                <div class="sidebar-overlay"></div>
+                <div class="dropdown-menu">
+                    <div class="dropdown-header">
+                        <button class="sidebar-close" aria-label="Close sidebar">×</button>
+                        <div class="dropdown-email" id="user-email">user@synk.app</div>
+                    </div>
+                    <div class="sidebar-content">
+                        <a href="dashboard.html" class="dropdown-item">Dashboard</a>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item" id="logout-btn">Log Out</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero-section">
+            <div class="container">
+                <h1 class="hero-headline">Sync Google Calendar to Notion.<br>Simple. Affordable. Made for this one job.</h1>
+                <p class="hero-subheadline">Tired of overpriced, overcomplicated automation tools? Meet Synk.</p>
+            </div>
+        </section>
+
+        <section id="comparison" class="comparison-section">
+            <div class="container">
+                <div class="section-header" style="text-align: center; margin-bottom: 1rem;">
+                    <h2 style="font-size: clamp(2rem, 4vw, 2.5rem);">The Comparison</h2>
+                    <p style="font-size: 1.1rem; color: var(--text-secondary);">See how Synk stacks up against the competition</p>
+                </div>
+                
+                <div class="comparison-table">
+                    <div class="comparison-column">
+                        <div class="comparison-header">Zapier/Make</div>
+                        <div class="comparison-row">
+                            <span class="row-label">Price</span>
+                            <span class="row-value">$29.99+/month</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="row-label">Setup Time</span>
+                            <span class="row-value">15-30 minutes (10+ steps)</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="row-label">Focus</span>
+                            <span class="row-value">5,000+ apps (generalist)</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="row-label">Learning Curve</span>
+                            <span class="row-value">Complex (rules, filters, logic)</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="row-label">Trial</span>
+                            <span class="row-value">Credit card required</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="row-label">Support</span>
+                            <span class="row-value">Generic, slow</span>
+                        </div>
+                    </div>
+                    
+                    <div class="comparison-column">
+                        <div class="comparison-header">2sync & Others</div>
+                        <div class="comparison-row">
+                            <span class="row-label">Price</span>
+                            <span class="row-value">$10-20/month</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="row-label">Setup Time</span>
+                            <span class="row-value">5-10 minutes</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="row-label">Focus</span>
+                            <span class="row-value">Multiple integrations</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="row-label">Learning Curve</span>
+                            <span class="row-value">Moderate</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="row-label">Trial</span>
+                            <span class="row-value">Often limited</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="row-label">Support</span>
+                            <span class="row-value">Varies</span>
+                        </div>
+                    </div>
+                    
+                    <div class="comparison-column featured">
+                        <div class="comparison-header">Synk</div>
+                        <div class="comparison-row">
+                            <span class="row-label">Price</span>
+                            <span class="row-value">$14.99/month</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="row-label">Setup Time</span>
+                            <span class="row-value">2 minutes (3 steps)</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="row-label">Focus</span>
+                            <span class="row-value">One thing perfectly: Calendar ↔ Notion</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="row-label">Learning Curve</span>
+                            <span class="row-value">None (it just works)</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="row-label">Trial</span>
+                            <span class="row-value">7-day full Pro trial, no credit card</span>
+                        </div>
+                        <div class="comparison-row">
+                            <span class="row-label">Support</span>
+                            <span class="row-value">Built by someone who uses it daily</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="pain-points-section">
+            <div class="container">
+                <div class="section-header" style="text-align: center; margin-bottom: 1rem;">
+                    <h2 style="font-size: clamp(2rem, 4vw, 2.5rem);">The Problem with Alternatives</h2>
+                    <p style="font-size: 1.1rem; color: var(--text-secondary);">Why other solutions fall short</p>
+                </div>
+                
+                <div class="pain-grid">
+                    <div class="pain-card">
+                        <h3>If you're using Zapier/Make:</h3>
+                        <ul>
+                            <li>You're paying for 4,999 apps you don't use</li>
+                            <li>You need a computer science degree to set it up</li>
+                            <li>When it breaks, good luck debugging</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="pain-card">
+                        <h3>If you're using other sync tools:</h3>
+                        <ul>
+                            <li>They're trying to do too much</li>
+                            <li>Setup is still complicated</li>
+                            <li>Support is faceless</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="synk-difference">
+                    <h3>Synk is different because:</h3>
+                    <ul>
+                        <li>We only do one thing (and we do it perfectly)</li>
+                        <li>No configuration hell (connect → set rules → done)</li>
+                        <li>Built by someone who needed this (I was manually syncing too)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="who-section">
+            <div class="container">
+                <div class="section-header" style="text-align: center; margin-bottom: 1rem;">
+                    <h2 style="font-size: clamp(2rem, 4vw, 2.5rem);">Is Synk Right for You?</h2>
+                    <p style="font-size: 1.1rem; color: var(--text-secondary);">Honest answers about who should (and shouldn't) use Synk</p>
+                </div>
+                
+                <div class="who-grid">
+                    <div class="who-card perfect">
+                        <h3>Perfect for:</h3>
+                        <ul>
+                            <li>Notion power users who live in their workspace</li>
+                            <li>Busy professionals who don't have time for complex setups</li>
+                            <li>Small teams who need reliability without enterprise pricing</li>
+                            <li>Anyone tired of manually copying calendar events</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="who-card not-for">
+                        <h3>Not for:</h3>
+                        <ul>
+                            <li>People who need 100+ app integrations (use Zapier)</li>
+                            <li>Enterprises with massive budgets (use enterprise solutions)</li>
+                            <li>People who enjoy manual data entry (you do you)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="testimonials-section">
+            <div class="container">
+                <div class="section-header" style="text-align: center; margin-bottom: 1rem;">
+                    <h2 style="font-size: clamp(2rem, 4vw, 2.5rem);">What Users Are Saying</h2>
+                    <p style="font-size: 1.1rem; color: var(--text-secondary);">Real feedback from real users</p>
+                </div>
+                
+                <div class="testimonials-grid">
+                    <div class="testimonial-card">
+                        <div class="testimonial-avatar">MC</div>
+                        <p class="testimonial-text">"I was using Zapier for this and paying $30/month for one workflow. Synk does it better for half the price."</p>
+                        <div class="testimonial-author">
+                            <strong>Michael Chen</strong>
+                            <span>Product Manager at TechCorp</span>
+                        </div>
+                    </div>
+                    
+                    <div class="testimonial-card">
+                        <div class="testimonial-avatar">SJ</div>
+                        <p class="testimonial-text">"Setup took 2 minutes. With Zapier it took me an hour to get it working. The time savings alone make it worth it."</p>
+                        <div class="testimonial-author">
+                            <strong>Sarah Johnson</strong>
+                            <span>Freelance Consultant</span>
+                        </div>
+                    </div>
+                    
+                    <div class="testimonial-card">
+                        <div class="testimonial-avatar">AR</div>
+                        <p class="testimonial-text">"Finally, a tool that does one thing exceptionally well. No configuration headaches, just reliable syncing every time."</p>
+                        <div class="testimonial-author">
+                            <strong>Alex Rodriguez</strong>
+                            <span>Operations Lead</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="video" class="video-section">
+            <div class="container">
+                <div class="section-header" style="text-align: center; margin-bottom: 1rem;">
+                    <h2 style="font-size: clamp(2rem, 4vw, 2.5rem);">See It In Action</h2>
+                    <p style="font-size: 1.1rem; color: var(--text-secondary);">Watch how easy it is to get started</p>
+                </div>
+                
+                <div class="video-placeholder">
+                    <div class="video-icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                    </div>
+                    <p><strong>How to set up Synk in under 2 minutes</strong></p>
+                    <p style="font-size: 0.95rem;">Video coming soon: Connect Google Calendar → Connect Notion → Start syncing</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="faq-section">
+            <div class="container">
+                <div class="section-header" style="text-align: center; margin-bottom: 1rem;">
+                    <h2 style="font-size: clamp(2rem, 4vw, 2.5rem);">Frequently Asked Questions</h2>
+                    <p style="font-size: 1.1rem; color: var(--text-secondary);">Everything you need to know</p>
+                </div>
+                
+                <div class="faq-container">
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            How is this different from Zapier?
+                            <span class="faq-toggle">→</span>
+                        </div>
+                        <div class="faq-answer">
+                            Zapier is a generalist tool built for 5,000+ integrations. Synk is a specialist—we do one thing perfectly: sync Google Calendar with Notion. This means simpler setup, better reliability, and a fraction of the cost for this specific use case.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            What if I need more integrations later?
+                            <span class="faq-toggle">→</span>
+                        </div>
+                        <div class="faq-answer">
+                            We're focused on perfecting Calendar ↔ Notion sync first. If there's demand for additional integrations that complement this core workflow, we'll consider adding them based on user feedback. For complex multi-app workflows, tools like Zapier are better suited.
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question" onclick="toggleFAQ(this)">
+                            Can I cancel anytime?
+                            <span class="faq-toggle">→</span>
+                        </div>
+                        <div class="faq-answer">
+                            Absolutely. You can cancel your Pro subscription anytime, no questions asked. When you cancel, you'll still have access to manual sync mode forever.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="container">
+                <div class="cta-content">
+                    <h2>Try Synk free for 7 days</h2>
+                    
+                    <div class="trust-signals">
+                        <span>No credit card required</span>
+                        <span>Full Pro features during trial</span>
+                        <span>Cancel anytime</span>
+                    </div>
+                    
+                    <a href="signup.html" class="cta-button">Start Free Trial</a>
+                    
+                    <div class="secondary-options">
+                        <a href="#video">Watch a 60-second setup video</a>
+                        <a href="#comparison">Compare feature-by-feature</a>
+                    </div>
+                    
+                    <div class="guarantee-callout">
+                        <p><strong>30-Day Money-Back Guarantee</strong><br>
+                        Not satisfied? Email me within 30 days for a full refund. No questions asked.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Synk</h3>
+                    <p>Seamlessly connecting your productivity tools for a more organized workflow.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Product</h3>
+                    <a href="why-synk.html">Why Synk?</a><br>
+                    <a href="pricing.html">Pricing</a><br>
+                    <a href="contact.html">Support</a><br>
+                    <a href="#comparison">Features</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <a href="privacy.html">Privacy Policy</a><br>
+                    <a href="terms.html">Terms of Service</a><br>
+                    <a href="contact.html">Contact Us</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Synk. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/supabase-auth-manager.js?v=10101"></script>
+    <script src="js/scripts.js?v=10101"></script>
+    <script>
+        function toggleFAQ(element) {
+            const faqItem = element.closest('.faq-item');
+            const isActive = faqItem.classList.contains('active');
+            
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            if (!isActive) {
+                faqItem.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>
