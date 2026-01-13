@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Email - Synk</title>
+    <link rel="stylesheet" href="css/styles.css?v=9.6">
+    <link rel="stylesheet" href="css/auth.css?v=2.1">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="auth-body">
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">Synk</a>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="about.html">How It Works</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="download.html">Download</a>
+                <a href="contact.html">Contact</a>
+                <a href="privacy.html">Privacy</a>
+                <a href="terms.html">Terms</a>
+            </nav>
+            
+            <div class="auth-buttons" id="auth-buttons">
+                <a href="login.html" class="auth-btn login">Log In</a>
+                <a href="signup.html" class="auth-btn signup">Get Started</a>
+            </div>
+            
+            <div class="mobile-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <main class="auth-page">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="verification-icon">
+                    <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="40" cy="40" r="38" stroke="url(#gradient)" stroke-width="4"/>
+                        <path d="M25 40L35 50L55 30" stroke="url(#gradient)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                        <defs>
+                            <linearGradient id="gradient" x1="0" y1="0" x2="80" y2="80">
+                                <stop offset="0%" stop-color="#FF4500"/>
+                                <stop offset="100%" stop-color="#DC143C"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+
+                <div class="auth-header">
+                    <h1>Check Your Email</h1>
+                    <p>We've sent a confirmation link to:</p>
+                    <p class="verification-email" id="verification-email">your@email.com</p>
+                </div>
+
+                <div class="verification-message">
+                    <p>Click the link in the email to verify your account and get started with Synk.</p>
+                    <p style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">
+                        The link will expire in 24 hours.
+                    </p>
+                </div>
+
+                <div id="error-message" class="error-message" style="display: none;"></div>
+                <div id="success-message" class="success-message" style="display: none;"></div>
+
+                <div class="resend-section">
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                        Didn't receive the email?
+                    </p>
+                    <button id="resend-btn" class="auth-submit-btn">
+                        <span id="resend-text">Resend Verification Email</span>
+                    </button>
+                    <div id="countdown-timer" style="display: none; margin-top: 1rem; color: var(--text-muted); text-align: center;">
+                        You can resend in <span id="countdown-seconds">60</span> seconds
+                    </div>
+                </div>
+
+                <div class="auth-alternate" style="margin-top: 2rem;">
+                    Wrong email? <a href="signup.html">Sign up again</a>
+                </div>
+
+                <div class="verification-help" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                    <p style="color: var(--text-muted); font-size: 0.9rem; text-align: center;">
+                        <strong>Tips:</strong> Check your spam folder • Add noreply@mail.app.supabase.io to contacts
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Display email from sessionStorage
+        function displayEmail() {
+            const email = sessionStorage.getItem('pending_verification_email');
+            const emailDisplay = document.getElementById('verification-email');
+            
+            if (email) {
+                emailDisplay.textContent = email;
+                console.log('[Verify Email] Displaying email:', email);
+            } else {
+                console.warn('[Verify Email] No pending verification email found in sessionStorage');
+                emailDisplay.textContent = 'your email address';
+                
+                // Show warning message
+                showError('No pending verification found. Please sign up first.');
+                setTimeout(() => {
+                    window.location.href = 'signup.html';
+                }, 3000);
+            }
+        }
+
+        // Check cooldown on page load
+        function checkExistingCooldown() {
+            const lastResend = sessionStorage.getItem('last_resend_time');
+            if (!lastResend) return;
+
+            const elapsed = Date.now() - parseInt(lastResend);
+            const remaining = Math.max(0, 60000 - elapsed);
+
+            if (remaining > 0) {
+                startCountdown(Math.ceil(remaining / 1000));
+            }
+        }
+
+        // Show error message
+        function showError(message) {
+            const errorEl = document.getElementById('error-message');
+            const successEl = document.getElementById('success-message');
+
+            if (successEl) successEl.style.display = 'none';
+            if (errorEl) {
+                errorEl.textContent = message;
+                errorEl.style.display = 'block';
+
+                setTimeout(() => {
+                    errorEl.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            const errorEl = document.getElementById('error-message');
+            const successEl = document.getElementById('success-message');
+
+            if (errorEl) errorEl.style.display = 'none';
+            if (successEl) {
+                successEl.textContent = message;
+                successEl.style.display = 'block';
+
+                setTimeout(() => {
+                    successEl.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Start countdown timer
+        let countdownInterval = null;
+
+        function startCountdown(seconds) {
+            const resendBtn = document.getElementById('resend-btn');
+            const resendText = document.getElementById('resend-text');
+            const countdownTimer = document.getElementById('countdown-timer');
+            const countdownSeconds = document.getElementById('countdown-seconds');
+
+            resendBtn.disabled = true;
+            resendText.textContent = 'Please Wait...';
+            countdownTimer.style.display = 'block';
+
+            let remaining = seconds;
+            countdownSeconds.textContent = remaining;
+
+            if (countdownInterval) clearInterval(countdownInterval);
+
+            countdownInterval = setInterval(() => {
+                remaining--;
+                countdownSeconds.textContent = remaining;
+
+                if (remaining <= 0) {
+                    clearInterval(countdownInterval);
+                    resendBtn.disabled = false;
+                    resendText.textContent = 'Resend Verification Email';
+                    countdownTimer.style.display = 'none';
+                    console.log('[Verify Email] Cooldown complete');
+                }
+            }, 1000);
+        }
+
+        // Wait for auth manager to initialize
+        function waitForAuthManager(maxAttempts = 30, delayMs = 100) {
+            return new Promise((resolve, reject) => {
+                let attempts = 0;
+
+                const check = () => {
+                    if (window.authManager && window.authManager.isInitialized) {
+                        resolve(window.authManager);
+                    } else if (attempts < maxAttempts) {
+                        attempts++;
+                        setTimeout(check, delayMs);
+                    } else {
+                        reject(new Error('Auth manager failed to initialize'));
+                    }
+                };
+
+                check();
+            });
+        }
+
+        // Resend button handler
+        document.getElementById('resend-btn').addEventListener('click', async function() {
+            console.log('[Verify Email] Resend button clicked');
+
+            // Check cooldown
+            const lastResend = sessionStorage.getItem('last_resend_time');
+            if (lastResend) {
+                const elapsed = Date.now() - parseInt(lastResend);
+                const remaining = Math.max(0, 60000 - elapsed);
+
+                if (remaining > 0) {
+                    console.log('[Verify Email] Cooldown active, remaining:', remaining);
+                    showError('Please wait before requesting another email');
+                    startCountdown(Math.ceil(remaining / 1000));
+                    return;
+                }
+            }
+
+            const email = sessionStorage.getItem('pending_verification_email');
+            if (!email) {
+                showError('No email found. Please sign up again.');
+                return;
+            }
+
+            // Set button loading state
+            const btn = document.getElementById('resend-btn');
+            const btnText = document.getElementById('resend-text');
+            btn.disabled = true;
+            btnText.textContent = 'Sending...';
+
+            try {
+                // Wait for auth manager
+                const manager = await waitForAuthManager();
+
+                // Call resend method
+                const result = await manager.resendVerificationEmail(email);
+
+                if (result.success) {
+                    showSuccess('Verification email sent! Check your inbox.');
+                    
+                    // Set cooldown
+                    sessionStorage.setItem('last_resend_time', Date.now().toString());
+                    startCountdown(60);
+                } else {
+                    throw new Error(result.error || 'Failed to resend email');
+                }
+            } catch (error) {
+                console.error('[Verify Email] Resend error:', error);
+                showError(error.message || 'Failed to resend email. Please try again.');
+                
+                // Re-enable button
+                btn.disabled = false;
+                btnText.textContent = 'Resend Verification Email';
+            }
+        });
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            displayEmail();
+            checkExistingCooldown();
+            console.log('[Verify Email] Page loaded');
+        });
+    </script>
+    
+    <script src="js/supabase-auth-manager.js?v=10101"></script>
+    <script src="js/scripts.js?v=10101"></script>
+</body>
+</html>

@@ -281,10 +281,29 @@
         }
         
         .testimonials-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+            overflow: hidden;
             margin-top: 3rem;
+            position: relative;
+        }
+        
+        .testimonials-track {
+            display: flex;
+            gap: 2rem;
+            animation: scroll 20s linear infinite;
+            width: fit-content;
+        }
+        
+        .testimonials-track:hover {
+            animation-play-state: paused;
+        }
+        
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
         }
         
         .testimonial-card {
@@ -293,12 +312,20 @@
             border-radius: var(--border-radius);
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: var(--transition);
+            flex-shrink: 0;
+            width: 400px;
         }
         
         .testimonial-card:hover {
             transform: translateY(-5px);
             border-color: rgba(255, 69, 0, 0.3);
             box-shadow: var(--shadow-medium);
+        }
+        
+        @media (max-width: 768px) {
+            .testimonial-card {
+                width: 300px;
+            }
         }
         
         .testimonial-avatar {
@@ -801,30 +828,60 @@
                 </div>
                 
                 <div class="testimonials-grid">
-                    <div class="testimonial-card">
-                        <div class="testimonial-avatar">MC</div>
-                        <p class="testimonial-text">"I was using Zapier for this and paying $30/month for one workflow. Synk does it better for half the price."</p>
-                        <div class="testimonial-author">
-                            <strong>Michael Chen</strong>
-                            <span>Product Manager at TechCorp</span>
+                    <div class="testimonials-track">
+                        <div class="testimonial-card">
+                            <div class="testimonial-avatar">MC</div>
+                            <p class="testimonial-text">"I was using Zapier for this and paying $30/month for one workflow. Synk does it better for half the price."</p>
+                            <div class="testimonial-author">
+                                <strong>Michael Chen</strong>
+                                <span>Product Manager at TechCorp</span>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="testimonial-card">
-                        <div class="testimonial-avatar">SJ</div>
-                        <p class="testimonial-text">"Setup took 2 minutes. With Zapier it took me an hour to get it working. The time savings alone make it worth it."</p>
-                        <div class="testimonial-author">
-                            <strong>Sarah Johnson</strong>
-                            <span>Freelance Consultant</span>
+                        
+                        <div class="testimonial-card">
+                            <div class="testimonial-avatar">SJ</div>
+                            <p class="testimonial-text">"Setup took 2 minutes. With Zapier it took me an hour to get it working. The time savings alone make it worth it."</p>
+                            <div class="testimonial-author">
+                                <strong>Sarah Johnson</strong>
+                                <span>Freelance Consultant</span>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="testimonial-card">
-                        <div class="testimonial-avatar">AR</div>
-                        <p class="testimonial-text">"Finally, a tool that does one thing exceptionally well. No configuration headaches, just reliable syncing every time."</p>
-                        <div class="testimonial-author">
-                            <strong>Alex Rodriguez</strong>
-                            <span>Operations Lead</span>
+                        
+                        <div class="testimonial-card">
+                            <div class="testimonial-avatar">AR</div>
+                            <p class="testimonial-text">"Finally, a tool that does one thing exceptionally well. No configuration headaches, just reliable syncing every time."</p>
+                            <div class="testimonial-author">
+                                <strong>Alex Rodriguez</strong>
+                                <span>Operations Lead</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Duplicate for infinite scroll -->
+                        <div class="testimonial-card">
+                            <div class="testimonial-avatar">MC</div>
+                            <p class="testimonial-text">"I was using Zapier for this and paying $30/month for one workflow. Synk does it better for half the price."</p>
+                            <div class="testimonial-author">
+                                <strong>Michael Chen</strong>
+                                <span>Product Manager at TechCorp</span>
+                            </div>
+                        </div>
+                        
+                        <div class="testimonial-card">
+                            <div class="testimonial-avatar">SJ</div>
+                            <p class="testimonial-text">"Setup took 2 minutes. With Zapier it took me an hour to get it working. The time savings alone make it worth it."</p>
+                            <div class="testimonial-author">
+                                <strong>Sarah Johnson</strong>
+                                <span>Freelance Consultant</span>
+                            </div>
+                        </div>
+                        
+                        <div class="testimonial-card">
+                            <div class="testimonial-avatar">AR</div>
+                            <p class="testimonial-text">"Finally, a tool that does one thing exceptionally well. No configuration headaches, just reliable syncing every time."</p>
+                            <div class="testimonial-author">
+                                <strong>Alex Rodriguez</strong>
+                                <span>Operations Lead</span>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -956,3 +956,98 @@ body.auth-body main {
     }
   }
 }
+
+/* ============================================
+   Email Verification Page Styles
+   ============================================ */
+
+.verification-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+  animation: fadeInScale 0.6s ease-out;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.verification-email {
+  font-weight: 700;
+  color: var(--accent-orange);
+  font-size: 1.1rem;
+  margin-top: 0.75rem;
+  word-break: break-word;
+}
+
+.verification-message {
+  text-align: center;
+  color: var(--text-secondary);
+  margin: 2rem 0;
+  line-height: 1.6;
+}
+
+.verification-message p {
+  margin: 0.5rem 0;
+}
+
+.resend-section {
+  text-align: center;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.resend-section p {
+  margin: 0;
+}
+
+#countdown-timer {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+#countdown-seconds {
+  color: var(--accent-orange);
+  font-weight: 700;
+}
+
+.verification-help {
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.verification-help strong {
+  color: var(--text-primary);
+}
+
+/* Loading state for resend button */
+.auth-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Mobile responsive adjustments for verification page */
+@media (max-width: 600px) {
+  .verification-icon svg {
+    width: 60px;
+    height: 60px;
+  }
+
+  .verification-email {
+    font-size: 1rem;
+  }
+
+  .verification-message {
+    font-size: 0.95rem;
+  }
+}
