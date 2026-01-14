@@ -61,7 +61,6 @@
                 </div>
 
                 <div id="error-message" class="error-message" style="display: none;"></div>
-                <div id="success-message" class="success-message" style="display: none;"></div>
 
                 <form id="signup-form" class="auth-form">
                     <div class="form-group">
@@ -86,11 +85,11 @@
                                 required 
                                 autocomplete="new-password"
                                 placeholder="Create a strong password"
-                                minlength="8"
+                                minlength="12"
                             >
                             <button type="button" class="toggle-password" id="toggle-password">Show</button>
                         </div>
-                        <small class="form-hint">At least 8 characters</small>
+                        <small class="form-hint">At least 12 characters, including uppercase, lowercase, number, and special character</small>
                     </div>
 
                     <div class="checkbox-group">
@@ -106,6 +105,8 @@
                         <span id="btn-text">Create Account</span>
                     </button>
                 </form>
+
+                <div id="success-message" class="success-message" style="display: none;"></div>
 
                 <div class="auth-alternate">
                     Already have an account? <a href="login.html">Log in</a>
@@ -139,6 +140,28 @@
             
             if (!terms) {
                 showError('Please agree to the Terms of Service and Privacy Policy');
+                return;
+            }
+
+            // Validate password strength
+            if (password.length < 12) {
+                showError('Password must be at least 12 characters long');
+                return;
+            }
+            if (!/[A-Z]/.test(password)) {
+                showError('Password must contain at least one uppercase letter');
+                return;
+            }
+            if (!/[a-z]/.test(password)) {
+                showError('Password must contain at least one lowercase letter');
+                return;
+            }
+            if (!/[0-9]/.test(password)) {
+                showError('Password must contain at least one number');
+                return;
+            }
+            if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+                showError('Password must contain at least one special character (!@#$%^&*, etc.)');
                 return;
             }
 
